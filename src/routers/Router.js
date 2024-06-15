@@ -1,27 +1,23 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // routes
-import { userRoutes, authRoutes } from "./allRoutes";
-import ProtectedRoute from "./ProtectedRoute";
+// import { userRoutes, authRoutes } from "./allRoutes";
+import ServicePage from "../page/service/ServicePage";
 
 // components
-import { MainLayout, ComponentLoading } from "../components";
+// import { MainLayout, ComponentLoading } from "../components/";
 
-const routes = [
-  // { path: '/dashboard', component: <LazyDashBoardPage /> },
-];
+const routes = [{ path: "/", component: <ServicePage /> }];
 
 const Router = () => {
   return (
     <BrowserRouter>
-      <Suspense fallback={<ComponentLoading />}>
-        <Routes>
-          {routes.map((route, idx) => (
-            <Route path={route.path} element={route.component} key={idx} />
-          ))}
-        </Routes>
-      </Suspense>
+      <Routes>
+        {routes.map((route, idx) => (
+          <Route path={route.path} element={route.component} key={idx} />
+        ))}
+      </Routes>
     </BrowserRouter>
   );
 };
