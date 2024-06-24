@@ -7,11 +7,15 @@ import {
   RangeDatePicker,
   Button,
   DateButtons,
+  ConfirmModal,
 } from "../../components/index";
 import { Row, Col } from "antd";
+import PopupRegModal from "./popupRegModal/PopupRegModal";
 
 const PopupMngPage = () => {
   const [selectedFilterItems, setSelectedFilterItems] = useState([]);
+  const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false);
+  const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false);
 
   const FILTER_ITEMS = [
     { id: 1, label: "당월", reqData: "" },
@@ -52,7 +56,14 @@ const PopupMngPage = () => {
         </Row>
         <Row justify={"space-between"}>
           <Col>
-            <Button btnText={"팝업등록"} />
+            <Button
+              btnText={"팝업등록"}
+              onClick={() => setIsModalOpenSubmit(true)}
+            />
+            <PopupRegModal
+              isModalOpen={isModalOpenSubmit}
+              setIsModalOpen={setIsModalOpenSubmit}
+            />
           </Col>
           <Col>
             <Button btnText={"조회"} />
@@ -60,7 +71,17 @@ const PopupMngPage = () => {
         </Row>
       </BoxShadow>
       <TableList />
-      <Button btnText={"삭제"} cancel />
+      <Button
+        btnText={"삭제"}
+        cancel
+        onClick={() => setIsModalOpenConfirm(true)}
+      />
+      <ConfirmModal
+        title={"삭제 알림"}
+        isModalOpen={isModalOpenConfirm}
+        setIsModalOpen={setIsModalOpenConfirm}
+        contents={"데이터를 삭제하시겠습니까?"}
+      />
     </div>
   );
 };
