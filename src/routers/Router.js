@@ -1,24 +1,27 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // routes
 // import { userRoutes, authRoutes } from "./allRoutes";
-import ServicePage from "../page/service/ServicePage";
+import PopupMngPage from "../page/popupMng/PopupMngPage";
 
 // components
 // import { MainLayout, ComponentLoading } from "../components/";
 
-const routes = [{ path: "/", component: <ServicePage /> }];
+const routes = [
+  {
+    path: "/",
+    component: <PopupMngPage />,
+  },
+];
 
 const Router = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {routes.map((route, idx) => (
-          <Route path={route.path} element={route.component} key={idx} />
-        ))}
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      {routes.map((route, idx) => (
+        <Route path={route.path} element={route.component} key={idx} />
+      ))}
+    </Routes>
   );
 };
 
