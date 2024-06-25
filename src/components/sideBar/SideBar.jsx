@@ -16,7 +16,7 @@ const SideBar = () => {
             <NavLink
               to={menu.path}
               key={index}
-              activeStyle={{ color: "black" }}
+              // activeStyle={{ color: "black" }}
             >
               <SidebarItem>{menu.name}</SidebarItem>
             </NavLink>
