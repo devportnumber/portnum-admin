@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Input,
   BoxShadow,
@@ -11,11 +11,14 @@ import {
 } from "../../components/index";
 import { Row, Col } from "antd";
 import PopupRegModal from "./popupRegModal/PopupRegModal";
+import { useAxios } from "../../hooks/useAxios";
 
 const PopupMngPage = () => {
   const [selectedFilterItems, setSelectedFilterItems] = useState([]);
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false);
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false);
+
+  const { fetchData, loading, data: storeList, error } = useAxios();
 
   const FILTER_ITEMS = [
     { id: 1, label: "당월", reqData: "" },
@@ -25,8 +28,13 @@ const PopupMngPage = () => {
   ];
 
   const handleFilterChange = (e) => {
-    console.log("선택", e);
+    // console.log("선택", e);
   };
+
+  useEffect(() => {
+    fetchData("GET", `/list`, null, null);
+    console.log("storeList", storeList);
+  }, []);
 
   return (
     <div>
