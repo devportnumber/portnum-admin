@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
+// import { Layout, Menu } from "antd";
 
 const SideBar = () => {
   const menus = [
@@ -30,18 +31,19 @@ const SideBar = () => {
 export default SideBar;
 
 const Side = styled.div`
-  background: #4f5d75;
+  background: #f9f9f9;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 292px;
+  width: 256px;
   height: 100vh;
+  border-right: 1px solid #d9d9d9;
 `;
 
 const MenuHead = styled.div`
   width: 100%;
   height: 100px;
-  border-bottom: 1px solid #818181;
+  border-bottom: 1px solid #e0e0e0;
 `;
 const Menu = styled.div`
   margin-top: 30px;
@@ -53,9 +55,9 @@ const Menu = styled.div`
 const SidebarItem = styled.p`
   padding: 15px 20px;
   font-size: 14px;
-  color: #fff;
+  color: #000;
   &:hover {
-    background-color: #6593a3;
+    background-color: #cccccc;
     color: white;
   }
 `;

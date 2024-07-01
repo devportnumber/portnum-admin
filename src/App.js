@@ -1,17 +1,21 @@
 import Router from "./routers/Router";
 import styled from "styled-components";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./components/header/Header";
 import SideBar from "./components/sideBar/SideBar";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
+        <Header />
         <LayoutWrapper>
-          <SideBar />
-          <MainContent>
-            <Router />
-          </MainContent>
+          <LayoutMain>
+            <SideBar />
+            <MainContent>
+              <Router />
+            </MainContent>
+          </LayoutMain>
         </LayoutWrapper>
       </BrowserRouter>
     </div>
@@ -19,8 +23,10 @@ function App() {
 }
 
 export default App;
-
-const LayoutWrapper = styled.div`
+const LayoutWrapper = styled.section`
+  min-height: 100vh;
+`;
+const LayoutMain = styled.div`
   display: flex;
 `;
 

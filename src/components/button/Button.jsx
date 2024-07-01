@@ -41,9 +41,9 @@ const Button = ({
       <ConfigProvider
         theme={{
           token: {
-            borderRadius: "5px",
-            colorPrimary: cancel ? "#FF2E2E" : "#4F5D75",
-            colorTextLightSolid: "#fff",
+            borderRadius: "8px",
+            colorPrimary: cancel ? "#fff" : "#000",
+            colorTextLightSolid: cancel ? "#000" : "#fff",
           },
         }}
       >
