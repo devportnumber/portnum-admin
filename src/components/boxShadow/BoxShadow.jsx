@@ -8,7 +8,7 @@ const BoxShadow = ({ children }) => {
 export default BoxShadow;
 
 const Wrap = styled.div`
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   padding: 20px;
   width: 100%;
   background: #fff;

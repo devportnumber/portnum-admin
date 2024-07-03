@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import {
   Input,
   BoxShadow,
@@ -62,22 +63,28 @@ const PopupMngPage = () => {
             />
           </Col>
         </Row>
-        <Row justify={"space-between"}>
+      </BoxShadow>
+      <ButtonWrap>
+        <div>
+          <Button
+            btnText={"팝업등록"}
+            onClick={() => setIsModalOpenSubmit(true)}
+          />
+          <PopupRegModal
+            isModalOpen={isModalOpenSubmit}
+            setIsModalOpen={setIsModalOpenSubmit}
+          />
+        </div>
+
+        <Row gutter={[10, 10]}>
           <Col>
-            <Button
-              btnText={"팝업등록"}
-              onClick={() => setIsModalOpenSubmit(true)}
-            />
-            <PopupRegModal
-              isModalOpen={isModalOpenSubmit}
-              setIsModalOpen={setIsModalOpenSubmit}
-            />
+            <Button btnText={"초기화"} cancel />
           </Col>
           <Col>
             <Button btnText={"조회"} />
           </Col>
         </Row>
-      </BoxShadow>
+      </ButtonWrap>
       <TableList />
       <Button
         btnText={"삭제"}
@@ -95,3 +102,9 @@ const PopupMngPage = () => {
 };
 
 export default PopupMngPage;
+
+const ButtonWrap = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 55px;
+`;

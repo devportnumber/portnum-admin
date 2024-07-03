@@ -31,6 +31,7 @@ const LayoutMain = styled.div`
 `;
 
 const MainContent = styled.div`
+  min-height: 100vh;
   flex-grow: 1;
   padding: 20px;
   background-color: #f3f7fa;
