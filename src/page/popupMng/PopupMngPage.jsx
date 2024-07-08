@@ -28,6 +28,16 @@ const PopupMngPage = () => {
     { id: 4, label: "2개월", reqData: "D" },
   ];
 
+  const CATEGORY_ITEMS = [
+    {
+      value: "all",
+      label: "전체",
+    },
+    {
+      value: "exhibition",
+      label: "전시회",
+    },
+  ];
   const handleFilterChange = (e) => {
     // console.log("선택", e);
   };
@@ -42,7 +52,10 @@ const PopupMngPage = () => {
       <BoxShadow>
         <Row gutter={[10, 0]}>
           <Col span={8}>
-            <SelectOption selectTitle={"카테고리"} />
+            <SelectOption
+              selectTitle={"카테고리"}
+              selectItems={CATEGORY_ITEMS}
+            />
           </Col>
           <Col span={8}>
             <SelectOption selectTitle={"상태"} />
@@ -87,7 +100,7 @@ const PopupMngPage = () => {
       </ButtonWrap>
       <TableList />
       <Button
-        btnText={"삭제"}
+        btnText={"선택 삭제"}
         cancel
         onClick={() => setIsModalOpenConfirm(true)}
       />

@@ -95,7 +95,7 @@ const TableList = () => {
         theme={{
           components: {
             Table: {
-              borderColor: "#dbdbdb;",
+              // borderColor: "#dbdbdb;",
             },
           },
         }}
@@ -122,8 +122,15 @@ const Wrap = styled.section`
   align-items: center;
   text-align: center; */
   margin-bottom: 20px;
-  .ant-spin-nested-loading {
+  /* .ant-spin-nested-loading {
     border: 1px solid #dbdbdb;
+  } */
+  .ant-checkbox-inner {
+    border-radius: 50%; /* 체크박스를 동그랗게 만듭니다. */
+  }
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #5d5fef; /* 체크된 상태의 배경색을 원하는 색상으로 설정합니다. */
+    border-color: #5d5fef; /* 체크된 상태의 테두리 색상도 동일하게 설정할 수 있습니다. */
   }
   .ant-table-thead > tr > th {
     text-align: center;

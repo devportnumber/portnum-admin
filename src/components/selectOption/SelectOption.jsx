@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Select, Space } from "antd";
 
-const SelectOption = ({ selectTitle }) => {
+const SelectOption = ({ selectTitle, selectItems }) => {
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
@@ -10,25 +10,12 @@ const SelectOption = ({ selectTitle }) => {
     <div>
       <SelectTitle>{selectTitle}</SelectTitle>
       <Select
-        defaultValue="test1"
+        defaultValue={"전체"}
         style={{
           width: "100%",
         }}
         onChange={handleChange}
-        options={[
-          {
-            value: "test1",
-            label: "test1",
-          },
-          {
-            value: "test2",
-            label: "test2",
-          },
-          {
-            value: "test3",
-            label: "test3",
-          },
-        ]}
+        options={selectItems}
       />
     </div>
   );

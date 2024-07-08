@@ -64,12 +64,13 @@ const FilterBox = styled.div`
   /* width: fit-content; */
   /* width: 300px; */
   width: 100%;
-  height: 28px;
+  height: 40px;
   display: flex;
+  gap: 8px;
   /* background: transparent; */
   background: #fff;
-  border: 1px solid #79747e;
-  border-radius: 20px;
+  /* border: 1px solid #79747e; */
+  /* border-radius: 20px; */
   overflow: hidden;
 
   .item {
@@ -79,16 +80,19 @@ const FilterBox = styled.div`
     flex-grow: 1;
     text-align: center;
     font-size: 14px;
-    color: #000;
-    border-right: 1px solid #79747e;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #00000099;
+    /* border-right: 1px solid #79747e; */
   }
 
   .item:last-child {
-    border-right: none;
+    /* border-right: none; */
   }
 
   .item.active {
-    background-color: #79747e;
-    color: #fff;
+    background-color: #e0e0e0;
+    color: #000;
   }
 `;
