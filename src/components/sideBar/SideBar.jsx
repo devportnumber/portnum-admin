@@ -35,11 +35,13 @@ const SideBar = () => {
     { name: "버튼관리", path: "/buttonMng" },
   ];
   const onClick = (e) => {
-    console.log("e", e);
-    // const path = items.find((item) => item.key === key)?.path;
-    // if (path) {
-    //   navigate(path);
-    // }
+    const { key } = e;
+    const item = items
+      .flatMap((menu) => (menu.children ? menu.children : [menu]))
+      .find((item) => item.key === key);
+    if (item && item.path) {
+      navigate(item.path);
+    }
   };
   return (
     <Side>
@@ -83,6 +85,15 @@ const Side = styled.div`
   width: 256px;
   height: 100vh;
   border-right: 1px solid #d9d9d9; */
+  .ant-menu-submenu-selected > .ant-menu-submenu-title {
+    color: #000;
+    font-weight: bold;
+    background-color: #fff;
+  }
+  .ant-menu-item-selected {
+    color: #000;
+    font-weight: bold;
+  }
 `;
 
 const MenuHead = styled.h4`
