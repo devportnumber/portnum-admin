@@ -21,14 +21,6 @@ const PopupMngPage = () => {
 
   const { fetchData, loading, data: storeList, error } = useAxios()
 
-  // 날짜 선택 버튼
-  const FILTER_ITEMS = [
-    { id: 1, label: '당월', reqData: '' },
-    { id: 2, label: '1주일', reqData: 'Y' },
-    { id: 3, label: '1개월', reqData: 'N' },
-    { id: 4, label: '2개월', reqData: 'D' },
-  ]
-
   // 카테고리 드롭다운
   const CATEGORY_ITEMS = [
     {
@@ -83,16 +75,16 @@ const PopupMngPage = () => {
           </Col>
         </Row>
         <Row gutter={[20, 0]} align={'bottom'}>
-          <Col span={12}>
+          <Col span={24}>
             <RangeDatePicker />
           </Col>
-          <Col span={8}>
+          {/* <Col span={8}>
             <DateButtons
               filterItems={FILTER_ITEMS}
               selectedFilterItems={selectedFilterItems}
               handleFilterChange={handleFilterChange}
             />
-          </Col>
+          </Col> */}
         </Row>
       </BoxShadow>
       <ButtonWrap>
