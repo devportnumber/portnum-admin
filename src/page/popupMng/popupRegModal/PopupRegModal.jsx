@@ -1,92 +1,94 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   Button,
   SubmitModal,
   Input,
   RangeDatePicker,
   SelectOption,
-} from "../../../components/index";
-import { Upload, message, Radio } from "antd";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import styled from "styled-components";
+  Address,
+} from '../../../components/index'
+import { Upload, message, Radio } from 'antd'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import styled from 'styled-components'
 
 const getBase64 = (img, callback) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result));
-  reader.readAsDataURL(img);
-};
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}
 const beforeUpload = (file) => {
-  const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
   if (!isJpgOrPng) {
-    message.error("You can only upload JPG/PNG file!");
+    message.error('You can only upload JPG/PNG file!')
   }
-  const isLt2M = file.size / 1024 / 1024 < 2;
+  const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    message.error("Image must smaller than 2MB!");
+    message.error('Image must smaller than 2MB!')
   }
-  return isJpgOrPng && isLt2M;
-};
+  return isJpgOrPng && isLt2M
+}
 const plainOptions = [
   {
-    label: "노출",
-    value: "Y",
+    label: '노출',
+    value: 'Y',
   },
   {
-    label: "비노출",
-    value: "N",
+    label: '비노출',
+    value: 'N',
   },
-];
+]
 
 const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
-  const [value1, setValue1] = useState("Apple");
-
+  const [loading, setLoading] = useState(false)
+  const [imageUrl, setImageUrl] = useState()
+  const [value1, setValue1] = useState('Apple')
+  const [address, setAddress] = useState(null)
   const handleChange = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
+    if (info.file.status === 'uploading') {
+      setLoading(true)
+      return
     }
-    if (info.file.status === "done") {
+    if (info.file.status === 'done') {
       // Get this url from response in real world.
       // getBase64(info.file.originFileObj, (url) => {
       //   setLoading(false);
       //   setImageUrl(url);
       // });
     }
-  };
+  }
   const uploadButton = (
     <button
       style={{
         border: 0,
-        background: "none",
+        background: 'none',
       }}
       type="button"
     >
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
     </button>
-  );
+  )
   const onChange1 = ({ target: { value } }) => {
-    console.log("radio1 checked", value);
-    setValue1(value);
-  };
+    console.log('radio1 checked', value)
+    setValue1(value)
+  }
   return (
     <SubmitModal
-      title={"컨텐츠 등록"}
+      title={'컨텐츠 등록'}
       isModalOpen={isModalOpen}
       setIsModalOpen={setIsModalOpen}
     >
       <FormWrap>
         <FormInfo>
-          <Input inputTitle={"컨텐츠 명"} />
+          <Input inputTitle={'컨텐츠 명'} />
           <RangeDatePicker />
-          <Input inputTitle={"주소 등록"} />
-          <Input inputTitle={"상세 주소"} placeholder={"상세주소 입력"} />
+          <Address address={address} setAddress={setAddress} />
+          {/* <Input inputTitle={"주소 등록"} /> */}
+          <Input inputTitle={'상세 주소'} placeholder={'상세주소 입력'} />
           <Input
-            inputTitle={"키워드 등록(,로 구분"}
-            placeholder={"키워드를 입력하세요."}
+            inputTitle={'키워드 등록(,로 구분'}
+            placeholder={'키워드를 입력하세요.'}
           />
-          <SelectOption selectTitle={"카테고리"} />
+          <SelectOption selectTitle={'카테고리'} />
         </FormInfo>
         <FormUpload>
           <div className="uploadBox">
@@ -105,7 +107,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
                   src={imageUrl}
                   alt="avatar"
                   style={{
-                    width: "100%",
+                    width: '100%',
                   }}
                 />
               ) : (
@@ -129,7 +131,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
                   src={imageUrl}
                   alt="avatar"
                   style={{
-                    width: "100%",
+                    width: '100%',
                   }}
                 />
               ) : (
@@ -138,8 +140,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
             </Upload>
           </div>
         </FormUpload>
-        <Input inputTitle={"기본 설명"} placeholder={"최대 100Byte 가능"} />
-        <Input inputTitle={"상세 설명"} placeholder={"최대 100Byte 가능"} />
+        <Input inputTitle={'기본 설명'} placeholder={'최대 100Byte 가능'} />
+        <Input inputTitle={'상세 설명'} placeholder={'최대 100Byte 가능'} />
         <div>
           <h4 className="infoTit">컨텐츠 노출 여부</h4>
           <Radio.Group
@@ -150,10 +152,10 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
         </div>
       </FormWrap>
     </SubmitModal>
-  );
-};
+  )
+}
 
-export default PopupRegModal;
+export default PopupRegModal
 
 const FormWrap = styled.section`
   display: flex;
@@ -169,7 +171,7 @@ const FormWrap = styled.section`
     color: #000;
     margin-bottom: 10px;
   }
-`;
+`
 const FormUpload = styled.div`
   display: flex;
   gap: 30px;
@@ -177,7 +179,7 @@ const FormUpload = styled.div`
     display: flex;
     flex-direction: column;
   }
-`;
+`
 
 const FormInfo = styled.section`
   display: grid;
@@ -185,4 +187,4 @@ const FormInfo = styled.section`
   align-items: center;
   gap: 20px;
   background: #fefefe;
-`;
+`
