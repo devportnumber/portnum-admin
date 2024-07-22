@@ -1,31 +1,31 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState } from 'react'
+import axios from 'axios'
 
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true
 
 export const useAxios = () => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   const fetchData = async (url, method, requestBody, params) => {
     try {
-      setLoading(true);
+      setLoading(true)
       const response = await axios({
         method: method,
-        url: "https://portnumber.site/admin" + url,
+        // url: "https://portnumber.site/admin" + url,
+        url: 'http://localhost:8080/admin' + url,
         data: requestBody,
         params: params,
-      });
+      })
 
-      setData(response.data);
-
-      setLoading(false);
+      setData(response.data)
+      setLoading(false)
     } catch (error) {
-      setError(error);
-      setLoading(false);
+      setError(error)
+      setLoading(false)
     }
-  };
+  }
 
-  return { data, loading, error, fetchData };
-};
+  return { data, loading, error, fetchData }
+}

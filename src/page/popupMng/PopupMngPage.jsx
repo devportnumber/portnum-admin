@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import {
   Input,
   BoxShadow,
@@ -19,7 +19,8 @@ const PopupMngPage = () => {
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false)
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false)
 
-  const { fetchData, loading, data: storeList, error } = useAxios()
+  const { data: storeList, loading, error, fetchData } = useAxios()
+  const [storeListData, setStoreListData] = useState()
 
   // 카테고리 드롭다운
   const CATEGORY_ITEMS = [
@@ -53,9 +54,15 @@ const PopupMngPage = () => {
   }
 
   useEffect(() => {
-    fetchData('GET', `/list`, null, null)
-    console.log('storeList', storeList)
+    fetchData('/list', 'GET', null, null)
   }, [])
+
+  useEffect(() => {
+    if (storeList) {
+      setStoreListData(storeList)
+      console.log('storeList', storeList)
+    }
+  }, [storeList])
 
   return (
     <div>
@@ -108,7 +115,8 @@ const PopupMngPage = () => {
           </Col>
         </Row>
       </ButtonWrap>
-      <TableList />
+      {/* 테이블 리스트 */}
+      <TableList dataSource={storeListData} />
       <Button
         btnText={'선택 삭제'}
         cancel
