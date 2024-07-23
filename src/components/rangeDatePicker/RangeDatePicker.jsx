@@ -5,7 +5,7 @@ import DateButtons from '../dateButtons/DateButtons'
 import dayjs from 'dayjs'
 const { RangePicker } = DatePicker
 
-const RangeDatePicker = ({ setFromDate, setToDate, title }) => {
+const RangeDatePicker = ({ setFromDate, setToDate, title, isRangeBtn }) => {
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const today = dayjs().format('YYYYMMDD')
 
@@ -43,40 +43,54 @@ const RangeDatePicker = ({ setFromDate, setToDate, title }) => {
 
   return (
     <Row gutter={[16, 0]} align={'bottom'}>
-      <Col span={12}>
-        <DateTitle>기간</DateTitle>
-        <RangePicker
-          style={{
-            width: '100%',
-          }}
-          onChange={(dates) => {}}
-        />
-      </Col>
-      <Col span={12}>
-        <FilterWrap>
-          {title && <h4 className="filterTit">{title}</h4>}
-          <DayBtn>
-            <p className="btnTxt" onClick={currentMonth}>
-              당월
-            </p>
-          </DayBtn>
-          <DayBtn>
-            <p className="btnTxt" onClick={currentThreeMonth}>
-              1주일
-            </p>
-          </DayBtn>
-          <DayBtn>
-            <p className="btnTxt" onClick={currentThreeMonth}>
-              1개월
-            </p>
-          </DayBtn>
-          <DayBtn>
-            <p className="btnTxt" onClick={currentSixMonth}>
-              2개월
-            </p>
-          </DayBtn>
-        </FilterWrap>
-      </Col>
+      {isRangeBtn ? (
+        <>
+          <Col span={12}>
+            <DateTitle>기간</DateTitle>
+            <RangePicker
+              style={{
+                width: '100%',
+              }}
+              onChange={(dates) => {}}
+            />
+          </Col>
+
+          <Col span={12}>
+            <FilterWrap>
+              {title && <h4 className="filterTit">{title}</h4>}
+              <DayBtn>
+                <p className="btnTxt" onClick={currentMonth}>
+                  당월
+                </p>
+              </DayBtn>
+              <DayBtn>
+                <p className="btnTxt" onClick={currentThreeMonth}>
+                  1주일
+                </p>
+              </DayBtn>
+              <DayBtn>
+                <p className="btnTxt" onClick={currentThreeMonth}>
+                  1개월
+                </p>
+              </DayBtn>
+              <DayBtn>
+                <p className="btnTxt" onClick={currentSixMonth}>
+                  2개월
+                </p>
+              </DayBtn>
+            </FilterWrap>
+          </Col>
+        </>
+      ) : (
+        <Col span={24}>
+          <RangePicker
+            style={{
+              width: '100%',
+            }}
+            onChange={(dates) => {}}
+          />
+        </Col>
+      )}
     </Row>
   )
 }

@@ -5,7 +5,8 @@ import { Input as Inputs } from 'antd'
 const Input = ({ value, inputTitle, placeholder, isReadOnly }) => {
   return (
     <div>
-      <InputTitle>{inputTitle}</InputTitle>
+      {inputTitle && <InputTitle>{inputTitle}</InputTitle>}
+
       <Inputs
         style={{
           width: '100%',

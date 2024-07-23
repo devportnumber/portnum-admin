@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from 'react'
-import styled, { createGlobalStyle } from 'styled-components'
+import { Col, Row } from 'antd'
+import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
 import {
-  Input,
   BoxShadow,
-  TableList,
-  SelectOption,
-  RangeDatePicker,
   Button,
-  DateButtons,
   ConfirmModal,
+  Input,
+  RangeDatePicker,
+  SelectOption,
+  TableList,
 } from '../../components/index'
-import { Row, Col } from 'antd'
-import PopupRegModal from './popupRegModal/PopupRegModal'
 import { useAxios } from '../../hooks/useAxios'
+import PopupRegModal from './popupRegModal/PopupRegModal'
+import { usePopupMngService } from './service/usePopupMngService'
+import * as constantsData from './service/constants'
 
 const PopupMngPage = () => {
+  const { storeListData } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
+  const [selectedRecord, setSelectedRecord] = useState(null)
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false)
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false)
 
   const { data: storeList, loading, error, fetchData } = useAxios()
-  const [storeListData, setStoreListData] = useState()
+  const [storeListState, setStoreListState] = useState()
 
   // 카테고리 드롭다운
   const CATEGORY_ITEMS = [
@@ -52,17 +55,19 @@ const PopupMngPage = () => {
   const handleFilterChange = (e) => {
     // console.log("선택", e);
   }
+  const handleTableRowClick = (record) => {
+    console.log('모달 클릭', record)
+    setIsModalOpenSubmit(true)
+    setSelectedRecord(record)
+  }
 
+  // api 연결
   useEffect(() => {
-    fetchData('/list', 'GET', null, null)
-  }, [])
-
-  useEffect(() => {
-    if (storeList) {
-      setStoreListData(storeList)
-      console.log('storeList', storeList)
+    if (storeListData) {
+      setStoreListState(storeListData)
+      console.log('storeListData', storeListData)
     }
-  }, [storeList])
+  }, [storeListData])
 
   return (
     <div>
@@ -83,7 +88,7 @@ const PopupMngPage = () => {
         </Row>
         <Row gutter={[20, 0]} align={'bottom'}>
           <Col span={24}>
-            <RangeDatePicker />
+            <RangeDatePicker isRangeBtn />
           </Col>
           {/* <Col span={8}>
             <DateButtons
@@ -105,7 +110,6 @@ const PopupMngPage = () => {
             setIsModalOpen={setIsModalOpenSubmit}
           />
         </div>
-
         <Row gutter={[10, 10]}>
           <Col>
             <Button btnText={'초기화'} cancel />
@@ -116,7 +120,11 @@ const PopupMngPage = () => {
         </Row>
       </ButtonWrap>
       {/* 테이블 리스트 */}
-      <TableList dataSource={storeListData} />
+      <TableList
+        columns={constantsData.popupColumns}
+        dataSource={storeListState}
+        onRow={(record) => handleTableRowClick(record)}
+      />
       <Button
         btnText={'선택 삭제'}
         cancel

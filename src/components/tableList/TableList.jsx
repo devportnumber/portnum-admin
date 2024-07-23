@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ConfigProvider, Divider, Radio, Table } from 'antd'
 
-const columns = [
+const columns1 = [
   {
     title: 'no',
     dataIndex: 'name',
@@ -89,7 +89,7 @@ const rowSelection = {
     // name: record.name,
   }),
 }
-const TableList = ({ dataSource }) => {
+const TableList = ({ columns, dataSource, onRow }) => {
   const [selectionType, setSelectionType] = useState('checkbox')
   return (
     <Wrap>
@@ -110,6 +110,18 @@ const TableList = ({ dataSource }) => {
           columns={columns}
           dataSource={dataSource}
           pagination={false}
+          onRow={(record, rowIndex) => {
+            // if (isrowclick) {
+            return {
+              onClick: (event) => {
+                // console.log('record-' + JSON.stringify(record))
+                // console.log('rowIndex-' + rowIndex)
+                // console.log('event', event) // 임시 -> 상세페이지로 이동
+                onRow(record)
+              },
+            }
+            // }
+          }}
         />
       </ConfigProvider>
     </Wrap>

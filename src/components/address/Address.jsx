@@ -42,7 +42,7 @@ const Address = ({ address, setAddress }) => {
       /> */}
       <div onClick={() => setIsModalOpen(true)}>
         <Input
-          inputTitle={'주소'}
+          // inputTitle={'주소'}
           placeholder={'주소찾기'}
           value={address}
           isReadOnly // 입력을 못하게 설정

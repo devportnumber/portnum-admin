@@ -1,14 +1,23 @@
-import React, { useState } from "react";
-import { Button } from "../../components/index";
-import { Flex, Modal, ConfigProvider } from "antd";
+import React, { useState } from 'react'
+import { Button } from '../../components/index'
+import { Flex, Modal, ConfigProvider } from 'antd'
 
-const SubmitModal = ({ title, isModalOpen, setIsModalOpen, children }) => {
+const SubmitModal = ({
+  title,
+  isModalOpen,
+  setIsModalOpen,
+  children,
+  handleSubmit,
+}) => {
   const handleOk = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+    if (handleSubmit) {
+      handleSubmit()
+    }
+  }
   const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
   return (
     <ConfigProvider
       theme={{
@@ -27,7 +36,7 @@ const SubmitModal = ({ title, isModalOpen, setIsModalOpen, children }) => {
         onCancel={handleCancel}
         width={1300}
         footer={[
-          <Flex gap={"small"} justify={"center"}>
+          <Flex gap={'small'} justify={'center'}>
             <Button btnText="취소" key="back" onClick={handleCancel} cancel />
 
             <Button btnText="등록" key="submit" onClick={handleOk} />
@@ -37,7 +46,7 @@ const SubmitModal = ({ title, isModalOpen, setIsModalOpen, children }) => {
         {children}
       </Modal>
     </ConfigProvider>
-  );
-};
+  )
+}
 
-export default SubmitModal;
+export default SubmitModal
