@@ -8,6 +8,7 @@ const SubmitModal = ({
   setIsModalOpen,
   children,
   handleSubmit,
+  isButton,
 }) => {
   const handleOk = () => {
     setIsModalOpen(false)
@@ -35,13 +36,22 @@ const SubmitModal = ({
         onOk={handleOk}
         onCancel={handleCancel}
         width={1300}
-        footer={[
-          <Flex gap={'small'} justify={'center'}>
-            <Button btnText="취소" key="back" onClick={handleCancel} cancel />
+        footer={
+          isButton
+            ? [
+                <Flex gap={'small'} justify={'center'}>
+                  <Button
+                    btnText="취소"
+                    key="back"
+                    onClick={handleCancel}
+                    cancel
+                  />
 
-            <Button btnText="등록" key="submit" onClick={handleOk} />
-          </Flex>,
-        ]}
+                  <Button btnText="등록" key="submit" onClick={handleOk} />
+                </Flex>,
+              ]
+            : null
+        }
       >
         {children}
       </Modal>

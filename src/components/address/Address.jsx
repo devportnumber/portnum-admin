@@ -4,49 +4,21 @@ import { Button, SubmitModal, ConfirmModal, Input } from '../index'
 import DaumPostcode from 'react-daum-postcode'
 import { Space } from 'antd'
 
-const Address = ({ address, setAddress }) => {
+const Address = ({ value, onChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false) // 모달창 컴포넌트 props로 전달
-  // const [address, setAddress] = useState(null)
-
-  // useEffect(() => {
-  //   if (address) {
-  //     console.log('address-' + JSON.stringify(address))
-  //   }
-  // }, [address])
 
   const handleComplete = (data) => {
-    setAddress(data?.address)
+    onChange(data?.address)
     setIsModalOpen(false)
-    // console.log('address', data?.address)
-    // // 시.도 저장
-    // setQ1(data.sido)
-    // // 구.군 저장
-    // setQ3(
-    //   data.sigungu.length > 3
-    //     ? data.sigungu.split('').splice(0, 3).join('')
-    //     : data.sigungu,
-    // )
-
-    // // 상세주소 앞 2단어 제외하고 저장 ('서울 강남구' 제외하고 저장)
-    // let splitAddress = data.address.split(' ').splice(2).join(' ')
-
-    // onToggleModal()
   }
-
   return (
     <AddressWrap>
-      {/* <Button
-        iconMode="search"
-        //   btnText={address ? address : '주소찾기'}
-        btnText={'주소찾기'}
-      /> */}
       <div onClick={() => setIsModalOpen(true)}>
         <Input
           // inputTitle={'주소'}
           placeholder={'주소찾기'}
-          value={address}
+          value={value}
           isReadOnly // 입력을 못하게 설정
-          onChange={(e) => setAddress(e)}
         />
       </div>
       <SubmitModal

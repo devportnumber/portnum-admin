@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Button,
   SubmitModal,
@@ -41,11 +41,32 @@ const plainOptions = [
   },
 ]
 
+// 팝업 등록 모달
 const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState()
   const [value1, setValue1] = useState('Apple')
   const [address, setAddress] = useState(null)
+  const [form] = Form.useForm()
+  const values = Form.useWatch([], form)
+
+  const [popupFormData, setPopupFormData] = useState({
+    name: '',
+    category: '',
+    startDate: '',
+    endDate: '',
+    stat: '',
+    neighborhood: '',
+    longitude: '',
+    latitude: '',
+    address: '',
+    addressDetail: '',
+    description: '',
+    mapUrl: '',
+    startTime: '',
+    endTime: '',
+    valid: '',
+  })
 
   const handleChange = (info) => {
     if (info.file.status === 'uploading') {
@@ -81,6 +102,20 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
     console.log('Received values:', values)
   }
 
+  useEffect(() => {
+    form
+      .validateFields({
+        validateOnly: true,
+      })
+      .then(
+        (value) => {
+          // setIsButtonEnabled(true)
+        },
+        () => {
+          // setIsButtonEnabled(false)
+        },
+      )
+  }, [form, values])
   return (
     <SubmitModal
       title={'컨텐츠 등록'}
@@ -88,18 +123,26 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
       setIsModalOpen={setIsModalOpen}
       handleSubmit={onFinish}
     >
-      <Form layout="vertical" onFinish={onFinish}>
+      <Form
+        form={form}
+        initialValues={popupFormData}
+        layout="vertical"
+        onFinish={onFinish}
+        onValuesChange={(changedValues, allValues) => {
+          setPopupFormData({ ...popupFormData, ...changedValues })
+        }}
+      >
         <FormWrap>
           <FormInfo>
             <Form.Item
-              name="contentName"
+              name="name"
               label="컨텐츠 명"
               rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              name="dateRange"
+              name="startDate"
               label="컨텐츠 노출 기간"
               rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
             >
@@ -110,10 +153,11 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
               label="주소 등록"
               rules={[{ required: true, message: '주소를 입력하세요!' }]}
             >
-              <Address address={address} setAddress={setAddress} />
+              {/* <Address address={address} setAddress={setAddress} /> */}
+              <Address />
             </Form.Item>
             <Form.Item
-              name="detailAddress"
+              name="addressDetail"
               label="상세 주소"
               rules={[{ required: true, message: '상세 주소를 입력하세요!' }]}
             >
@@ -199,15 +243,15 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
           >
             <Input placeholder="최대 100Byte 가능" />
           </Form.Item>
-          <Form.Item
+          {/* <Form.Item
             name="details"
             label="상세 설명"
             rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
-            name="exposure"
+            name="valid"
             label="컨텐츠 노출 여부"
             rules={[
               { required: true, message: '컨텐츠 노출 여부를 선택하세요!' },
@@ -220,9 +264,9 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
             />
           </Form.Item>
         </FormWrap>
-        {/* <Form.Item>
+        <Form.Item>
           <Button btnText={'등록'} htmlType="submit" />
-        </Form.Item> */}
+        </Form.Item>
       </Form>
     </SubmitModal>
   )

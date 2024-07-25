@@ -89,7 +89,7 @@ const rowSelection = {
     // name: record.name,
   }),
 }
-const TableList = ({ columns, dataSource, onRow }) => {
+const TableList = ({ columns, dataSource, onRow, rowKey }) => {
   const [selectionType, setSelectionType] = useState('checkbox')
   return (
     <Wrap>
@@ -103,6 +103,7 @@ const TableList = ({ columns, dataSource, onRow }) => {
         }}
       >
         <Table
+          rowKey={rowKey}
           rowSelection={{
             type: selectionType,
             ...rowSelection,
