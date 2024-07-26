@@ -10,7 +10,7 @@ import {
 import { Upload, message, Radio, Form } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
-import { usePopupMngService } from '../service/usePopupMngService'
+import * as constantsData from '../service/constants'
 
 const getBase64 = (img, callback) => {
   const reader = new FileReader()
@@ -175,7 +175,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
               label="카테고리"
               rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
             >
-              <SelectOption />
+              <SelectOption selectItems={constantsData.CATEGORY_ITEMS} />
             </Form.Item>
           </FormInfo>
           <FormUpload>

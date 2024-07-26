@@ -31,3 +31,47 @@ export const popupColumns = [
     dataIndex: 'valid',
   },
 ]
+
+// 카테고리 드롭다운: : 베이커리, 카페, 패션, 굿즈, 바, 레스토랑, 전시
+export const CATEGORY_ITEMS = [
+  {
+    value: 'all',
+    label: '전체',
+  },
+  {
+    value: 'goods',
+    label: '굿즈',
+  },
+  {
+    value: 'exhibition',
+    label: '전시회',
+  },
+  {
+    value: 'fashion',
+    label: '패션',
+  },
+  {
+    value: 'cafe',
+    label: '카페',
+  },
+  {
+    value: 'bakery',
+    label: '베이커리',
+  },
+]
+
+// 상태 드롭다운
+export const STATE_ITEMS = [
+  {
+    value: 'all',
+    label: '전체',
+  },
+  {
+    value: 'Y',
+    label: '노출',
+  },
+  {
+    value: 'N',
+    label: '비노출',
+  },
+]

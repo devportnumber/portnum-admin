@@ -16,7 +16,7 @@ import { usePopupMngService } from './service/usePopupMngService'
 import * as constantsData from './service/constants'
 
 const PopupMngPage = () => {
-  const { storeListData } = usePopupMngService()
+  // const { storeListData } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const [selectedRecord, setSelectedRecord] = useState(null)
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false)
@@ -25,33 +25,6 @@ const PopupMngPage = () => {
   const { data: storeList, loading, error, fetchData } = useAxios()
   const [storeListState, setStoreListState] = useState()
 
-  // 카테고리 드롭다운
-  const CATEGORY_ITEMS = [
-    {
-      value: 'all',
-      label: '전체',
-    },
-    {
-      value: 'exhibition',
-      label: '전시회',
-    },
-  ]
-
-  // 상태 드롭다운
-  const STATE_ITEMS = [
-    {
-      value: 'all',
-      label: '전체',
-    },
-    {
-      value: 'Y',
-      label: '노출',
-    },
-    {
-      value: 'N',
-      label: '비노출',
-    },
-  ]
   const handleFilterChange = (e) => {
     // console.log("선택", e);
   }
@@ -61,13 +34,17 @@ const PopupMngPage = () => {
     setSelectedRecord(record)
   }
 
+  useEffect(() => {
+    fetchData('/list', 'GET', null, null)
+  }, [])
+
   // api 연결
   useEffect(() => {
-    if (storeListData) {
-      setStoreListState(storeListData)
-      console.log('storeListData', storeListData)
+    if (storeList) {
+      setStoreListState(storeList)
+      console.log('storeList', storeList)
     }
-  }, [storeListData])
+  }, [storeList])
 
   return (
     <div>
@@ -76,11 +53,14 @@ const PopupMngPage = () => {
           <Col span={8}>
             <SelectOption
               selectTitle={'카테고리'}
-              selectItems={CATEGORY_ITEMS}
+              selectItems={constantsData.CATEGORY_ITEMS}
             />
           </Col>
           <Col span={8}>
-            <SelectOption selectTitle={'상태'} selectItems={STATE_ITEMS} />
+            <SelectOption
+              selectTitle={'상태'}
+              selectItems={constantsData.STATE_ITEMS}
+            />
           </Col>
           <Col span={8}>
             <Input inputTitle={'팝업명'} />
