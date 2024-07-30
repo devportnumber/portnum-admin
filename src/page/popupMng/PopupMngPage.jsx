@@ -61,6 +61,11 @@ const PopupMngPage = () => {
     setSelectedRecord(record)
   }
 
+  const handleSelectionChange = (selectedRowKeys, selectedRows) => {
+    console.log('Selected Row Keys:', selectedRowKeys)
+    console.log('Selected Rows:', selectedRows)
+  }
+
   // api 연결
   useEffect(() => {
     if (storeListData) {
@@ -125,6 +130,7 @@ const PopupMngPage = () => {
         columns={constantsData.popupColumns}
         dataSource={storeListState}
         onRow={(record) => handleTableRowClick(record)}
+        onSelectionChange={handleSelectionChange}
       />
       <Button
         btnText={'선택 삭제'}

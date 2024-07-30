@@ -25,11 +25,10 @@ const beforeUpload = (file) => {
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    message.error('Image must smaller than 2MB!')
+    message.error('Image must be smaller than 2MB!')
   }
   return isJpgOrPng && isLt2M
 }
-
 const plainOptions = [
   {
     label: '노출',
@@ -45,7 +44,7 @@ const plainOptions = [
 const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState()
-  const [value1, setValue1] = useState('Apple')
+  const [value1, setValue1] = useState('Y')
   const [address, setAddress] = useState(null)
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
@@ -69,6 +68,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
   })
 
   const handleChange = (info) => {
+    console.log('handleChange', info)
+    console.log('info.file.status', info.file.status)
     if (info.file.status === 'uploading') {
       setLoading(true)
       return
@@ -77,6 +78,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false)
         setImageUrl(url)
+        console.log('url', url)
       })
     }
   }
@@ -190,8 +192,9 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
-                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                beforeUpload={beforeUpload}
+                // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                // beforeUpload={beforeUpload}
+                beforeUpload={() => false}
                 onChange={handleChange}
               >
                 {imageUrl ? (
