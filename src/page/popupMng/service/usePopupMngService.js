@@ -1,10 +1,60 @@
 import React, { useState, useEffect } from 'react'
 import { useAxios } from '../../../hooks/useAxios'
-
+import dayjs from 'dayjs'
 // 팝업관리 서비스 로직
 export const usePopupMngService = () => {
-  const { fetchData, loading, data: storeListData, error } = useAxios()
+  const {
+    fetchData: storeGetApi,
+    _,
+    data: storeListData,
+    error: error1,
+  } = useAxios()
+  const {
+    fetchData: storePostApi,
+    loading,
+    data: storeFilterData,
+    error: error2,
+  } = useAxios()
   const [reqPopupData, setReqPopupData] = useState({})
+
+  const [startDate, setStartDate] = useState(dayjs())
+  const [endDate, setEndDate] = useState(dayjs())
+
+  const [reqFilter, setReqFilter] = useState({
+    name: '', // 팝업명
+    category: '', // 카테고리
+    startDate: startDate, // 시작 날짜
+    endDate: endDate, // 종료 날짜
+    stat: '',
+  })
+
+  const handleCategoryChange = (value) => {
+    console.log('카테고리 value', value)
+    if (value === 'all') {
+      setReqFilter({ ...reqFilter, category: null })
+    } else {
+      setReqFilter({ ...reqFilter, category: value })
+    }
+  }
+
+  const handleStateChange = (value) => {
+    console.log('상태 value', value)
+    if (value === 'all') {
+      setReqFilter({ ...reqFilter, stat: null })
+    } else {
+      setReqFilter({ ...reqFilter, stat: value })
+    }
+  }
+
+  const handleNameChange = (value) => {
+    console.log('상태 value', value)
+    setReqFilter({ ...reqFilter, name: value })
+  }
+
+  const filterClick = () => {
+    // storePostApi('/list/filter', 'POST', reqFilter, null)
+    console.log('reqFilter', reqFilter)
+  }
 
   // 모달창 팝업등록 제출
   const onFinish = (values) => {
@@ -30,7 +80,7 @@ export const usePopupMngService = () => {
     // fetchData('/update', 'POST', reqPopupData, null)
   }
   useEffect(() => {
-    fetchData('/list', 'GET', null, null)
+    storeGetApi('/list', 'GET', null, null)
     console.log('storeListData', storeListData)
   }, [])
 
@@ -38,5 +88,13 @@ export const usePopupMngService = () => {
     storeListData,
     onFinish,
     reqPopupData,
+    filterClick,
+    handleCategoryChange,
+    handleStateChange,
+    handleNameChange,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
   }
 }

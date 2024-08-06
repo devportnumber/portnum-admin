@@ -5,10 +5,17 @@ import DateButtons from '../dateButtons/DateButtons'
 import dayjs from 'dayjs'
 const { RangePicker } = DatePicker
 
-const RangeDatePicker = ({ setFromDate, setToDate, title, isRangeBtn }) => {
+const RangeDatePicker = ({
+  fromDate,
+  toDate,
+  setFromDate,
+  setToDate,
+  title,
+  isRangeBtn,
+}) => {
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const today = dayjs().format('YYYYMMDD')
-
+  const [dateRange, setDateRange] = useState([fromDate, toDate])
   // 당월
   const currentMonth = () => {
     const startOfMonth = dayjs().startOf('month').format('YYYYMMDD')
@@ -41,6 +48,19 @@ const RangeDatePicker = ({ setFromDate, setToDate, title, isRangeBtn }) => {
     { id: 4, label: '2개월', reqData: 'D' },
   ]
 
+  const handleDateChange = (dates, dateStrings) => {
+    console.log('dates', dates)
+    if (dates) {
+      const fromDate = dates[0].format('YYYYMMDD')
+      const toDate = dates[1].format('YYYYMMDD')
+      setFromDate(fromDate)
+      setToDate(toDate)
+    } else {
+      setFromDate(null)
+      setToDate(null)
+    }
+  }
+
   return (
     <Row gutter={[16, 0]} align={'bottom'}>
       {isRangeBtn ? (
@@ -51,7 +71,8 @@ const RangeDatePicker = ({ setFromDate, setToDate, title, isRangeBtn }) => {
               style={{
                 width: '100%',
               }}
-              onChange={(dates) => {}}
+              onChange={handleDateChange}
+              value={dateRange}
             />
           </Col>
 

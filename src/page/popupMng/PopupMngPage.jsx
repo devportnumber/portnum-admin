@@ -16,7 +16,17 @@ import { usePopupMngService } from './service/usePopupMngService'
 import * as constantsData from './service/constants'
 
 const PopupMngPage = () => {
-  const { storeListData } = usePopupMngService()
+  const {
+    storeListData,
+    filterClick,
+    handleCategoryChange,
+    handleStateChange,
+    handleNameChange,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+  } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const [selectedRecord, setSelectedRecord] = useState(null)
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false)
@@ -56,7 +66,7 @@ const PopupMngPage = () => {
     // console.log("선택", e);
   }
   const handleTableRowClick = (record) => {
-    console.log('모달 클릭', record)
+    // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)
     setSelectedRecord(record)
   }
@@ -77,18 +87,29 @@ const PopupMngPage = () => {
             <SelectOption
               selectTitle={'카테고리'}
               selectItems={CATEGORY_ITEMS}
+              onChange={handleCategoryChange}
             />
           </Col>
           <Col span={8}>
-            <SelectOption selectTitle={'상태'} selectItems={STATE_ITEMS} />
+            <SelectOption
+              selectTitle={'상태'}
+              selectItems={STATE_ITEMS}
+              onChange={handleStateChange}
+            />
           </Col>
           <Col span={8}>
-            <Input inputTitle={'팝업명'} />
+            <Input inputTitle={'팝업명'} onChange={handleNameChange} />
           </Col>
         </Row>
         <Row gutter={[20, 0]} align={'bottom'}>
           <Col span={24}>
-            <RangeDatePicker isRangeBtn />
+            <RangeDatePicker
+              isRangeBtn
+              fromDate={startDate}
+              toDate={endDate}
+              setFromDate={setStartDate}
+              setToDate={setEndDate}
+            />
           </Col>
           {/* <Col span={8}>
             <DateButtons
@@ -115,7 +136,7 @@ const PopupMngPage = () => {
             <Button btnText={'초기화'} cancel />
           </Col>
           <Col>
-            <Button btnText={'조회'} />
+            <Button btnText={'조회'} onClick={filterClick} />
           </Col>
         </Row>
       </ButtonWrap>
