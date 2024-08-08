@@ -18,7 +18,7 @@ import * as constantsData from './service/constants'
 const PopupMngPage = () => {
   const {
     storeListData,
-    filterClick,
+    handleFilterClick,
     handleCategoryChange,
     handleStateChange,
     handleNameChange,
@@ -136,7 +136,7 @@ const PopupMngPage = () => {
             <Button btnText={'초기화'} cancel />
           </Col>
           <Col>
-            <Button btnText={'조회'} onClick={filterClick} />
+            <Button btnText={'조회'} onClick={handleFilterClick} />
           </Col>
         </Row>
       </ButtonWrap>

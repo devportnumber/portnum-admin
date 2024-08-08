@@ -27,7 +27,7 @@ export const usePopupMngService = () => {
     endDate: endDate, // 종료 날짜
     stat: '',
   })
-
+  // filter 1. 카테고리 드롭다운
   const handleCategoryChange = (value) => {
     console.log('카테고리 value', value)
     if (value === 'all') {
@@ -36,7 +36,7 @@ export const usePopupMngService = () => {
       setReqFilter({ ...reqFilter, category: value })
     }
   }
-
+  // filter 2. 팝업 상태 : 노출 or 비노출
   const handleStateChange = (value) => {
     console.log('상태 value', value)
     if (value === 'all') {
@@ -46,12 +46,19 @@ export const usePopupMngService = () => {
     }
   }
 
+  // filter 3. 팝업명 : 입력 값
   const handleNameChange = (value) => {
-    console.log('상태 value', value)
     setReqFilter({ ...reqFilter, name: value })
   }
 
-  const filterClick = () => {
+  // API: 필터 조회
+  const handleFilterClick = () => {
+    // storePostApi('/list/filter', 'POST', reqFilter, null)
+    console.log('reqFilter', reqFilter)
+  }
+
+  // API: 필터 조회
+  const handleDeleteClick = () => {
     // storePostApi('/list/filter', 'POST', reqFilter, null)
     console.log('reqFilter', reqFilter)
   }
@@ -88,7 +95,7 @@ export const usePopupMngService = () => {
     storeListData,
     onFinish,
     reqPopupData,
-    filterClick,
+    handleFilterClick,
     handleCategoryChange,
     handleStateChange,
     handleNameChange,
