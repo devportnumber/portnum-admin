@@ -22,10 +22,12 @@ const PopupMngPage = () => {
     handleCategoryChange,
     handleStateChange,
     handleNameChange,
+    handleDeleteClick,
     startDate,
     setStartDate,
     endDate,
     setEndDate,
+    setCheckItem,
   } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const [selectedRecord, setSelectedRecord] = useState(null)
@@ -146,6 +148,7 @@ const PopupMngPage = () => {
         columns={constantsData.popupColumns}
         dataSource={storeListState}
         onRow={(record) => handleTableRowClick(record)}
+        setCheckItem={setCheckItem}
       />
       <Button
         btnText={'선택 삭제'}
@@ -157,6 +160,7 @@ const PopupMngPage = () => {
         isModalOpen={isModalOpenConfirm}
         setIsModalOpen={setIsModalOpenConfirm}
         contents={'데이터를 삭제하시겠습니까?'}
+        onOk={handleDeleteClick}
       />
     </div>
   )

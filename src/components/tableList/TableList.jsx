@@ -2,21 +2,21 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ConfigProvider, Divider, Radio, Table } from 'antd'
 
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log('selectedRowKeys', selectedRows)
-    const selectRowsArr = selectedRows.map((x) => ({ storeId: x.storeId }))
-
-    console.log('selectRowsArr', selectRowsArr)
-  },
-  getCheckboxProps: (record) => ({
-    // disabled: record.name === "Disabled User",
-    // // Column configuration not to be checked
-    // name: record.name,
-  }),
-}
-const TableList = ({ columns, dataSource, onRow, rowKey }) => {
+const TableList = ({ columns, dataSource, onRow, rowKey, setCheckItem }) => {
   const [selectionType, setSelectionType] = useState('checkbox')
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      const selectRowsArr = selectedRows.map((x) => ({ storeId: x.storeId }))
+
+      console.log('selectRowsArr', selectRowsArr)
+      setCheckItem(selectRowsArr)
+    },
+    getCheckboxProps: (record) => ({
+      // disabled: record.name === "Disabled User",
+      // // Column configuration not to be checked
+      // name: record.name,
+    }),
+  }
   return (
     <Wrap>
       <ConfigProvider

@@ -3,18 +3,22 @@ import { useAxios } from '../../../hooks/useAxios'
 import dayjs from 'dayjs'
 // 팝업관리 서비스 로직
 export const usePopupMngService = () => {
+  // 팔ㅂ
   const {
     fetchData: storeGetApi,
     _,
     data: storeListData,
     error: error1,
   } = useAxios()
+
+  // 팝업 등록
   const {
     fetchData: storePostApi,
     loading,
     data: storeFilterData,
     error: error2,
   } = useAxios()
+
   const [reqPopupData, setReqPopupData] = useState({})
 
   const [startDate, setStartDate] = useState(dayjs())
@@ -27,6 +31,8 @@ export const usePopupMngService = () => {
     endDate: endDate, // 종료 날짜
     stat: '',
   })
+  const [checkItem, setCheckItem] = useState([])
+
   // filter 1. 카테고리 드롭다운
   const handleCategoryChange = (value) => {
     console.log('카테고리 value', value)
@@ -51,16 +57,16 @@ export const usePopupMngService = () => {
     setReqFilter({ ...reqFilter, name: value })
   }
 
-  // API: 필터 조회
+  // API: 팝업 필터 조회
   const handleFilterClick = () => {
     // storePostApi('/list/filter', 'POST', reqFilter, null)
     console.log('reqFilter', reqFilter)
   }
 
-  // API: 필터 조회
+  // API: 팝업 삭제
   const handleDeleteClick = () => {
-    // storePostApi('/list/filter', 'POST', reqFilter, null)
-    console.log('reqFilter', reqFilter)
+    storePostApi('/del', 'POST', checkItem, null)
+    console.log('checkItem', checkItem)
   }
 
   // 모달창 팝업등록 제출
@@ -99,9 +105,11 @@ export const usePopupMngService = () => {
     handleCategoryChange,
     handleStateChange,
     handleNameChange,
+    handleDeleteClick,
     startDate,
     setStartDate,
     endDate,
     setEndDate,
+    setCheckItem,
   }
 }
