@@ -21,8 +21,8 @@ export const usePopupMngService = () => {
 
   const [reqPopupData, setReqPopupData] = useState({})
 
-  const [startDate, setStartDate] = useState(dayjs())
-  const [endDate, setEndDate] = useState(dayjs())
+  const [startDate, setStartDate] = useState()
+  const [endDate, setEndDate] = useState()
 
   const [reqFilter, setReqFilter] = useState({
     name: '', // 팝업명
