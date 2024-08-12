@@ -17,6 +17,9 @@ export const useAxios = () => {
         url: 'http://localhost:8080/admin' + url,
         data: requestBody,
         params: params,
+        headers: {
+          'Content-Type': 'application/json', // JSON으로 전달
+        },
       })
 
       setData(response.data)

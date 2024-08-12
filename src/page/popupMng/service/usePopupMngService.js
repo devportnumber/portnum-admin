@@ -3,7 +3,7 @@ import { useAxios } from '../../../hooks/useAxios'
 import dayjs from 'dayjs'
 // 팝업관리 서비스 로직
 export const usePopupMngService = () => {
-  // 팔ㅂ
+  // 팝업
   const {
     fetchData: storeGetApi,
     _,
@@ -14,23 +14,33 @@ export const usePopupMngService = () => {
   // 팝업 등록
   const {
     fetchData: storePostApi,
-    loading,
+    loading2,
     data: storeFilterData,
     error: error2,
   } = useAxios()
 
+  // 팝업 조회
+  const {
+    fetchData: storeFilterPostApi,
+    loading3,
+    data: storeFilterPostData,
+    error: error3,
+  } = useAxios()
+
+  const [storeListState, setStoreListState] = useState()
   const [reqPopupData, setReqPopupData] = useState({})
 
-  const [startDate, setStartDate] = useState()
-  const [endDate, setEndDate] = useState()
+  const [startDate, setStartDate] = useState(null)
+  const [endDate, setEndDate] = useState(null)
 
   const [reqFilter, setReqFilter] = useState({
-    name: '', // 팝업명
-    category: '', // 카테고리
-    startDate: startDate, // 시작 날짜
-    endDate: endDate, // 종료 날짜
-    stat: '',
+    name: null, // 팝업명
+    category: null, // 카테고리
+    startDate: null, // 시작 날짜
+    endDate: null, // 종료 날짜
+    stat: null,
   })
+  const [requestFilter, setRequestFilter] = useState(reqFilter)
   const [checkItem, setCheckItem] = useState([])
 
   // filter 1. 카테고리 드롭다운
@@ -59,8 +69,23 @@ export const usePopupMngService = () => {
 
   // API: 팝업 필터 조회
   const handleFilterClick = () => {
+    // setReqFilter((prevState) => ({
+    //   ...prevState,
+    //   startDate: startDate ? startDate : null,
+    //   endDate: endDate ? endDate : null,
+    // }))
+    const updateReq = {
+      name: reqFilter.name, // 팝업명
+      category: reqFilter.category, // 카테고리
+      startDate: startDate, // 시작 날짜
+      endDate: endDate, // 종료 날짜
+      stat: reqFilter.stat,
+    }
+    setRequestFilter(updateReq)
     // storePostApi('/list/filter', 'POST', reqFilter, null)
-    console.log('reqFilter', reqFilter)
+    // console.log('service-startDate', startDate)
+    // console.log('service-endDate', endDate)
+    // console.log('reqFilter', reqFilter)
   }
 
   // API: 팝업 삭제
@@ -73,32 +98,25 @@ export const usePopupMngService = () => {
   const onFinish = (values) => {
     console.log('Received values:', values)
 
-    const test = {
-      name: 'test',
-      category: 'test',
-      startDate: 'test',
-      endDate: 'test',
-      stat: 'test',
-      neighborhood: 'test',
-      longitude: 'test',
-      latitude: 'test',
-      address: 'test',
-      addressDetail: 'test',
-      description: 'test',
-      mapUrl: 'test',
-      startTime: 'test',
-      endTime: 'test',
-      valid: 't',
-    }
     // fetchData('/update', 'POST', reqPopupData, null)
   }
+  // useEffect(() => {
+  //   storeGetApi('/list', 'GET', null, null)
+  //   console.log('storeListData', storeListData)
+  // }, [])
+
   useEffect(() => {
-    storeGetApi('/list', 'GET', null, null)
-    console.log('storeListData', storeListData)
-  }, [])
+    storeFilterPostApi('/list/filter', 'POST', requestFilter, null)
+  }, [requestFilter])
+  useEffect(() => {
+    if (storeFilterPostData) {
+      setStoreListState(storeFilterPostData)
+      console.log('>>>storeFilterPostData', storeFilterPostData)
+    }
+  }, [storeFilterPostData])
 
   return {
-    storeListData,
+    storeListState,
     onFinish,
     reqPopupData,
     handleFilterClick,

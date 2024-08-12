@@ -18,7 +18,7 @@ import * as constantsData from './service/constants'
 
 const PopupMngPage = () => {
   const {
-    storeListData,
+    storeListState,
     handleFilterClick,
     handleCategoryChange,
     handleStateChange,
@@ -36,7 +36,6 @@ const PopupMngPage = () => {
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false)
 
   const { data: storeList, loading, error, fetchData } = useAxios()
-  const [storeListState, setStoreListState] = useState()
 
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
@@ -82,14 +81,6 @@ const PopupMngPage = () => {
     setIsModalOpenSubmit(true)
     setSelectedRecord(record)
   }
-
-  // api 연결
-  useEffect(() => {
-    if (storeListData) {
-      setStoreListState(storeListData)
-      console.log('storeListData', storeListData)
-    }
-  }, [storeListData])
 
   return (
     <div>
