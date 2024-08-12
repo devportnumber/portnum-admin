@@ -9,6 +9,7 @@ import {
   RangeDatePicker,
   SelectOption,
   TableList,
+  Pagination,
 } from '../../components/index'
 import { useAxios } from '../../hooks/useAxios'
 import PopupRegModal from './popupRegModal/PopupRegModal'
@@ -36,6 +37,15 @@ const PopupMngPage = () => {
 
   const { data: storeList, loading, error, fetchData } = useAxios()
   const [storeListState, setStoreListState] = useState()
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
+  const paginateData = (data, currentPage, pageSize) => {
+    const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
+    const endIndex = startIndex + pageSize // 끝 인덱스
+    return data?.slice(startIndex, endIndex)
+  }
+  const currentData = paginateData(storeListState, currentPage, pageSize)
 
   // 카테고리 드롭다운
   const CATEGORY_ITEMS = [
@@ -146,9 +156,15 @@ const PopupMngPage = () => {
       <TableList
         rowKey={(record) => record.storeId}
         columns={constantsData.popupColumns}
-        dataSource={storeListState}
+        dataSource={currentData}
         onRow={(record) => handleTableRowClick(record)}
         setCheckItem={setCheckItem}
+      />
+      <Pagination
+        size={pageSize}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        total={storeListState?.length}
       />
       <Button
         btnText={'선택 삭제'}

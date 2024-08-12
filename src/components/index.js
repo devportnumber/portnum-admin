@@ -9,6 +9,7 @@ import DateButtons from './dateButtons/DateButtons'
 import ConfirmModal from './confirmModal/ConfirmModal'
 import SubmitModal from './submitModal/SubmitModal'
 import Address from './address/Address'
+import Pagination from './pagination/Pagination'
 
 export {
   BoxShadow,
@@ -22,4 +23,5 @@ export {
   ConfirmModal,
   SubmitModal,
   Address,
+  Pagination,
 }
