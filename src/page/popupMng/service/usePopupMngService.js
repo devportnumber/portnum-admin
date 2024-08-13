@@ -13,7 +13,7 @@ export const usePopupMngService = () => {
 
   // 팝업 등록
   const {
-    fetchData: storePostApi,
+    fetchData: storeSaveApi,
     loading2,
     data: storeFilterData,
     error: error2,
@@ -27,11 +27,20 @@ export const usePopupMngService = () => {
     error: error3,
   } = useAxios()
 
+  // 팝업 삭제
+  const {
+    fetchData: storeDelApi,
+    loading4,
+    data: storeDelData,
+    error: error4,
+  } = useAxios()
   const [storeListState, setStoreListState] = useState()
   const [reqPopupData, setReqPopupData] = useState({})
 
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
+
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [reqFilter, setReqFilter] = useState({
     name: null, // 팝업명
@@ -90,30 +99,33 @@ export const usePopupMngService = () => {
 
   // API: 팝업 삭제
   const handleDeleteClick = () => {
-    storePostApi('/del', 'POST', checkItem, null)
+    storeDelApi('/del', 'POST', checkItem, null)
     console.log('checkItem', checkItem)
   }
 
-  // 모달창 팝업등록 제출
+  // API 모달창 팝업등록 제출
   const onFinish = (values) => {
     console.log('Received values:', values)
-
     // fetchData('/update', 'POST', reqPopupData, null)
   }
-  // useEffect(() => {
-  //   storeGetApi('/list', 'GET', null, null)
-  //   console.log('storeListData', storeListData)
-  // }, [])
 
+  // API 펄터 조회
   useEffect(() => {
     storeFilterPostApi('/list/filter', 'POST', requestFilter, null)
   }, [requestFilter])
+
   useEffect(() => {
     if (storeFilterPostData) {
       setStoreListState(storeFilterPostData)
       console.log('>>>storeFilterPostData', storeFilterPostData)
     }
   }, [storeFilterPostData])
+  useEffect(() => {
+    if (storeDelData === 'success') {
+      storeFilterPostApi('/list/filter', 'POST', requestFilter, null)
+      setCurrentPage(1)
+    }
+  }, [storeDelData])
 
   return {
     storeListState,
@@ -129,5 +141,7 @@ export const usePopupMngService = () => {
     endDate,
     setEndDate,
     setCheckItem,
+    currentPage,
+    setCurrentPage,
   }
 }

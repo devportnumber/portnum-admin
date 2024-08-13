@@ -29,6 +29,8 @@ const PopupMngPage = () => {
     endDate,
     setEndDate,
     setCheckItem,
+    currentPage,
+    setCurrentPage,
   } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const [selectedRecord, setSelectedRecord] = useState(null)
@@ -37,7 +39,7 @@ const PopupMngPage = () => {
 
   const { data: storeList, loading, error, fetchData } = useAxios()
 
-  const [currentPage, setCurrentPage] = useState(1)
+  // const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const paginateData = (data, currentPage, pageSize) => {
     const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
