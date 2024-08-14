@@ -37,8 +37,8 @@ export const usePopupMngService = () => {
   const [storeListState, setStoreListState] = useState()
   const [reqPopupData, setReqPopupData] = useState({})
 
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(null)
+  const [startDate, setStartDate] = useState(dayjs())
+  const [endDate, setEndDate] = useState(dayjs())
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -78,16 +78,11 @@ export const usePopupMngService = () => {
 
   // API: 팝업 필터 조회
   const handleFilterClick = () => {
-    // setReqFilter((prevState) => ({
-    //   ...prevState,
-    //   startDate: startDate ? startDate : null,
-    //   endDate: endDate ? endDate : null,
-    // }))
     const updateReq = {
       name: reqFilter.name, // 팝업명
       category: reqFilter.category, // 카테고리
-      startDate: startDate, // 시작 날짜
-      endDate: endDate, // 종료 날짜
+      startDate: dayjs(startDate).format('YY.MM.DD'), // 시작 날짜
+      endDate: dayjs(endDate).format('YY.MM.DD'), // 종료 날짜
       stat: reqFilter.stat,
     }
     setRequestFilter(updateReq)

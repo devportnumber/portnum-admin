@@ -3,6 +3,7 @@ import SideBar from './sideBar/SideBar'
 import TableList from './tableList/TableList'
 import Input from './input/Input'
 import SelectOption from './selectOption/SelectOption'
+import DatePicker from './datePicker/DatePicker'
 import RangeDatePicker from './rangeDatePicker/RangeDatePicker'
 import Button from './button/Button'
 import DateButtons from './dateButtons/DateButtons'
@@ -18,6 +19,7 @@ export {
   Input,
   SelectOption,
   RangeDatePicker,
+  DatePicker,
   Button,
   DateButtons,
   ConfirmModal,

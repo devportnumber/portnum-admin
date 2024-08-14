@@ -42,13 +42,30 @@ const plainOptions = [
 ]
 
 // 팝업 등록 모달
-const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
+const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState()
   const [value1, setValue1] = useState('Apple')
   const [address, setAddress] = useState(null)
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
+
+  console.log('tableRecord', tableRecord)
+
+  useEffect(() => {
+    if (tableRecord) {
+      form.setFieldValue('name', tableRecord.name)
+      form.setFieldValue('category', tableRecord.category)
+      form.setFieldValue('startDate', tableRecord.startDate)
+      form.setFieldValue('endDate', tableRecord.endDate)
+      form.setFieldValue('stat', tableRecord.stat)
+      form.setFieldValue('address', tableRecord.address)
+      form.setFieldValue('addressDetail', tableRecord.addressDetail)
+      form.setFieldValue('mapUrl', tableRecord.mapUrl)
+      form.setFieldValue('valid', tableRecord.valid)
+      form.setFieldValue('description', tableRecord.description)
+    }
+  }, [tableRecord])
 
   const [popupFormData, setPopupFormData] = useState({
     name: '',
@@ -142,11 +159,17 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
               <Input />
             </Form.Item>
             <Form.Item
-              name="startDate"
+              name="dateRange"
               label="컨텐츠 노출 기간"
               rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
             >
-              <RangeDatePicker />
+              <RangeDatePicker
+                // startDate={tableRecord?.startDate}
+                // endDate={tableRecord?.endDate}
+                onChange={(dates) => {
+                  form.setFieldsValue({ dateRange: dates }) // 배열 형태로 값 설정
+                }}
+              />
             </Form.Item>
             <Form.Item
               name="address"
@@ -265,7 +288,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen }) => {
           </Form.Item>
         </FormWrap>
         <Form.Item>
-          <Button btnText={'등록'} htmlType="submit" />
+          <Button btnText={tableRecord ? '수정' : '등록'} htmlType="submit" />
         </Form.Item>
       </Form>
     </SubmitModal>
