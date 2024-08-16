@@ -6,11 +6,13 @@ import {
   RangeDatePicker,
   SelectOption,
   Address,
+  ToastEditor,
 } from '../../../components/index'
 import { Upload, message, Radio, Form } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import { usePopupMngService } from '../service/usePopupMngService'
+import * as constantsData from '../service/constants'
 
 const getBase64 = (img, callback) => {
   const reader = new FileReader()
@@ -45,12 +47,11 @@ const plainOptions = [
 const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState()
-  const [value1, setValue1] = useState('Apple')
+  const [popupState, setPopupState] = useState('Y')
   const [address, setAddress] = useState(null)
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
-
-  console.log('tableRecord', tableRecord)
+  const [editorTextData, setEditorTextData] = useState()
 
   useEffect(() => {
     if (tableRecord) {
@@ -78,7 +79,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     latitude: '',
     address: '',
     addressDetail: '',
-    description: '',
+    description: editorTextData,
     mapUrl: '',
     startTime: '',
     endTime: '',
@@ -110,14 +111,30 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     </button>
   )
 
-  const onChange1 = ({ target: { value } }) => {
+  const onPopupStateChange = ({ target: { value } }) => {
     console.log('radio1 checked', value)
-    setValue1(value)
+    setPopupState(value)
   }
 
   const onFinish = (values) => {
-    console.log('Received values:', values)
+    const savePopupFormData = {
+      ...popupFormData,
+      description: editorTextData,
+    }
+    console.log('savePopupFormData:', savePopupFormData)
+    console.log('Received values:', popupFormData)
   }
+
+  const onClose = () => {
+    form.resetFields()
+  }
+
+  // useEffect(() => {
+  //   setPopupFormData((prevData) => ({
+  //     ...prevData,
+  //     description: editorTextData,
+  //   }))
+  // }, [editorTextData])
 
   useEffect(() => {
     form
@@ -133,12 +150,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
         },
       )
   }, [form, values])
+
   return (
     <SubmitModal
       title={'컨텐츠 등록'}
       isModalOpen={isModalOpen}
       setIsModalOpen={setIsModalOpen}
       handleSubmit={onFinish}
+      handleClose={onClose}
     >
       <Form
         form={form}
@@ -176,7 +195,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               label="주소 등록"
               rules={[{ required: true, message: '주소를 입력하세요!' }]}
             >
-              {/* <Address address={address} setAddress={setAddress} /> */}
               <Address />
             </Form.Item>
             <Form.Item
@@ -198,7 +216,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               label="카테고리"
               rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
             >
-              <SelectOption />
+              <SelectOption selectItems={constantsData.CATEGORY_ITEMS} />
             </Form.Item>
           </FormInfo>
           <FormUpload>
@@ -259,20 +277,20 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               </Upload>
             </Form.Item>
           </FormUpload>
-          <Form.Item
+          {/* <Form.Item
             name="description"
             label="기본 설명"
             rules={[{ required: true, message: '기본 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
-          </Form.Item>
-          {/* <Form.Item
-            name="details"
-            label="상세 설명"
-            rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
-          >
-            <Input placeholder="최대 100Byte 가능" />
           </Form.Item> */}
+          <Form.Item
+            name="description"
+            label="상세 설명"
+            // rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
+          >
+            <ToastEditor setEditorTextData={setEditorTextData} />
+          </Form.Item>
           <Form.Item
             name="valid"
             label="컨텐츠 노출 여부"
@@ -282,8 +300,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           >
             <Radio.Group
               options={plainOptions}
-              onChange={onChange1}
-              value={value1}
+              onChange={onPopupStateChange}
+              value={popupState}
             />
           </Form.Item>
         </FormWrap>

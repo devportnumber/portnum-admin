@@ -11,7 +11,6 @@ const Input = ({ value, inputTitle, placeholder, isReadOnly, onChange }) => {
   return (
     <div>
       {inputTitle && <InputTitle>{inputTitle}</InputTitle>}
-
       <Inputs
         style={{
           width: '100%',
