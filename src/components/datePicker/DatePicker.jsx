@@ -8,10 +8,6 @@ import locale from 'antd/lib/locale/ko_KR'
 dayjs.locale('ko')
 
 const DatePicker = ({ value, placeholder, onChange, dateTit, required }) => {
-  // const disabledDate = (current) => {
-  //   return current && current > dayjs().endOf('day')
-  // }
-
   return (
     <DatetWrap>
       <h4 className="dateTit">
@@ -21,7 +17,6 @@ const DatePicker = ({ value, placeholder, onChange, dateTit, required }) => {
         <DatePick
           format="YY.MM.DD"
           value={value ? dayjs(value) : null}
-          // disabledDate={disabledDate} // 미래날짜 선택 막기
           placeholder={placeholder}
           onChange={onChange}
         />

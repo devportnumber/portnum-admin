@@ -3,16 +3,18 @@ import {
   Button,
   SubmitModal,
   Input,
+  DatePicker,
   RangeDatePicker,
   SelectOption,
   Address,
   ToastEditor,
 } from '../../../components/index'
-import { Upload, message, Radio, Form } from 'antd'
+import { Upload, message, Radio, Form, Flex } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
-import { usePopupMngService } from '../service/usePopupMngService'
+import { useAxios } from '../../../hooks/useAxios'
 import * as constantsData from '../service/constants'
+import dayjs from 'dayjs'
 
 const getBase64 = (img, callback) => {
   const reader = new FileReader()
@@ -53,6 +55,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const values = Form.useWatch([], form)
   const [editorTextData, setEditorTextData] = useState()
 
+  // 팝업 등록
+  const {
+    fetchData: storeSaveApi,
+    loading: saveLoading,
+    data: storeFilterData,
+    error: error2,
+  } = useAxios()
+
   useEffect(() => {
     if (tableRecord) {
       form.setFieldValue('name', tableRecord.name)
@@ -75,12 +85,12 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     endDate: '',
     stat: '',
     neighborhood: '',
-    longitude: '',
-    latitude: '',
+    longitude: '', // 경도
+    latitude: '', // 위도
+    mapUrl: '', // 네이버 지도
     address: '',
     addressDetail: '',
-    description: editorTextData,
-    mapUrl: '',
+    description: editorTextData, // 상세 설명?
     startTime: '',
     endTime: '',
     valid: '',
@@ -122,19 +132,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       description: editorTextData,
     }
     console.log('savePopupFormData:', savePopupFormData)
+    setPopupFormData(savePopupFormData)
+    storeSaveApi('/save', 'POST', savePopupFormData, null)
     console.log('Received values:', popupFormData)
   }
 
   const onClose = () => {
     form.resetFields()
   }
-
-  // useEffect(() => {
-  //   setPopupFormData((prevData) => ({
-  //     ...prevData,
-  //     description: editorTextData,
-  //   }))
-  // }, [editorTextData])
 
   useEffect(() => {
     form
@@ -173,23 +178,45 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             <Form.Item
               name="name"
               label="컨텐츠 명"
-              rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
+              // rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              name="dateRange"
-              label="컨텐츠 노출 기간"
-              rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
-            >
-              <RangeDatePicker
-                // startDate={tableRecord?.startDate}
-                // endDate={tableRecord?.endDate}
-                onChange={(dates) => {
-                  form.setFieldsValue({ dateRange: dates }) // 배열 형태로 값 설정
-                }}
-              />
-            </Form.Item>
+            <Flex gap="small" align="center">
+              <Form.Item
+                name="startDate"
+                // label="컨텐츠 노출 기간"
+                // rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
+              >
+                <DatePicker
+                  value={popupFormData.startDate}
+                  placeholder="YY.MM.DD"
+                  onChange={(e) =>
+                    setPopupFormData((prevData) => ({
+                      ...prevData,
+                      startDate: dayjs(e).format('YY.MM.DD'),
+                    }))
+                  }
+                />
+              </Form.Item>
+              ~{' '}
+              <Form.Item
+                name="endDate"
+                // label="컨텐츠 노출 기간"
+                rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
+              >
+                <DatePicker
+                  value={popupFormData.endDate}
+                  placeholder="YY.MM.DD"
+                  onChange={(e) =>
+                    setPopupFormData((prevData) => ({
+                      ...prevData,
+                      endDate: dayjs(e).format('YY.MM.DD'),
+                    }))
+                  }
+                />
+              </Form.Item>
+            </Flex>
             <Form.Item
               name="address"
               label="주소 등록"
