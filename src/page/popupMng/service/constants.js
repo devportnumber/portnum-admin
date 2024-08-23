@@ -52,20 +52,32 @@ export const CATEGORY_ITEMS = [
     label: '전체',
   },
   {
-    value: 'exhibition',
+    value: 'EXHIBITION',
     label: '전시회',
   },
   {
-    value: 'goods',
+    value: 'RESTAURANT',
+    label: '레스토랑',
+  },
+  {
+    value: 'BAR',
+    label: '술집',
+  },
+  {
+    value: 'GOODS',
     label: '굿즈',
   },
   {
-    value: 'fashion',
+    value: 'FASHION',
     label: '패션',
   },
   {
-    value: 'test',
-    label: '[테스트]',
+    value: 'CAFE',
+    label: '카페',
+  },
+  {
+    value: 'BAKERY',
+    label: '베이커리',
   },
 ]
 
