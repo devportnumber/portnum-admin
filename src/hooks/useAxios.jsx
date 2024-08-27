@@ -13,8 +13,8 @@ export const useAxios = () => {
       setLoading(true)
       const response = await axios({
         method: method,
-        // url: "https://portnumber.site/admin" + url,
-        url: 'http://localhost:8080/admin' + url,
+        url: 'https://portnumber.site/admin' + url,
+        // url: 'http://localhost:8080/admin' + url,
         data: requestBody,
         params: params,
         headers: {
@@ -22,7 +22,7 @@ export const useAxios = () => {
         },
       })
 
-      setData(response.data)
+      setData(response?.data)
       setLoading(false)
     } catch (error) {
       setError(error)

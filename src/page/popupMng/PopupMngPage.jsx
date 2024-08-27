@@ -43,12 +43,12 @@ const PopupMngPage = () => {
 
   // const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
-  const paginateData = (data, currentPage, pageSize) => {
-    const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
-    const endIndex = startIndex + pageSize // 끝 인덱스
-    return data?.slice(startIndex, endIndex)
-  }
-  const currentData = paginateData(storeListState, currentPage, pageSize)
+  // const paginateData = (data, currentPage, pageSize) => {
+  //   const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
+  //   const endIndex = startIndex + pageSize // 끝 인덱스
+  //   return data?.slice(startIndex, endIndex)
+  // }
+  // const currentData = paginateData(storeListState, currentPage, pageSize)
 
   const handleFilterChange = (e) => {
     // console.log("선택", e);
@@ -141,7 +141,7 @@ const PopupMngPage = () => {
       <TableList
         rowKey={(record) => record.storeId}
         columns={[...LIST_NUMBER_COLUMN, ...constantsData.popupColumns]}
-        dataSource={currentData}
+        dataSource={storeList}
         onRow={(record) => handleTableRowClick(record)}
         setCheckItem={setCheckItem}
       />

@@ -15,7 +15,7 @@ const DatePicker = ({ value, placeholder, onChange, dateTit, required }) => {
       </h4>
       <ConfigProvider locale={locale}>
         <DatePick
-          format="YY.MM.DD"
+          format="YYYY.MM.DD" // 날짜 형식 지정
           value={value ? dayjs(value) : null}
           placeholder={placeholder}
           onChange={onChange}

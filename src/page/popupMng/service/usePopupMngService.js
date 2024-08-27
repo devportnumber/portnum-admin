@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useAxios } from '../../../hooks/useAxios'
+import { createGlobalStyle } from 'styled-components'
+
 import dayjs from 'dayjs'
+import 'dayjs/locale/ko' // 한국어 설정
+import locale from 'antd/lib/locale/ko_KR'
+import utc from 'dayjs/plugin/utc'
+dayjs.extend(utc)
+dayjs.locale('ko')
+
 // 팝업관리 서비스 로직
 export const usePopupMngService = () => {
   // 팝업
@@ -81,10 +89,13 @@ export const usePopupMngService = () => {
     const updateReq = {
       name: reqFilter.name, // 팝업명
       category: reqFilter.category, // 카테고리
-      startDate: dayjs(startDate).format('YY.MM.DD'), // 시작 날짜
-      endDate: dayjs(endDate).format('YY.MM.DD'), // 종료 날짜
+      startDate: dayjs(startDate).format('YYYY-MM-DDT00:00:00'), // 시작 날짜
+      endDate: dayjs(endDate).format('YYYY-MM-DDT00:00:00'), // 종료 날짜
+      // startDate: dayjs(startDate).format('YY.MM.DD'), // 시작 날짜
+      // endDate: dayjs(endDate).format('YY.MM.DD'), // 종료 날짜
       stat: reqFilter.stat,
     }
+    console.log('######', updateReq)
     setRequestFilter(updateReq)
     // storePostApi('/list/filter', 'POST', reqFilter, null)
     // console.log('service-startDate', startDate)
@@ -104,9 +115,10 @@ export const usePopupMngService = () => {
     // fetchData('/update', 'POST', reqPopupData, null)
   }
 
-  // API 펄터 조회
+  // API 필터 조회
   useEffect(() => {
-    storeFilterPostApi('/list/filter', 'POST', requestFilter, null)
+    // /admin/popup/1
+    storeFilterPostApi('/popup/1', 'GET', null, requestFilter)
   }, [requestFilter])
 
   useEffect(() => {
