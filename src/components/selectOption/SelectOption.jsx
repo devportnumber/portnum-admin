@@ -17,7 +17,7 @@ const SelectOption = ({ selectTitle, selectItems, onChange }) => {
         style={{
           width: '100%',
         }}
-        onChange={handleChange}
+        onChange={onChange}
         options={selectItems}
       />
     </div>

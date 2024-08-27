@@ -1,17 +1,22 @@
-import React, { useState } from "react";
-import { Button, Modal } from "antd";
+import React, { useState } from 'react'
+import { Button, Modal } from 'antd'
 
-const ConfirmModal = ({ title, isModalOpen, setIsModalOpen, contents }) => {
+const ConfirmModal = ({
+  title,
+  isModalOpen,
+  setIsModalOpen,
+  contents,
+  onOk,
+}) => {
   //   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOk = () => {
-    alert("확인");
-    setIsModalOpen(false);
-  };
+    onOk()
+    setIsModalOpen(false)
+  }
   const handleCancel = () => {
-    alert("취소");
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
   return (
     <>
       <Modal
@@ -23,7 +28,7 @@ const ConfirmModal = ({ title, isModalOpen, setIsModalOpen, contents }) => {
         <p>{contents}</p>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default ConfirmModal;
+export default ConfirmModal

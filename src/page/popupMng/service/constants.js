@@ -13,6 +13,9 @@ export const popupColumns = [
   {
     title: '태그명',
     dataIndex: 'category',
+    render: (data) => {
+      return <p>{getLabelByValue(CATEGORY_ITEMS, data)}</p>
+    },
   },
   {
     title: '팝업명',
@@ -28,50 +31,32 @@ export const popupColumns = [
   },
   {
     title: '상태',
-    dataIndex: 'valid',
+    dataIndex: 'stat',
+    render: (data) => {
+      return <p>{getLabelByValue(STATE_ITEMS, data)}</p>
+    },
   },
 ]
 
-// 카테고리 드롭다운: : 베이커리, 카페, 패션, 굿즈, 바, 레스토랑, 전시
+export const CATEGORY_TYPE = {
+  exhibition: '전시회',
+  fashion: '패션',
+  goods: '굿즈',
+  test: '[테스트]',
+}
+
+// 카테고리 드롭다운
 export const CATEGORY_ITEMS = [
   {
     value: 'all',
     label: '전체',
   },
   {
-    value: 'goods',
-    label: '굿즈',
-  },
-  {
     value: 'exhibition',
     label: '전시회',
   },
   {
-    value: 'fashion',
-    label: '패션',
-  },
-  {
-    value: 'cafe',
-    label: '카페',
-  },
-  {
-    value: 'bakery',
-    label: '베이커리',
-  },
-]
-
-// 상태 드롭다운
-export const STATE_ITEMS = [
-  {
-    value: 'all',
-    label: '전체',
-  },
-  {
-    value: 'Y',
-    label: '노출',
-  },
-  {
-    value: 'N',
-    label: '비노출',
+    value: 'goods',
+    label: '굿즈',
   },
 ]

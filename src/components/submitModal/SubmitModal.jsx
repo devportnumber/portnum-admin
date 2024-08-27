@@ -8,15 +8,19 @@ const SubmitModal = ({
   setIsModalOpen,
   children,
   handleSubmit,
+  handleClose,
   isButton,
 }) => {
   const handleOk = () => {
-    setIsModalOpen(false)
     if (handleSubmit) {
       handleSubmit()
     }
+    setIsModalOpen(false)
   }
   const handleCancel = () => {
+    if (handleClose) {
+      handleClose()
+    }
     setIsModalOpen(false)
   }
   return (
