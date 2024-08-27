@@ -5,9 +5,7 @@ import { Select, Space } from 'antd'
 const SelectOption = ({ selectTitle, selectItems, onChange }) => {
   const handleChange = (value) => {
     console.log(`selected ${value}`)
-    if (onChange) {
-      onChange(value) // onChange 콜백 호출
-    }
+    onChange()
   }
   return (
     <div>
@@ -17,7 +15,7 @@ const SelectOption = ({ selectTitle, selectItems, onChange }) => {
         style={{
           width: '100%',
         }}
-        onChange={handleChange}
+        onChange={onChange}
         options={selectItems}
       />
     </div>

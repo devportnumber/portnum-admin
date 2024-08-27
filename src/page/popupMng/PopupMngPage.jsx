@@ -1,4 +1,4 @@
-import { Col, Row } from 'antd'
+import { Col, Row, Flex } from 'antd'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import {
@@ -7,8 +7,11 @@ import {
   ConfirmModal,
   Input,
   RangeDatePicker,
+  DatePicker,
   SelectOption,
   TableList,
+  Pagination,
+  DateButtons,
 } from '../../components/index'
 import { useAxios } from '../../hooks/useAxios'
 import PopupRegModal from './popupRegModal/PopupRegModal'
@@ -16,35 +19,58 @@ import { usePopupMngService } from './service/usePopupMngService'
 import * as constantsData from './service/constants'
 
 const PopupMngPage = () => {
-  // const { storeListData } = usePopupMngService()
+  const {
+    storeListState,
+    handleFilterClick,
+    handleCategoryChange,
+    handleStateChange,
+    handleNameChange,
+    handleDeleteClick,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    setCheckItem,
+    currentPage,
+    setCurrentPage,
+  } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
-  const [selectedRecord, setSelectedRecord] = useState(null)
+  const [tableRecord, setTableRecord] = useState(null)
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false)
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false)
 
   const { data: storeList, loading, error, fetchData } = useAxios()
-  const [storeListState, setStoreListState] = useState()
+
+  // const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
+  const paginateData = (data, currentPage, pageSize) => {
+    const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
+    const endIndex = startIndex + pageSize // 끝 인덱스
+    return data?.slice(startIndex, endIndex)
+  }
+  const currentData = paginateData(storeListState, currentPage, pageSize)
 
   const handleFilterChange = (e) => {
     // console.log("선택", e);
   }
   const handleTableRowClick = (record) => {
-    console.log('모달 클릭', record)
+    // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)
-    setSelectedRecord(record)
+    setTableRecord(record)
   }
 
-  useEffect(() => {
-    fetchData('/list', 'GET', null, null)
-  }, [])
-
-  // api 연결
-  useEffect(() => {
-    if (storeList) {
-      setStoreListState(storeList)
-      console.log('storeList', storeList)
-    }
-  }, [storeList])
+  const LIST_NUMBER_COLUMN = [
+    {
+      title: 'No',
+      dataIndex: 'number',
+      key: 'number',
+      render: (text, row, index) => {
+        const startIndex = (currentPage - 1) * 10
+        const count = startIndex + index + 1
+        return <p>{count}</p>
+      },
+    },
+  ]
 
   return (
     <div>
@@ -54,29 +80,40 @@ const PopupMngPage = () => {
             <SelectOption
               selectTitle={'카테고리'}
               selectItems={constantsData.CATEGORY_ITEMS}
+              onChange={handleCategoryChange}
             />
           </Col>
           <Col span={8}>
             <SelectOption
               selectTitle={'상태'}
               selectItems={constantsData.STATE_ITEMS}
+              onChange={handleStateChange}
             />
           </Col>
           <Col span={8}>
-            <Input inputTitle={'팝업명'} />
+            <Input inputTitle={'팝업명'} onChange={handleNameChange} />
           </Col>
         </Row>
-        <Row gutter={[20, 0]} align={'bottom'}>
-          <Col span={24}>
-            <RangeDatePicker isRangeBtn />
+        <Row gutter={[10, 0]} align={'bottom'}>
+          <Col span={14}>
+            <p>기간</p>
+            <Flex gap="small" align="center">
+              <DatePicker
+                value={startDate}
+                placeholder="YYYY-MM-DD"
+                onChange={(e) => setStartDate(e)}
+              />
+              ~
+              <DatePicker
+                value={endDate}
+                placeholder="YYYY-MM-DD"
+                onChange={(e) => setEndDate(e)}
+              />
+            </Flex>
           </Col>
-          {/* <Col span={8}>
-            <DateButtons
-              filterItems={FILTER_ITEMS}
-              selectedFilterItems={selectedFilterItems}
-              handleFilterChange={handleFilterChange}
-            />
-          </Col> */}
+          <Col span={8}>
+            <DateButtons setFromDate={setStartDate} setToDate={setEndDate} />
+          </Col>
         </Row>
       </BoxShadow>
       <ButtonWrap>
@@ -88,6 +125,7 @@ const PopupMngPage = () => {
           <PopupRegModal
             isModalOpen={isModalOpenSubmit}
             setIsModalOpen={setIsModalOpenSubmit}
+            tableRecord={tableRecord}
           />
         </div>
         <Row gutter={[10, 10]}>
@@ -95,16 +133,23 @@ const PopupMngPage = () => {
             <Button btnText={'초기화'} cancel />
           </Col>
           <Col>
-            <Button btnText={'조회'} />
+            <Button btnText={'조회'} onClick={handleFilterClick} />
           </Col>
         </Row>
       </ButtonWrap>
       {/* 테이블 리스트 */}
       <TableList
         rowKey={(record) => record.storeId}
-        columns={constantsData.popupColumns}
-        dataSource={storeListState}
+        columns={[...LIST_NUMBER_COLUMN, ...constantsData.popupColumns]}
+        dataSource={currentData}
         onRow={(record) => handleTableRowClick(record)}
+        setCheckItem={setCheckItem}
+      />
+      <Pagination
+        size={pageSize}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        total={storeListState?.length}
       />
       <Button
         btnText={'선택 삭제'}
@@ -116,6 +161,7 @@ const PopupMngPage = () => {
         isModalOpen={isModalOpenConfirm}
         setIsModalOpen={setIsModalOpenConfirm}
         contents={'데이터를 삭제하시겠습니까?'}
+        onOk={handleDeleteClick}
       />
     </div>
   )
