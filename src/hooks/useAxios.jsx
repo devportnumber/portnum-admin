@@ -22,7 +22,7 @@ export const useAxios = () => {
         },
       })
 
-      setData(response.data)
+      setData(response?.data)
       setLoading(false)
     } catch (error) {
       setError(error)

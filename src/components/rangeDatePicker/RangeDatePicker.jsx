@@ -15,7 +15,7 @@ const RangeDatePicker = ({
   onChange,
 }) => {
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
-  const today = dayjs().format('YY.MM.DD')
+  const today = dayjs().format()
   const [dateRange, setDateRange] = useState([fromDate, toDate])
   const [activeButton, setActiveButton] = useState('')
 
