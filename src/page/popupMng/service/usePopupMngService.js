@@ -106,7 +106,7 @@ export const usePopupMngService = () => {
 
   // API 펄터 조회
   useEffect(() => {
-    storeFilterPostApi('/list/filter', 'POST', requestFilter, null)
+    storeFilterPostApi('/list/filter', 'GET', requestFilter, null)
   }, [requestFilter])
 
   useEffect(() => {
