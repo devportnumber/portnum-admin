@@ -1,8 +1,10 @@
 import React, { useRef, useState } from 'react'
 // import { Editor } from '@toast-ui/react-editor'
 // import '@toast-ui/editor/dist/toastui-editor.css'
+import { Flex, Input } from 'antd'
+const { TextArea } = Input
 
-const ToastEditor = ({ editorTextData, setEditorTextData }) => {
+const ToastEditor = ({ editorTextData, setEditorTextData, onChange }) => {
   const editorRef = useRef()
   //   const [editorTextData, setEditorTextData] = useState()
 
@@ -14,8 +16,26 @@ const ToastEditor = ({ editorTextData, setEditorTextData }) => {
   //   setEditorTextData(data)
   // }
 
-  return
-  ;<></>
+  const handleChange = (e) => {
+    console.log('Change:', e.target.value)
+    onChange(e.target.value)
+    setEditorTextData(e.target.value)
+  }
+  return (
+    <>
+      <TextArea
+        showCount
+        maxLength={100}
+        onChange={handleChange}
+        placeholder="disable resize"
+        style={{
+          height: 120,
+          resize: 'none',
+        }}
+      />
+    </>
+  )
+
   // <Editor
   //   toolbarItems={[
   //     // 툴바 옵션 설정

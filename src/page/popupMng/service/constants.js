@@ -1,14 +1,14 @@
 export const popupColumns = [
-  {
-    title: 'no',
-    dataIndex: 'name',
-    render: (text, _, i) => {
-      return <p>{i + 1}</p>
-    },
-  },
+  // {
+  //   title: 'no',
+  //   dataIndex: 'name',
+  //   render: (text, _, i) => {
+  //     return <p>{i + 1}</p>
+  //   },
+  // },
   {
     title: '팝업코드',
-    dataIndex: 'storeId',
+    dataIndex: 'popupId',
   },
   {
     title: '태그명',

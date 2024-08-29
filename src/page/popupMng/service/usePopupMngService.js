@@ -29,9 +29,9 @@ export const usePopupMngService = () => {
 
   // 팝업 조회
   const {
-    fetchData: storeFilterPostApi,
+    fetchData: storeFilterGetApi,
     loading3,
-    data: storeFilterPostData,
+    data: storeFilterGetData,
     error: error3,
   } = useAxios()
 
@@ -118,18 +118,18 @@ export const usePopupMngService = () => {
   // API 필터 조회
   useEffect(() => {
     // /admin/popup/1
-    storeFilterPostApi('/popup/1', 'GET', null, requestFilter)
+    storeFilterGetApi('/popup/1', 'GET', null, requestFilter)
   }, [requestFilter])
 
   useEffect(() => {
-    if (storeFilterPostData) {
-      setStoreListState(storeFilterPostData)
-      console.log('>>>storeFilterPostData', storeFilterPostData)
+    if (storeFilterGetData) {
+      setStoreListState(storeFilterGetData.data.data)
+      // console.log('>>>storeFilterPostData', storeFilterGetData)
     }
-  }, [storeFilterPostData])
+  }, [storeFilterGetData])
   useEffect(() => {
     if (storeDelData === 'success') {
-      storeFilterPostApi('/list/filter', 'POST', requestFilter, null)
+      storeFilterGetApi('/list/filter', 'POST', requestFilter, null)
       setCurrentPage(1)
     }
   }, [storeDelData])
