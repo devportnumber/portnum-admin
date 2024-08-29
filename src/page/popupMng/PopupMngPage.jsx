@@ -141,7 +141,7 @@ const PopupMngPage = () => {
       <TableList
         rowKey={(record) => record.popupId}
         columns={[...LIST_NUMBER_COLUMN, ...constantsData.popupColumns]}
-        dataSource={storeList}
+        dataSource={storeListState}
         onRow={(record) => handleTableRowClick(record)}
         setCheckItem={setCheckItem}
       />
