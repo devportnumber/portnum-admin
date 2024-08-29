@@ -11,7 +11,7 @@ import {
 } from '../../../components/index'
 import { Upload, message, Radio, Form, Flex } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import { useAxios } from '../../../hooks/useAxios'
 import * as constantsData from '../service/constants'
 import dayjs from 'dayjs'
@@ -22,18 +22,19 @@ const getBase64 = (img, callback) => {
   reader.readAsDataURL(img)
 }
 
+// 이미지 파일만 허용하도록 설정
 const beforeUpload = (file) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!')
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!')
-  }
-  return isJpgOrPng && isLt2M
-}
+  console.log('file', file)
+  const isImage = file.type.startsWith('image/')
 
+  console.log('isImage', isImage)
+  if (!isImage) {
+    alert('이미지 파일만 업로드할 수 있습니다.')
+    return Upload.LIST_IGNORE // 파일 업로드를 무시
+  } else {
+    return true // 파일 업로드 허용
+  }
+}
 const plainOptions = [
   {
     label: '노출',
@@ -48,12 +49,14 @@ const plainOptions = [
 // 팝업 등록 모달
 const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [loading, setLoading] = useState(false)
-  const [imageUrl, setImageUrl] = useState()
   const [popupState, setPopupState] = useState('Y')
   const [address, setAddress] = useState(null)
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
-  const [editorTextData, setEditorTextData] = useState()
+  const [editorTextData, setEditorTextData] = useState('')
+
+  const [imageUrl, setImageUrl] = useState('')
+  const [imageList, setImageList] = useState([])
 
   // 팝업 등록
   const {
@@ -79,10 +82,11 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   }, [tableRecord])
 
   const [popupFormData, setPopupFormData] = useState({
+    adminId: 1,
     name: '',
     category: '',
-    startDate: '',
-    endDate: '',
+    startDate: dayjs().format('YYYY-MM-DDT00:00:00'),
+    endDate: dayjs().format('YYYY-MM-DDT00:00:00'),
     stat: '',
     neighborhood: '',
     longitude: '', // 경도
@@ -91,22 +95,35 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     address: '',
     addressDetail: '',
     description: editorTextData, // 상세 설명?
-    startTime: '',
-    endTime: '',
-    valid: '',
+    representImgUrl: imageUrl, // 대표 이미지 1장
+    images: imageList, // 이미지 배열 9장
   })
 
-  const handleChange = (info) => {
-    if (info.file.status === 'uploading') {
-      setLoading(true)
-      return
-    }
+  // 대표 이미지 업로드 핸들러
+  const handleRepresentChange = (info) => {
+    console.log('info', info)
     if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, (url) => {
-        setLoading(false)
-        setImageUrl(url)
-      })
+      if (info.file.response && info.file.response.url) {
+        setImageUrl(info.file.response.url)
+      }
+    } else if (info.file.status === 'error') {
+      alert('파일 업로드에 실패했습니다.')
     }
+  }
+
+  // 추가 이미지 업로드 핸들러
+  const handleImageChange = (info) => {
+    if (info.file.status === 'done' && info.file.response.url) {
+      setImageList((prevList) => [...prevList, info.file.response.url])
+    } else if (info.file.status === 'error') {
+      alert('파일 업로드에 실패했습니다.')
+    }
+  }
+
+  const handleUpload = () => {
+    // 파일 목록을 처리하여 서버에 전송
+    console.log('대표 이미지 URL:', imageUrl)
+    console.log('추가 이미지 목록:', imageList)
   }
 
   const uploadButton = (
@@ -126,15 +143,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     setPopupState(value)
   }
 
+  // API 팝업등록
   const onFinish = (values) => {
     const savePopupFormData = {
       ...popupFormData,
-      description: editorTextData,
+      // description: editorTextData,
     }
-    console.log('savePopupFormData:', savePopupFormData)
+    console.log('등록: savePopupFormData:', savePopupFormData)
     setPopupFormData(savePopupFormData)
-    storeSaveApi('/save', 'POST', savePopupFormData, null)
-    console.log('Received values:', popupFormData)
+    // storeSaveApi('/popup', 'POST', savePopupFormData, null)
+    // console.log('Received values:', popupFormData)
   }
 
   const onClose = () => {
@@ -183,10 +201,11 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               <Input />
             </Form.Item>
             <Flex gap="small" align="center">
+              {/* <h4 className="infoTit">기간</h4> */}
               <Form.Item
                 name="startDate"
-                // label="컨텐츠 노출 기간"
-                // rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
+                label="컨텐츠 노출 기간"
+                rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
               >
                 <DatePicker
                   value={popupFormData.startDate}
@@ -202,8 +221,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               ~{' '}
               <Form.Item
                 name="endDate"
-                // label="컨텐츠 노출 기간"
-                rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
+                label=" "
+                // rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
               >
                 <DatePicker
                   value={popupFormData.endDate}
@@ -234,7 +253,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             <Form.Item
               name="keywords"
               label="키워드 등록(,로 구분)"
-              rules={[{ required: true, message: '키워드를 입력하세요!' }]}
+              rules={[{ required: false, message: '키워드를 입력하세요!' }]}
             >
               <Input placeholder="키워드를 입력하세요." />
             </Form.Item>
@@ -248,27 +267,26 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           </FormInfo>
           <FormUpload>
             <Form.Item
+              name="representImgUrl"
               label="대표 이미지"
               rules={[
                 { required: true, message: '대표 이미지를 업로드하세요!' },
               ]}
             >
               <Upload
-                name="avatar"
+                name="file"
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
-                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                action="https://port-num.s3.ap-northeast-2.amazonaws.com/image/store/"
                 beforeUpload={beforeUpload}
-                onChange={handleChange}
+                onChange={handleRepresentChange}
               >
                 {imageUrl ? (
                   <img
                     src={imageUrl}
-                    alt="avatar"
-                    style={{
-                      width: '100%',
-                    }}
+                    alt="대표 이미지"
+                    style={{ width: '100%' }}
                   />
                 ) : (
                   uploadButton
@@ -276,31 +294,22 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               </Upload>
             </Form.Item>
             <Form.Item
+              name="images"
               label="추가 이미지"
               rules={[
                 { required: true, message: '추가 이미지를 업로드하세요!' },
               ]}
             >
               <Upload
-                name="avatar"
+                name="file"
                 listType="picture-card"
                 className="avatar-uploader"
-                showUploadList={false}
-                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                multiple
+                // action="https://port-num.s3.ap-northeast-2.amazonaws.com/image/store"
                 beforeUpload={beforeUpload}
-                onChange={handleChange}
+                onChange={handleImageChange}
               >
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt="avatar"
-                    style={{
-                      width: '100%',
-                    }}
-                  />
-                ) : (
-                  uploadButton
-                )}
+                {uploadButton}
               </Upload>
             </Form.Item>
           </FormUpload>
@@ -319,7 +328,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             <ToastEditor setEditorTextData={setEditorTextData} />
           </Form.Item>
           <Form.Item
-            name="valid"
+            name="stat"
             label="컨텐츠 노출 여부"
             rules={[
               { required: true, message: '컨텐츠 노출 여부를 선택하세요!' },
