@@ -141,15 +141,7 @@ const PopupMngPage = () => {
       <TableList
         rowKey={(record) => record.popupId}
         columns={[...LIST_NUMBER_COLUMN, ...constantsData.popupColumns]}
-<<<<<<< HEAD
-<<<<<<< HEAD
         dataSource={storeListState}
-=======
-        dataSource={storeList}
->>>>>>> 2bd215f (modify: 필터 조회)
-=======
-        dataSource={storeListState}
->>>>>>> 7eafa13 (Add: 필터 테스트)
         onRow={(record) => handleTableRowClick(record)}
         setCheckItem={setCheckItem}
       />

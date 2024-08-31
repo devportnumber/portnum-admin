@@ -23,17 +23,22 @@ const getBase64 = (img, callback) => {
 }
 
 // 이미지 파일만 허용하도록 설정
-const beforeUpload = (file) => {
-  console.log('file', file)
-  const isImage = file.type.startsWith('image/')
 
-  console.log('isImage', isImage)
-  if (!isImage) {
-    alert('이미지 파일만 업로드할 수 있습니다.')
-    return Upload.LIST_IGNORE // 파일 업로드를 무시
-  } else {
-    return true // 파일 업로드 허용
+const beforeUpload = (file) => {
+  // 파일 크기 제한 등 사전 검사를 여기서 할 수 있음 (예: 파일 크기 체크)
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+  if (!isJpgOrPng) {
+    message.error('JPG/PNG 파일만 업로드할 수 있습니다.')
+    return Upload.LIST_IGNORE // 업로드 취소
   }
+
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isLt2M) {
+    message.error('이미지 크기는 2MB 이하로 제한됩니다.')
+    return Upload.LIST_IGNORE
+  }
+
+  return true
 }
 const plainOptions = [
   {
@@ -58,6 +63,21 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [imageList, setImageList] = useState([])
 
+  // 이미지 url 요청
+  const {
+    fetchData: storeImgGetApi,
+    loading: storeImgGetLoading,
+    data: storeImgGetData,
+    error: storeImgGetError,
+  } = useAxios()
+
+  const {
+    fetchData: storeImgPostApi,
+    loading: storeImgPostLoading,
+    data: storeImgPostData,
+    error: storeImgPostError,
+  } = useAxios()
+
   // 팝업 등록
   const {
     fetchData: storeSaveApi,
@@ -73,11 +93,12 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       form.setFieldValue('startDate', tableRecord.startDate)
       form.setFieldValue('endDate', tableRecord.endDate)
       form.setFieldValue('stat', tableRecord.stat)
-      form.setFieldValue('address', tableRecord.address)
-      form.setFieldValue('addressDetail', tableRecord.addressDetail)
+      form.setFieldValue('address', tableRecord.address?.address)
+      form.setFieldValue('addressDetail', tableRecord.address?.addressDetail)
       form.setFieldValue('mapUrl', tableRecord.mapUrl)
       form.setFieldValue('valid', tableRecord.valid)
       form.setFieldValue('description', tableRecord.description)
+      form.setFieldValue('detailDescription', tableRecord.detailDescription)
     }
   }, [tableRecord])
 
@@ -99,27 +120,29 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     images: imageList, // 이미지 배열 9장
   })
 
-  // 대표 이미지 업로드 핸들러
-  const handleRepresentChange = (info) => {
-    console.log('info', info)
-    if (info.file.status === 'done') {
-      if (info.file.response && info.file.response.url) {
-        setImageUrl(info.file.response.url)
-      }
-    } else if (info.file.status === 'error') {
-      alert('파일 업로드에 실패했습니다.')
-    }
-  }
+  const handleRepresentChange = async ({ file }) => {
+    console.log('파일', file)
+    // 1. 백엔드에 GET 요청으로 preSignedUrl을 받아옴
+    // storeImgGetApi('/image', 'GET', null, { imageName: file.name })
+    // if (file.status === 'uploading') {
+    //   setLoading(true)
+    //   return
+    // }
 
-  // 추가 이미지 업로드 핸들러
-  const handleImageChange = (info) => {
-    if (info.file.status === 'done' && info.file.response.url) {
-      setImageList((prevList) => [...prevList, info.file.response.url])
-    } else if (info.file.status === 'error') {
-      alert('파일 업로드에 실패했습니다.')
-    }
+    // if (file.status === 'done') {
+    //   try {
+    //     setLoading(false)
+    //     message.success('이미지 업로드에 성공했습니다.')
+    //   } catch (error) {
+    //     setLoading(false)
+    //     message.error('이미지 업로드에 실패했습니다.')
+    //   }
+    // }
   }
-
+  const handleAdditionalChange = async ({ fileList }) => {
+    console.log('파일 리스트', fileList)
+    setImageList(fileList)
+  }
   const handleUpload = () => {
     // 파일 목록을 처리하여 서버에 전송
     console.log('대표 이미지 URL:', imageUrl)
@@ -173,6 +196,15 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
         },
       )
   }, [form, values])
+
+  useEffect(() => {
+    console.log('storeImgGetData', storeImgGetData)
+    if (storeImgGetData) {
+      const { preSignedUrl, imageSaveUrl } = storeImgGetData.data
+      // 2. 받은 preSignedUrl로 S3에 이미지 업로드
+      storeImgPostApi('/image', 'POST', null, null)
+    }
+  }, [storeImgGetData])
 
   return (
     <SubmitModal
@@ -253,7 +285,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             <Form.Item
               name="keywords"
               label="키워드 등록(,로 구분)"
-              rules={[{ required: false, message: '키워드를 입력하세요!' }]}
+              rules={[{ required: true, message: '키워드를 입력하세요!' }]}
             >
               <Input placeholder="키워드를 입력하세요." />
             </Form.Item>
@@ -265,67 +297,60 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               <SelectOption selectItems={constantsData.CATEGORY_ITEMS} />
             </Form.Item>
           </FormInfo>
-          <FormUpload>
-            <Form.Item
-              name="representImgUrl"
-              label="대표 이미지"
-              rules={[
-                { required: true, message: '대표 이미지를 업로드하세요!' },
-              ]}
+          <Form.Item
+            name="representImgUrl"
+            label="대표 이미지"
+            rules={[{ required: true, message: '대표 이미지를 업로드하세요!' }]}
+          >
+            <Upload
+              name="file"
+              listType="picture-card"
+              className="avatar-uploader"
+              beforeUpload={beforeUpload}
+              onChange={handleRepresentChange}
+              maxCount={1}
             >
-              <Upload
-                name="file"
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                action="https://port-num.s3.ap-northeast-2.amazonaws.com/image/store/"
-                beforeUpload={beforeUpload}
-                onChange={handleRepresentChange}
-              >
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt="대표 이미지"
-                    style={{ width: '100%' }}
-                  />
-                ) : (
-                  uploadButton
-                )}
-              </Upload>
-            </Form.Item>
-            <Form.Item
-              name="images"
-              label="추가 이미지"
-              rules={[
-                { required: true, message: '추가 이미지를 업로드하세요!' },
-              ]}
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt="대표 이미지"
+                  style={{ width: '100%' }}
+                />
+              ) : (
+                uploadButton
+              )}
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="images"
+            label="추가 이미지"
+            rules={[{ required: true, message: '추가 이미지를 업로드하세요!' }]}
+          >
+            <Upload
+              name="file"
+              listType="picture-card"
+              className="avatar-uploader"
+              multiple
+              beforeUpload={beforeUpload}
+              fileList={imageList}
+              onChange={handleAdditionalChange}
             >
-              <Upload
-                name="file"
-                listType="picture-card"
-                className="avatar-uploader"
-                multiple
-                // action="https://port-num.s3.ap-northeast-2.amazonaws.com/image/store"
-                beforeUpload={beforeUpload}
-                onChange={handleImageChange}
-              >
-                {uploadButton}
-              </Upload>
-            </Form.Item>
-          </FormUpload>
-          {/* <Form.Item
+              {uploadButton}
+            </Upload>
+          </Form.Item>
+          <Form.Item
             name="description"
             label="기본 설명"
             rules={[{ required: true, message: '기본 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
-          </Form.Item> */}
+          </Form.Item>
           <Form.Item
-            name="description"
+            name="detailDescription"
             label="상세 설명"
-            // rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
+            rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
           >
-            <ToastEditor setEditorTextData={setEditorTextData} />
+            <ToastEditor />
           </Form.Item>
           <Form.Item
             name="stat"
