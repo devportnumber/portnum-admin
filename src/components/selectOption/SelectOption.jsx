@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Select, Space } from 'antd'
 
-const SelectOption = ({ selectTitle, selectItems, onChange }) => {
+const SelectOption = ({ selectTitle, selectItems, onChange, value }) => {
   const handleChange = (value) => {
     console.log(`selected ${value}`)
     onChange()
@@ -12,6 +12,7 @@ const SelectOption = ({ selectTitle, selectItems, onChange }) => {
       <SelectTitle>{selectTitle}</SelectTitle>
       <Select
         defaultValue={'전체'}
+        value={value}
         style={{
           width: '100%',
         }}

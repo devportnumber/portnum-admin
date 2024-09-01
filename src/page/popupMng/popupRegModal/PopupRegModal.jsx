@@ -53,15 +53,17 @@ const plainOptions = [
 
 // 팝업 등록 모달
 const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
-  const [loading, setLoading] = useState(false)
-  const [popupState, setPopupState] = useState('Y')
-  const [address, setAddress] = useState(null)
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
+
+  const [loading, setLoading] = useState(false)
+  const [address, setAddress] = useState(null)
+  const [popupState, setPopupState] = useState('Y')
   const [editorTextData, setEditorTextData] = useState('')
 
-  const [imageUrl, setImageUrl] = useState('')
-  const [imageList, setImageList] = useState([])
+  // 이미지 데이터(대표이미지, 추가이미지)
+  const [mainImage, setMainImage] = useState('') // 대표 이미지
+  const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
 
   // 이미지 url 요청
   const {
@@ -116,8 +118,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     address: '',
     addressDetail: '',
     description: editorTextData, // 상세 설명?
-    representImgUrl: imageUrl, // 대표 이미지 1장
-    images: imageList, // 이미지 배열 9장
+    representImgUrl: mainImage, // 대표 이미지 1장
+    images: additionalImages, // 이미지 배열 9장
   })
 
   const handleRepresentChange = async ({ file }) => {
@@ -139,14 +141,20 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     //   }
     // }
   }
-  const handleAdditionalChange = async ({ fileList }) => {
-    console.log('파일 리스트', fileList)
-    setImageList(fileList)
+
+  const handleMainImageChange = ({ file }) => {
+    setMainImage(file)
   }
+
+  const handleAdditionalImagesChange = ({ fileList }) => {
+    console.log('파일 리스트', fileList)
+    setAdditionalImages(fileList.slice(0, 9)) // 최대 9개만 추가 가능하게 설정
+  }
+
   const handleUpload = () => {
     // 파일 목록을 처리하여 서버에 전송
-    console.log('대표 이미지 URL:', imageUrl)
-    console.log('추가 이미지 목록:', imageList)
+    // console.log('대표 이미지 URL:', imageUrl)
+    // console.log('추가 이미지 목록:', imageList)
   }
 
   const uploadButton = (
@@ -294,7 +302,10 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               label="카테고리"
               rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
             >
-              <SelectOption selectItems={constantsData.CATEGORY_ITEMS} />
+              <SelectOption
+                selectItems={constantsData.CATEGORY_ITEMS}
+                value={tableRecord?.category}
+              />
             </Form.Item>
           </FormInfo>
           <Form.Item
@@ -303,16 +314,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             rules={[{ required: true, message: '대표 이미지를 업로드하세요!' }]}
           >
             <Upload
-              name="file"
+              // name="file"
+              // className="avatar-uploader"
+              // beforeUpload={beforeUpload}
               listType="picture-card"
-              className="avatar-uploader"
-              beforeUpload={beforeUpload}
-              onChange={handleRepresentChange}
               maxCount={1}
+              onChange={handleMainImageChange}
             >
-              {imageUrl ? (
+              {mainImage ? (
                 <img
-                  src={imageUrl}
+                  src={mainImage}
                   alt="대표 이미지"
                   style={{ width: '100%' }}
                 />
@@ -327,13 +338,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             rules={[{ required: true, message: '추가 이미지를 업로드하세요!' }]}
           >
             <Upload
-              name="file"
+              // name="file"
+              // className="avatar-uploader"
+              // multiple
+              // beforeUpload={beforeUpload}
+              // fileList={imageList}
+              // onChange={handleAdditionalChange}
               listType="picture-card"
-              className="avatar-uploader"
               multiple
-              beforeUpload={beforeUpload}
-              fileList={imageList}
-              onChange={handleAdditionalChange}
+              fileList={additionalImages}
+              onChange={handleAdditionalImagesChange}
             >
               {uploadButton}
             </Upload>
