@@ -88,6 +88,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     error: error2,
   } = useAxios()
 
+  // 상세 설정
   useEffect(() => {
     if (tableRecord) {
       form.setFieldValue('name', tableRecord.name)
@@ -97,6 +98,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       form.setFieldValue('stat', tableRecord.stat)
       form.setFieldValue('address', tableRecord.address?.address)
       form.setFieldValue('addressDetail', tableRecord.address?.addressDetail)
+      form.setFieldValue('keywords', tableRecord.keywords.join(', '))
       form.setFieldValue('mapUrl', tableRecord.mapUrl)
       form.setFieldValue('valid', tableRecord.valid)
       form.setFieldValue('description', tableRecord.description)
@@ -170,7 +172,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   )
 
   const onPopupStateChange = ({ target: { value } }) => {
-    console.log('radio1 checked', value)
     setPopupState(value)
   }
 
@@ -364,7 +365,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             label="상세 설명"
             rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
           >
-            <ToastEditor />
+            <ToastEditor value={tableRecord?.detailDescription} />
           </Form.Item>
           <Form.Item
             name="stat"

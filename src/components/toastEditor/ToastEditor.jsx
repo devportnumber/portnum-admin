@@ -4,7 +4,12 @@ import React, { useRef, useState } from 'react'
 import { Flex, Input } from 'antd'
 const { TextArea } = Input
 
-const ToastEditor = ({ editorTextData, setEditorTextData, onChange }) => {
+const ToastEditor = ({
+  editorTextData,
+  setEditorTextData,
+  onChange,
+  value,
+}) => {
   const editorRef = useRef()
   //   const [editorTextData, setEditorTextData] = useState()
 
@@ -26,6 +31,7 @@ const ToastEditor = ({ editorTextData, setEditorTextData, onChange }) => {
       <TextArea
         showCount
         maxLength={100}
+        value={value}
         onChange={handleChange}
         placeholder="disable resize"
         style={{
