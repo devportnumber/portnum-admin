@@ -105,8 +105,9 @@ export const usePopupMngService = () => {
 
   // API: 팝업 삭제
   const handleDeleteClick = () => {
-    storeDelApi('/del', 'POST', checkItem, null)
+    // storeDelApi('/popup', 'DELETE', null, checkItem)
     console.log('checkItem', checkItem)
+    console.log('checkItem', { popupIds: checkItem })
   }
 
   // API 모달창 팝업등록 제출
@@ -127,6 +128,7 @@ export const usePopupMngService = () => {
       // console.log('>>>storeFilterPostData', storeFilterGetData)
     }
   }, [storeFilterGetData])
+
   useEffect(() => {
     if (storeDelData === 'success') {
       storeFilterGetApi('/list/filter', 'POST', requestFilter, null)

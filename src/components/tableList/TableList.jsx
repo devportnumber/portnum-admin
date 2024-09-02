@@ -6,7 +6,7 @@ const TableList = ({ columns, dataSource, onRow, rowKey, setCheckItem }) => {
   const [selectionType, setSelectionType] = useState('checkbox')
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      const selectRowsArr = selectedRows.map((x) => ({ storeId: x.storeId }))
+      const selectRowsArr = selectedRows.map((x) => x.popupId)
 
       console.log('selectRowsArr', selectRowsArr)
       setCheckItem(selectRowsArr)
