@@ -64,7 +64,12 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   // 이미지 데이터(대표이미지, 추가이미지)
   const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지
   const [mainImage, setMainImage] = useState('') // 대표 이미지
+  const [mainImageUploaded, setMainImageUploaded] = useState(false)
+
+  const [additionalImageFile, setAdditionalImageFile] = useState([]) // 추가 이미지
   const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
+  const [additionalImagesUploaded, setAdditionalImagesUploaded] =
+    useState(false)
 
   // 이미지 url 요청
   const {
@@ -104,6 +109,10 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       form.setFieldValue('valid', tableRecord.valid)
       form.setFieldValue('description', tableRecord.description)
       form.setFieldValue('detailDescription', tableRecord.detailDescription)
+      form.setFieldValue('representImgUrl', tableRecord.representImgUrl)
+      form.setFieldValue('images', tableRecord.detailDescription)
+
+      setMainImage(tableRecord?.representImgUrl)
     }
   }, [tableRecord])
 
@@ -114,15 +123,21 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     startDate: dayjs().format('YYYY-MM-DDT00:00:00'),
     endDate: dayjs().format('YYYY-MM-DDT00:00:00'),
     stat: '',
-    neighborhood: '',
-    longitude: '', // 경도
-    latitude: '', // 위도
+    point: {
+      longitude: '123',
+      latitude: '123',
+    },
+    // address: {
+    //   address: '',
+    //   addressDetail: '',
+    //   region: '',
+    // },
+    description: '', // 상세 설명?
+    detailDescription: '',
     mapUrl: '', // 네이버 지도
-    address: '',
-    addressDetail: '',
-    description: editorTextData, // 상세 설명?
     representImgUrl: mainImage, // 대표 이미지 1장
     images: additionalImages, // 이미지 배열 9장
+    keywords: ['테스트', '테스트1', '테스트2'],
   })
 
   // 대표 이미지 핸들러
@@ -131,16 +146,19 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     storeImgGetApi('/image', 'GET', null, { imageName: file.name })
     // 상태에 파일 저장
     setMainImageFile(file)
+    // 업로드 상태 초기화
+    setMainImageUploaded(false)
   }
 
   // 추가 이미지 핸들러
   const handleAdditionalImagesChange = ({ file, fileList }) => {
     console.log('추가 파일 리스트', fileList)
-    // API 호출 트리거
-    storeImgGetApi('/image', 'GET', null, { imageName: file.name })
 
-    // 상태에 파일 리스트 저장
-    setAdditionalImages(fileList.slice(0, 9))
+    setAdditionalImageFile(fileList)
+    fileList.forEach((fileItem) => {
+      storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
+      setAdditionalImagesUploaded(false)
+    })
   }
 
   const uploadToS3 = async (s3Url, file) => {
@@ -173,32 +191,37 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     // 대표 이미지 처리
     if (storeImgGetData && mainImageFile) {
       const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
-      uploadImageToS3(mainImageFile, preSingedUrl)
-      setMainImage(imageSaveUrl) // 상태 업데이트
+
+      // 대표 이미지가 이미 업로드된 상태가 아닌 경우에만 업로드
+      if (!mainImageUploaded) {
+        console.log('#대표이미지 이펙트', preSingedUrl)
+        uploadImageToS3(mainImageFile, preSingedUrl)
+        setMainImage(imageSaveUrl) // 상태 업데이트
+        setMainImageUploaded(true) // 업로드 상태 업데이트
+      }
     }
 
     // 추가 이미지 처리
-    if (storeImgGetData && additionalImages.length > 0) {
-      const { preSingedUrl } = storeImgGetData.data
-      additionalImages.forEach(async (file) => {
-        await uploadImageToS3(file, preSingedUrl)
+    if (storeImgGetData && additionalImageFile) {
+      const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
+
+      console.log('#추가이미지 이펙트', preSingedUrl)
+      console.log('#추가이미지 이펙트', imageSaveUrl)
+
+      setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }])
+
+      console.log('additionalImageFile', additionalImageFile)
+      const newAdditionalImages = []
+      additionalImageFile.forEach(async (file) => {
+        // 추가 이미지가 이미 업로드된 상태가 아닌 경우에만 업로드
+        if (!additionalImagesUploaded) {
+          console.log('###추가', file)
+          await uploadImageToS3(file, preSingedUrl)
+          setAdditionalImagesUploaded(true)
+        }
       })
-      // 추가 이미지 URL 업데이트 코드 필요 시 추가
     }
-  }, [storeImgGetData, mainImageFile, additionalImages])
-
-  // useEffect(() => {
-  //   if (storeImgGetData) {
-  //     // console.log('########storeImgGetData', storeImgGetData)
-  //     // console.log('대표 이미지 URL:', mainImage)
-  //     // console.log('추가 이미지 목록:', additionalImages)
-  //     const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
-  //     // uploadToS3(preSingedUrl, imageSaveUrl)
-
-  //     console.log(' preSignedUrl :', preSingedUrl)
-  //     console.log('imageSaveUrl ', imageSaveUrl)
-  //   }
-  // }, [storeImgGetData])
+  }, [storeImgGetData])
 
   const uploadButton = (
     <button
@@ -221,10 +244,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     const savePopupFormData = {
       ...popupFormData,
       // description: editorTextData,
+      representImgUrl: mainImage, // 대표 이미지 1장
+      images: additionalImages, // 이미지 배열 9장
+      address: {
+        address: values.address, // address 객체를 그대로 사용
+        addressDetail: values.addressDetail, // addressDetail을 따로 사용
+      },
     }
     console.log('팝업 등록: savePopupFormData:', savePopupFormData)
     setPopupFormData(savePopupFormData)
-    // storeSaveApi('/popup', 'POST', savePopupFormData, null)
+    storeSaveApi('/popup', 'POST', savePopupFormData, null)
     // console.log('Received values:', popupFormData)
   }
 
@@ -310,30 +339,32 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               </Form.Item>
             </Flex>
             <Form.Item
+              // name={['address', 'address']}
               name="address"
               label="주소 등록"
-              rules={[{ required: true, message: '주소를 입력하세요!' }]}
+              rules={[{ required: false, message: '주소를 입력하세요!' }]}
             >
               <Address />
             </Form.Item>
             <Form.Item
-              name="addressDetail"
+              // name={['address', 'addressDetail']}
+              name={'addressDetail'}
               label="상세 주소"
-              rules={[{ required: true, message: '상세 주소를 입력하세요!' }]}
+              rules={[{ required: false, message: '상세 주소를 입력하세요!' }]}
             >
               <Input placeholder="상세주소 입력" />
             </Form.Item>
             <Form.Item
               name="keywords"
               label="키워드 등록(,로 구분)"
-              rules={[{ required: true, message: '키워드를 입력하세요!' }]}
+              rules={[{ required: false, message: '키워드를 입력하세요!' }]}
             >
               <Input placeholder="키워드를 입력하세요." />
             </Form.Item>
             <Form.Item
               name="category"
               label="카테고리"
-              rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
+              rules={[{ required: false, message: '카테고리를 선택하세요!' }]}
             >
               <SelectOption
                 selectItems={constantsData.CATEGORY_ITEMS}
@@ -344,12 +375,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           <Form.Item
             name="representImgUrl"
             label="대표 이미지"
-            rules={[{ required: true, message: '대표 이미지를 업로드하세요!' }]}
+            rules={[
+              { required: false, message: '대표 이미지를 업로드하세요!' },
+            ]}
           >
             <Upload
               // name="file"
               // className="avatar-uploader"
-              // beforeUpload={beforeUpload}
+              // beforeUpload={()=>}
+              fileList={mainImage ? [{ url: mainImage, uid: '-1' }] : []}
+              // fileList={[{ url: mainImage, uid: '-1' }]}
               listType="picture-card"
               maxCount={1}
               onChange={handleMainImageChange}
@@ -368,7 +403,9 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           <Form.Item
             name="images"
             label="추가 이미지"
-            rules={[{ required: true, message: '추가 이미지를 업로드하세요!' }]}
+            rules={[
+              { required: false, message: '추가 이미지를 업로드하세요!' },
+            ]}
           >
             <Upload
               listType="picture-card"
@@ -382,14 +419,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           <Form.Item
             name="description"
             label="기본 설명"
-            rules={[{ required: true, message: '기본 설명을 입력하세요!' }]}
+            rules={[{ required: false, message: '기본 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
           </Form.Item>
           <Form.Item
             name="detailDescription"
             label="상세 설명"
-            rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
+            rules={[{ required: false, message: '상세 설명을 입력하세요!' }]}
           >
             <ToastEditor value={tableRecord?.detailDescription} />
           </Form.Item>
@@ -397,7 +434,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             name="stat"
             label="컨텐츠 노출 여부"
             rules={[
-              { required: true, message: '컨텐츠 노출 여부를 선택하세요!' },
+              { required: false, message: '컨텐츠 노출 여부를 선택하세요!' },
             ]}
           >
             <Radio.Group

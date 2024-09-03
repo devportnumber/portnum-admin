@@ -8,7 +8,9 @@ const Address = ({ value, onChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false) // 모달창 컴포넌트 props로 전달
 
   const handleComplete = (data) => {
-    onChange(data?.address)
+    console.log('address', data)
+    const fullAddress = data?.address // 주소를 받아옴
+    onChange(fullAddress)
     setIsModalOpen(false)
   }
   return (
@@ -19,6 +21,7 @@ const Address = ({ value, onChange }) => {
           placeholder={'주소찾기'}
           value={value}
           isReadOnly // 입력을 못하게 설정
+          // onChange={onChange}
         />
       </div>
       <SubmitModal

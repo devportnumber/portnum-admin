@@ -22,9 +22,9 @@ const ToastEditor = ({
   // }
 
   const handleChange = (e) => {
-    console.log('Change:', e.target.value)
+    // console.log('Change:', e.target.value)
     onChange(e.target.value)
-    setEditorTextData(e.target.value)
+    // setEditorTextData(e.target.value)
   }
   return (
     <>
