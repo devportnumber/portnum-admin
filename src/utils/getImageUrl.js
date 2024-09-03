@@ -1,16 +1,20 @@
+import { useEffect } from 'react'
 import { useAxios } from '../hooks/useAxios'
 
-// API : S3 PreSignedUrl 요청
-const {
-  fetchData: imageGetApi,
-  loading2,
-  data: imageGetData,
-  error: error2,
-} = useAxios()
+// Custom Hook: getImageUrl
+export function getImageUrl(imageName) {
+  const {
+    fetchData: imageGetApi,
+    loading2: loading,
+    data: imageGetData,
+    error: error,
+  } = useAxios()
 
-export default function getImageUrl(imageName) {
-  imageGetApi('/image', 'GET', null, { imageName: imageName })
-  // preSingedUrl
-  // imageSaveUrl
-  return { imageGetData }
+  useEffect(() => {
+    if (imageName) {
+      imageGetApi('/image', 'GET', null, { imageName: imageName })
+    }
+  }, [imageName])
+
+  return { imageGetData, loading, error }
 }

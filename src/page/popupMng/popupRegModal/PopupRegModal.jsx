@@ -62,6 +62,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [editorTextData, setEditorTextData] = useState('')
 
   // 이미지 데이터(대표이미지, 추가이미지)
+  const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지
   const [mainImage, setMainImage] = useState('') // 대표 이미지
   const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
 
@@ -124,40 +125,80 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     images: additionalImages, // 이미지 배열 9장
   })
 
-  const handleRepresentChange = async ({ file }) => {
-    console.log('파일', file)
-    // 1. 백엔드에 GET 요청으로 preSignedUrl을 받아옴
-    // storeImgGetApi('/image', 'GET', null, { imageName: file.name })
-    // if (file.status === 'uploading') {
-    //   setLoading(true)
-    //   return
-    // }
-
-    // if (file.status === 'done') {
-    //   try {
-    //     setLoading(false)
-    //     message.success('이미지 업로드에 성공했습니다.')
-    //   } catch (error) {
-    //     setLoading(false)
-    //     message.error('이미지 업로드에 실패했습니다.')
-    //   }
-    // }
+  // 대표 이미지 핸들러
+  const handleMainImageChange = async ({ file }) => {
+    // API 호출 트리거
+    storeImgGetApi('/image', 'GET', null, { imageName: file.name })
+    // 상태에 파일 저장
+    setMainImageFile(file)
   }
 
-  const handleMainImageChange = ({ file }) => {
-    setMainImage(file)
+  // 추가 이미지 핸들러
+  const handleAdditionalImagesChange = ({ file, fileList }) => {
+    console.log('추가 파일 리스트', fileList)
+    // API 호출 트리거
+    storeImgGetApi('/image', 'GET', null, { imageName: file.name })
+
+    // 상태에 파일 리스트 저장
+    setAdditionalImages(fileList.slice(0, 9))
   }
 
-  const handleAdditionalImagesChange = ({ fileList }) => {
-    console.log('파일 리스트', fileList)
-    setAdditionalImages(fileList.slice(0, 9)) // 최대 9개만 추가 가능하게 설정
+  const uploadToS3 = async (s3Url, file) => {
+    console.log('s3Url', s3Url)
+    console.log('file', file)
+    try {
+      await fetch(s3Url, {
+        method: 'PUT',
+        body: file.originFileObj,
+        headers: {
+          'Content-Type': file.type,
+        },
+      })
+    } catch (error) {
+      console.error('[Error uploading to S3]', error)
+      throw error
+    }
   }
 
-  const handleUpload = () => {
-    // 파일 목록을 처리하여 서버에 전송
-    // console.log('대표 이미지 URL:', imageUrl)
-    // console.log('추가 이미지 목록:', imageList)
-  }
+  useEffect(() => {
+    const uploadImageToS3 = async (file, preSingedUrl) => {
+      try {
+        await uploadToS3(preSingedUrl, file)
+        console.log('파일 업로드 완료!!!!!!!!!')
+      } catch (error) {
+        console.error('파일 업로드 중 오류!!!!!!!!!!', error)
+      }
+    }
+
+    // 대표 이미지 처리
+    if (storeImgGetData && mainImageFile) {
+      const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
+      uploadImageToS3(mainImageFile, preSingedUrl)
+      setMainImage(imageSaveUrl) // 상태 업데이트
+    }
+
+    // 추가 이미지 처리
+    if (storeImgGetData && additionalImages.length > 0) {
+      const { preSingedUrl } = storeImgGetData.data
+      additionalImages.forEach(async (file) => {
+        await uploadImageToS3(file, preSingedUrl)
+      })
+      // 추가 이미지 URL 업데이트 코드 필요 시 추가
+    }
+  }, [storeImgGetData, mainImageFile, additionalImages])
+
+  // useEffect(() => {
+  //   if (storeImgGetData) {
+  //     // console.log('########storeImgGetData', storeImgGetData)
+  //     // console.log('대표 이미지 URL:', mainImage)
+  //     // console.log('추가 이미지 목록:', additionalImages)
+  //     const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
+  //     // uploadToS3(preSingedUrl, imageSaveUrl)
+
+  //     console.log(' preSignedUrl :', preSingedUrl)
+  //     console.log('imageSaveUrl ', imageSaveUrl)
+  //   }
+  // }, [storeImgGetData])
 
   const uploadButton = (
     <button
@@ -181,7 +222,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       ...popupFormData,
       // description: editorTextData,
     }
-    console.log('등록: savePopupFormData:', savePopupFormData)
+    console.log('팝업 등록: savePopupFormData:', savePopupFormData)
     setPopupFormData(savePopupFormData)
     // storeSaveApi('/popup', 'POST', savePopupFormData, null)
     // console.log('Received values:', popupFormData)
@@ -205,15 +246,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
         },
       )
   }, [form, values])
-
-  useEffect(() => {
-    console.log('storeImgGetData', storeImgGetData)
-    if (storeImgGetData) {
-      const { preSignedUrl, imageSaveUrl } = storeImgGetData.data
-      // 2. 받은 preSignedUrl로 S3에 이미지 업로드
-      storeImgPostApi('/image', 'POST', null, null)
-    }
-  }, [storeImgGetData])
 
   return (
     <SubmitModal
@@ -339,12 +371,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             rules={[{ required: true, message: '추가 이미지를 업로드하세요!' }]}
           >
             <Upload
-              // name="file"
-              // className="avatar-uploader"
-              // multiple
-              // beforeUpload={beforeUpload}
-              // fileList={imageList}
-              // onChange={handleAdditionalChange}
               listType="picture-card"
               multiple
               fileList={additionalImages}
