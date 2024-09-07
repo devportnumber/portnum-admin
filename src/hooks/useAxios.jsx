@@ -9,7 +9,10 @@ export const useAxios = () => {
   const [error, setError] = useState('')
 
   const fetchData = async (url, method, requestBody, params) => {
+    // 임시 작업 토큰
     try {
+      const token =
+        'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoIjoiUk9MRV9VU0VSIiwic3ViIjoidGVzdFdlYmluQG5hdmVyLmNvbSIsImV4cCI6MTcyNTY5NzA2OCwiaWF0IjoxNzI1Njk1MjY4fQ.50zoG6eEQHTIDBiAaxwbkyF7-UUI-TZF5Nan2EYy8Pc'
       setLoading(true)
       const response = await axios({
         method: method,
@@ -19,6 +22,7 @@ export const useAxios = () => {
         params: params,
         headers: {
           'Content-Type': 'application/json', // JSON으로 전달
+          Authorization: `Bearer ${token}`, // JWT 토큰을 헤더에 추가
         },
       })
 
