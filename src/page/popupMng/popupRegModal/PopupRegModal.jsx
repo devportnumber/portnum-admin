@@ -31,6 +31,7 @@ const plainOptions = [
 const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
+  const [isUpload, setIsUpload] = useState(false)
 
   const [loading, setLoading] = useState(false)
   const [address, setAddress] = useState(null)
@@ -118,11 +119,26 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
 
   // 대표 이미지 핸들러
   const handleMainImageChange = async ({ file }) => {
-    // API 호출 트리거
-    storeImgGetApi('/image', 'GET', null, { imageName: file.name })
-    // 상태에 파일 저장
-    setMainImageFile(file)
-    // 업로드 상태 초기화
+    // // API 호출 트리거
+    // storeImgGetApi('/image', 'GET', null, { imageName: file.name })
+    // // 상태에 파일 저장
+    // setMainImageFile(file)
+    // // 업로드 상태 초기화
+    // setMainImageUploaded(false)
+
+    if (file.status === 'uploading') {
+      console.log('#대표이미지 핸들러', file)
+      // API 호출 트리거
+      storeImgGetApi('/image', 'GET', null, { imageName: file.name })
+      // 상태에 파일 저장
+      setMainImageFile(file)
+      // 업로드 상태 초기화
+    } else if (file.status === 'removed') {
+      setMainImage('')
+    } else if (file.status === 'done') {
+      setMainImageFile(file)
+      // setMainImageFile(file)
+    }
     setMainImageUploaded(false)
   }
 
@@ -130,46 +146,25 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const handleAdditionalImagesChange = ({ file, fileList }) => {
     console.log('추가 파일 리스트', fileList)
 
-    setAdditionalImageFile(fileList)
-    fileList.forEach((fileItem) => {
-      storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
-      setAdditionalImagesUploaded(false)
-    })
-  }
+    // setAdditionalImageFile(fileList)
+    // fileList.forEach((fileItem) => {
+    //   storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
+    //   setAdditionalImagesUploaded(false)
+    // })
 
-  const handleFileStatus = async () => {
-    // 대표 이미지 파일 처리
-    if (mainImageFile) {
-      // 대표 이미지가 'done' 상태이면 수정 API 호출
-      if (mainImageFile.status === 'done') {
-        await storeSaveApi(
-          '/popup',
-          'PUT',
-          { representImgUrl: mainImage },
-          null,
-        )
-      }
-      // 대표 이미지가 'removed' 상태이면 삭제 API 호출
-      else if (mainImageFile.status === 'removed') {
-        await storeSaveApi(
-          '/popup',
-          'DELETE',
-          { representImgUrl: mainImage },
-          null,
-        )
-      }
+    if (file.status === 'uploading') {
+      setAdditionalImageFile(fileList)
+      fileList.forEach((fileItem) => {
+        storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
+        setAdditionalImagesUploaded(false)
+      })
+    } else if (file.status === 'removed') {
+      // setAdditionalImageFile((prev) =>
+      //   prev.filter((img) => img.imgUrl !== file.url),
+      // )
+    } else if (file.status === 'done') {
+      setAdditionalImageFile(fileList)
     }
-
-    // 추가 이미지 파일 처리
-    additionalImageFile.forEach(async (file) => {
-      if (file.status === 'done') {
-        // 추가 이미지가 'done' 상태이면 등록 API 호출
-        await storeSaveApi('/popup/image', 'POST', { imgUrl: file.url }, null)
-      } else if (file.status === 'removed') {
-        // 추가 이미지가 'removed' 상태이면 삭제 API 호출
-        await storeSaveApi('/popup/image', 'DELETE', { imgUrl: file.url }, null)
-      }
-    })
   }
 
   // s3 이미지 업로드
@@ -207,8 +202,11 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       // 대표 이미지가 이미 업로드된 상태가 아닌 경우에만 업로드
       if (!mainImageUploaded) {
         console.log('#대표이미지 이펙트', preSingedUrl)
-        // uploadImageToS3(mainImageFile, preSingedUrl)
         setMainImage(imageSaveUrl) // 상태 업데이트
+        if (isUpload) {
+          uploadImageToS3(mainImageFile, preSingedUrl)
+        }
+
         setMainImageUploaded(true) // 업로드 상태 업데이트
       }
     }
@@ -221,13 +219,15 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       additionalImageFile.forEach(async (file) => {
         if (!additionalImagesUploaded) {
           console.log('###추가이미지', file)
-          // await uploadImageToS3(file, preSingedUrl)
           setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }])
+          if (isUpload) {
+            await uploadImageToS3(file, preSingedUrl)
+          }
           setAdditionalImagesUploaded(true)
         }
       })
     }
-  }, [storeImgGetData])
+  }, [storeImgGetData, isUpload])
 
   // 이미지 업로드 버튼
   const uploadButton = (
@@ -270,8 +270,12 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       // 최종 등록 API 호출
       console.log('팝업 등록 완료:', savePopupFormData)
       // await storeSaveApi('/popup', 'POST', savePopupFormData, null)
+      setIsUpload(true) // Set isUpload to true after successful API call
+      setLoading(false)
+      setIsModalOpen(false) // Close the modal after successful submission
     } catch (error) {
       console.error('팝업 등록 중 오류 발생:', error)
+      setLoading(false)
     }
   }
 

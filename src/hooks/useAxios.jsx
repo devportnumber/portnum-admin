@@ -12,7 +12,7 @@ export const useAxios = () => {
     // 임시 작업 토큰
     try {
       const token =
-        'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoIjoiUk9MRV9VU0VSIiwic3ViIjoidGVzdFdlYmluQG5hdmVyLmNvbSIsImV4cCI6MTcyNTY5NzA2OCwiaWF0IjoxNzI1Njk1MjY4fQ.50zoG6eEQHTIDBiAaxwbkyF7-UUI-TZF5Nan2EYy8Pc'
+        'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoIjoiUk9MRV9VU0VSIiwic3ViIjoidGVzdFdlYmluQG5hdmVyLmNvbSIsImV4cCI6MTcyNTc2NjAyOCwiaWF0IjoxNzI1NzY0MjI4fQ.8-QV5PxfW5R7eKKao148m6zPYSJ5YG1uW7pI2K7-9q0'
       setLoading(true)
       const response = await axios({
         method: method,
