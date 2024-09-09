@@ -48,6 +48,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [additionalImagesUploaded, setAdditionalImagesUploaded] =
     useState(false)
 
+  // // 팝업상세
+  // const {
+  //   fetchData: storeDetailApi,
+  //   loading: storeDetailLoading,
+  //   data: storeDetailData,
+  //   error: sstoreDetailError,
+  // } = useAxios()
+
   // 이미지 url 요청
   const {
     fetchData: storeImgGetApi,
@@ -92,6 +100,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       setMainImage(tableRecord?.representImgUrl)
     }
   }, [tableRecord])
+
+  // useEffect(() => {
+  //   storeDetailApi(`/popup/api/1/1`, 'GET', null, null)
+  // }, [])
+
+  // useEffect(() => {
+  //   if (storeDetailData) {
+  //     console.log('storeDetailData', storeDetailData)
+  //   }
+  // }, [storeDetailData])
 
   const [popupFormData, setPopupFormData] = useState({
     adminId: 1,
@@ -269,7 +287,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
 
       // 최종 등록 API 호출
       console.log('팝업 등록 완료:', savePopupFormData)
-      // await storeSaveApi('/popup', 'POST', savePopupFormData, null)
+      await storeSaveApi('/popup', 'POST', savePopupFormData, null)
       setIsUpload(true) // Set isUpload to true after successful API call
       setLoading(false)
       setIsModalOpen(false) // Close the modal after successful submission

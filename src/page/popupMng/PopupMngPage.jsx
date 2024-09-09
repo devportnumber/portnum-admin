@@ -50,13 +50,22 @@ const PopupMngPage = () => {
   // }
   // const currentData = paginateData(storeListState, currentPage, pageSize)
 
+  // 팝업상세
+  const {
+    fetchData: storeDetailApi,
+    loading: storeDetailLoading,
+    data: storeDetailData,
+    error: sstoreDetailError,
+  } = useAxios()
+
   const handleFilterChange = (e) => {
     // console.log("선택", e);
   }
   const handleTableRowClick = (record) => {
     // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)
-    setTableRecord(record)
+    storeDetailApi(`/popup/api/1/1`, 'GET', null, null)
+    // setTableRecord(record)
   }
 
   const LIST_NUMBER_COLUMN = [
@@ -71,6 +80,12 @@ const PopupMngPage = () => {
       },
     },
   ]
+
+  useEffect(() => {
+    if (storeDetailData) {
+      setTableRecord(storeDetailData)
+    }
+  }, [storeDetailData])
 
   return (
     <div>
