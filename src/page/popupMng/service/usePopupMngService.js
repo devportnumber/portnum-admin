@@ -105,7 +105,7 @@ export const usePopupMngService = () => {
 
   // API: 팝업 삭제
   const handleDeleteClick = () => {
-    // storeDelApi('/popup', 'DELETE', null, {adminId: 1,  popupIds: checkItem })
+    storeDelApi('/popup', 'DELETE', null, { adminId: 1, popupIds: checkItem })
     console.log('checkItem', checkItem)
     console.log('checkItem', { adminId: 1, popupIds: checkItem })
   }
@@ -120,7 +120,7 @@ export const usePopupMngService = () => {
   useEffect(() => {
     // /admin/popup/1
     storeFilterGetApi('/popup/api/1', 'GET', null, requestFilter)
-  }, [requestFilter])
+  }, [requestFilter, storeDelData])
 
   useEffect(() => {
     if (storeFilterGetData) {
@@ -129,12 +129,12 @@ export const usePopupMngService = () => {
     }
   }, [storeFilterGetData])
 
-  useEffect(() => {
-    if (storeDelData === 'success') {
-      storeFilterGetApi('/list/filter', 'POST', requestFilter, null)
-      setCurrentPage(1)
-    }
-  }, [storeDelData])
+  // useEffect(() => {
+  //   if (storeDelData === 'success') {
+  //     storeFilterGetApi('/popup/api/1', 'GET', null, requestFilter)
+  //     setCurrentPage(1)
+  //   }
+  // }, [storeDelData])
 
   return {
     storeListState,

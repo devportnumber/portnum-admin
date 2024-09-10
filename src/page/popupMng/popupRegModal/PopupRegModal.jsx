@@ -89,7 +89,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       form.setFieldValue('stat', tableRecord.stat)
       form.setFieldValue('address', tableRecord.address?.address)
       form.setFieldValue('addressDetail', tableRecord.address?.addressDetail)
-      form.setFieldValue('keywords', tableRecord.keywords.join(', '))
+      form.setFieldValue('keywords', tableRecord.keywords?.join(', '))
       form.setFieldValue('mapUrl', tableRecord.mapUrl)
       form.setFieldValue('valid', tableRecord.valid)
       form.setFieldValue('description', tableRecord.description)
@@ -98,6 +98,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       form.setFieldValue('images', tableRecord.detailDescription)
 
       setMainImage(tableRecord?.representImgUrl)
+      setAdditionalImages(tableRecord?.images)
     }
   }, [tableRecord])
 
@@ -296,6 +297,12 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (storeFilterData?.success) {
+      window.location.reload()
+    }
+  }, [storeFilterData])
 
   const onClose = () => {
     form.resetFields()

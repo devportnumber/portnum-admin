@@ -1,6 +1,6 @@
 import { Col, Row, Flex } from 'antd'
 import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import {
   BoxShadow,
   Button,
@@ -64,7 +64,7 @@ const PopupMngPage = () => {
   const handleTableRowClick = (record) => {
     // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)
-    storeDetailApi(`/popup/api/1/1`, 'GET', null, null)
+    storeDetailApi(`/popup/api/1/${record?.popupId}`, 'GET', null, null)
     // setTableRecord(record)
   }
 
@@ -83,7 +83,8 @@ const PopupMngPage = () => {
 
   useEffect(() => {
     if (storeDetailData) {
-      setTableRecord(storeDetailData)
+      console.log('storeDetailData', storeDetailData)
+      setTableRecord(storeDetailData?.data)
     }
   }, [storeDetailData])
 
