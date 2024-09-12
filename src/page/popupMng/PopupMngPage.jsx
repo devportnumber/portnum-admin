@@ -64,7 +64,7 @@ const PopupMngPage = () => {
   const handleTableRowClick = (record) => {
     // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)
-    storeDetailApi(`/popup/api/1/${record?.popupId}`, 'GET', null, null)
+    storeDetailApi(`/popup/api/한윤수2/${record?.popupId}`, 'GET', null, null)
     // setTableRecord(record)
   }
 

@@ -119,7 +119,7 @@ export const usePopupMngService = () => {
   // API 필터 조회
   useEffect(() => {
     // /admin/popup/1
-    storeFilterGetApi('/popup/api/1', 'GET', null, requestFilter)
+    storeFilterGetApi('/popup/api/한윤수2', 'GET', null, requestFilter)
   }, [requestFilter, storeDelData])
 
   useEffect(() => {

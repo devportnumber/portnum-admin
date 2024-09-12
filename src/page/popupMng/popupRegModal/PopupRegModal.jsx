@@ -11,7 +11,7 @@ import {
 } from '../../../components/index'
 import { Upload, message, Radio, Form, Flex } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import styled, { createGlobalStyle } from 'styled-components'
+import styled from 'styled-components'
 import { useAxios } from '../../../hooks/useAxios'
 import * as constantsData from '../service/constants'
 import dayjs from 'dayjs'

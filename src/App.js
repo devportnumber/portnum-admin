@@ -3,20 +3,29 @@ import styled from 'styled-components'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/header/Header'
 import SideBar from './components/sideBar/SideBar'
-
+const useAuth = () => {
+  return localStorage.getItem('isAuthenticated') === 'true'
+}
 function App() {
+  const isAuthenticated = useAuth()
   return (
     <div className="App">
       <BrowserRouter>
-        <Header />
-        <LayoutWrapper>
-          <LayoutMain>
-            <SideBar />
-            <MainContent>
-              <Router />
-            </MainContent>
-          </LayoutMain>
-        </LayoutWrapper>
+        {isAuthenticated ? (
+          <>
+            <Header />
+            <LayoutWrapper>
+              <LayoutMain>
+                <SideBar />
+                <MainContent>
+                  <Router />
+                </MainContent>
+              </LayoutMain>
+            </LayoutWrapper>
+          </>
+        ) : (
+          <Router />
+        )}
       </BrowserRouter>
     </div>
   )
