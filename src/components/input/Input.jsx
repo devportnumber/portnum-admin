@@ -2,7 +2,14 @@ import React from 'react'
 import styled from 'styled-components'
 import { Input as Inputs } from 'antd'
 
-const Input = ({ value, inputTitle, placeholder, isReadOnly, onChange }) => {
+const Input = ({
+  value,
+  inputTitle,
+  placeholder,
+  isReadOnly,
+  onChange,
+  type,
+}) => {
   const handleChange = (e) => {
     const { value } = e.target
     onChange(value)
@@ -16,6 +23,7 @@ const Input = ({ value, inputTitle, placeholder, isReadOnly, onChange }) => {
           width: '100%',
         }}
         value={value}
+        type={type}
         placeholder={placeholder}
         readOnly={isReadOnly}
         onChange={onChange ? handleChange : onChange}

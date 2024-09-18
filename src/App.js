@@ -1,13 +1,22 @@
+import React, { useState, useEffect } from 'react'
 import Router from './routers/Router'
 import styled from 'styled-components'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/header/Header'
 import SideBar from './components/sideBar/SideBar'
-const useAuth = () => {
-  return localStorage.getItem('isAuthenticated') === 'true'
-}
+
 function App() {
-  const isAuthenticated = useAuth()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      setIsAuthenticated(true)
+    } else {
+      setIsAuthenticated(false)
+    }
+  }, [])
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -18,13 +27,13 @@ function App() {
               <LayoutMain>
                 <SideBar />
                 <MainContent>
-                  <Router />
+                  <Router isAuthenticated={isAuthenticated} />
                 </MainContent>
               </LayoutMain>
             </LayoutWrapper>
           </>
         ) : (
-          <Router />
+          <Router isAuthenticated={isAuthenticated} />
         )}
       </BrowserRouter>
     </div>

@@ -48,14 +48,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [additionalImagesUploaded, setAdditionalImagesUploaded] =
     useState(false)
 
-  // // 팝업상세
-  // const {
-  //   fetchData: storeDetailApi,
-  //   loading: storeDetailLoading,
-  //   data: storeDetailData,
-  //   error: sstoreDetailError,
-  // } = useAxios()
-
   // 이미지 url 요청
   const {
     fetchData: storeImgGetApi,
@@ -101,16 +93,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       setAdditionalImages(tableRecord?.images)
     }
   }, [tableRecord])
-
-  // useEffect(() => {
-  //   storeDetailApi(`/popup/api/1/1`, 'GET', null, null)
-  // }, [])
-
-  // useEffect(() => {
-  //   if (storeDetailData) {
-  //     console.log('storeDetailData', storeDetailData)
-  //   }
-  // }, [storeDetailData])
 
   const [popupFormData, setPopupFormData] = useState({
     adminId: 1,

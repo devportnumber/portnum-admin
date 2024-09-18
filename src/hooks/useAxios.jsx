@@ -47,6 +47,8 @@ export const useAxios = () => {
         },
       })
 
+      console.log(response)
+
       setData(response?.data)
       setLoading(false)
     } catch (error) {
