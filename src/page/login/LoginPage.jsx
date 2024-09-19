@@ -5,6 +5,7 @@ import { useAxios } from '../../hooks/useAxios.jsx'
 import { Input, Button } from '../../components/index.js'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.js'
 
 const LoginPage = () => {
   const [form] = Form.useForm()
@@ -14,6 +15,7 @@ const LoginPage = () => {
     password: 'port8000!',
   })
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const {
     fetchData: loginApi,
@@ -22,16 +24,18 @@ const LoginPage = () => {
     error: loginError,
   } = useAxios()
 
-  const login = async () => {
+  const handleLogin = async () => {
     try {
       const response = await axios.post(
         'https://portnumber.site/auth/login',
         loginForm,
       )
       console.log('response', response)
-      navigate('/', { replace: true })
+      // navigate('/', { replace: true })
       const newToken = response.headers['authorization']
-      localStorage.setItem('token', newToken)
+      // localStorage.setItem('token', newToken)
+      login(newToken)
+      navigate('/')
     } catch (error) {
       console.error('Login failed:', error)
     }
@@ -40,7 +44,7 @@ const LoginPage = () => {
   // 기존 로그인 제출 함수
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await login()
+    await handleLogin()
   }
 
   useEffect(() => {

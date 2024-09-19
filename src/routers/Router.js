@@ -5,6 +5,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 // import { userRoutes, authRoutes } from "./allRoutes";
 import PopupMngPage from '../page/popupMng/PopupMngPage'
 import LoginPage from '../page/login/LoginPage'
+import { useAuth } from '../context/AuthContext'
 
 // 인증된 사용자용 라우트 정의
 const authenticatedRoutes = [
@@ -23,9 +24,10 @@ const unauthenticatedRoutes = [
   },
 ]
 
-const Router = ({ isAuthenticated }) => {
+const Router = () => {
   // const isAuthenticated = localStorage.getItem('token')
   // const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   // useEffect(() => {
@@ -44,9 +46,9 @@ const Router = ({ isAuthenticated }) => {
             <Route path={route.path} element={route.component} key={idx} />
           ))}
       {/* 인증되지 않은 사용자가 인증된 라우트에 접근 시 로그인 페이지로 리다이렉트 */}
-      {/* {!isAuthenticated && (
+      {!isAuthenticated && (
         <Route path="*" element={<Navigate to="/login" />} />
-      )} */}
+      )}
     </Routes>
   )
 }

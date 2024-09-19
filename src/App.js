@@ -4,39 +4,52 @@ import styled from 'styled-components'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/header/Header'
 import SideBar from './components/sideBar/SideBar'
+import { useAuth, AuthProvider } from './context/AuthContext'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  // const [isAuthenticated, setIsAuthenticated] = useState(false)
+  // const token = localStorage.getItem('token')
 
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      setIsAuthenticated(true)
-    } else {
-      setIsAuthenticated(false)
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (token) {
+  //     setIsAuthenticated(true)
+  //   } else {
+  //     setIsAuthenticated(false)
+  //   }
+  // }, [])
 
   return (
     <div className="App">
       <BrowserRouter>
-        {isAuthenticated ? (
-          <>
-            <Header />
-            <LayoutWrapper>
-              <LayoutMain>
-                <SideBar />
-                <MainContent>
-                  <Router isAuthenticated={isAuthenticated} />
-                </MainContent>
-              </LayoutMain>
-            </LayoutWrapper>
-          </>
-        ) : (
-          <Router isAuthenticated={isAuthenticated} />
-        )}
+        <AuthProvider>
+          <AuthenticatedApp />
+        </AuthProvider>
       </BrowserRouter>
     </div>
+  )
+}
+
+function AuthenticatedApp() {
+  const { isAuthenticated } = useAuth()
+
+  return (
+    <>
+      {isAuthenticated ? (
+        <>
+          <Header />
+          <LayoutWrapper>
+            <LayoutMain>
+              <SideBar />
+              <MainContent>
+                <Router />
+              </MainContent>
+            </LayoutMain>
+          </LayoutWrapper>
+        </>
+      ) : (
+        <Router />
+      )}
+    </>
   )
 }
 
