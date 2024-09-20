@@ -1,11 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
-import LOGO_IMG from '../../assets/logo/brand-logo.svg'
+import LOGO_IMG from '../../assets/logo/portnumber_logo1.svg'
+import { useNavigate } from 'react-router-dom'
+
 const Header = () => {
+  const navigate = useNavigate()
+
   return (
     <Wrap>
       <div>
-        <img src={LOGO_IMG} alt="로고 이미지" />
+        <button type="button" onClick={() => navigate('/')}>
+          <img src={LOGO_IMG} alt="로고 이미지" />
+        </button>
       </div>
       <RightBox>
         {/* 로그인시 입장 닉네임으로 변경 */}

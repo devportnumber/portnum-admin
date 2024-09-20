@@ -32,8 +32,8 @@ export const useAxios = () => {
   const fetchData = async (url, method, requestBody, params) => {
     // 임시 작업 토큰
     try {
-      const token =
-        'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoIjoiUk9MRV9VU0VSIiwic3ViIjoiaGVsbG8yQGdtYWlsLmNvbSIsImV4cCI6MTcyNTk2Nzk4NSwiaWF0IjoxNzI1OTY2MTg1fQ.uNqL0ZLy6z-sHN7_U5S5Y47L0cSuI5Mjniwy9HE1GOA'
+      const token = localStorage.getItem('token')
+      console.log('++', token)
       setLoading(true)
       const response = await axios({
         method: method,
@@ -43,7 +43,7 @@ export const useAxios = () => {
         params: params,
         headers: {
           'Content-Type': 'application/json', // JSON으로 전달
-          Authorization: `Bearer ${token}`, // JWT 토큰을 헤더에 추가
+          Authorization: `${token}`, // JWT 토큰을 헤더에 추가 Bearer
         },
       })
 

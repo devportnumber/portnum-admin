@@ -105,7 +105,7 @@ export const usePopupMngService = () => {
 
   // API: 팝업 삭제
   const handleDeleteClick = () => {
-    storeDelApi('/popup', 'DELETE', null, { adminId: 1, popupIds: checkItem })
+    storeDelApi('/popup', 'DELETE', { adminId: 1, popupIds: checkItem }, null)
     console.log('checkItem', checkItem)
     console.log('checkItem', { adminId: 1, popupIds: checkItem })
   }
