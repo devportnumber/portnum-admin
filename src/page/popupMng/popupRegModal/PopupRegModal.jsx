@@ -94,10 +94,18 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       form.setFieldValue('description', tableRecord.description)
       form.setFieldValue('detailDescription', tableRecord.detailDescription)
       form.setFieldValue('representImgUrl', tableRecord.representImgUrl)
-      form.setFieldValue('images', tableRecord.detailDescription)
 
       setMainImage(tableRecord?.representImgUrl)
-      setAdditionalImages(tableRecord?.images)
+      // setAdditionalImages(tableRecord?.images)
+
+      // 추가 이미지 설정
+      const formattedImages = tableRecord.images.map((image) => ({
+        uid: image.imgId, // 고유한 uid
+        name: image.imgUrl.split('/').pop(), // 파일 이름
+        status: 'done', // 상태
+        url: image.imgUrl, // 이미지 URL
+      }))
+      setAdditionalImages(formattedImages)
     }
   }, [tableRecord])
 
@@ -238,24 +246,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             ]}
           >
             <Upload
-              // name="file"
-              // className="avatar-uploader"
-              // beforeUpload={()=>}
+              name="file"
               fileList={mainImage ? [{ url: mainImage, uid: '-1' }] : []}
               // fileList={[{ url: mainImage, uid: '-1' }]}
               listType="picture-card"
               maxCount={1}
               onChange={handleMainImageChange}
             >
-              {mainImage ? (
-                <img
-                  src={mainImage}
-                  alt="대표 이미지"
-                  style={{ width: '100%' }}
-                />
-              ) : (
-                uploadButton
-              )}
+              {uploadButton}
             </Upload>
           </Form.Item>
           <Form.Item
@@ -266,9 +264,11 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             ]}
           >
             <Upload
+              name="file"
               listType="picture-card"
               multiple
               fileList={additionalImages}
+              maxCount={9}
               onChange={handleAdditionalImagesChange}
             >
               {uploadButton}

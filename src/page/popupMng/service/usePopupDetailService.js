@@ -66,13 +66,6 @@ export const usePopupDetailService = () => {
 
   // 대표 이미지 핸들러
   const handleMainImageChange = async ({ file }) => {
-    // // API 호출 트리거
-    // storeImgGetApi('/image', 'GET', null, { imageName: file.name })
-    // // 상태에 파일 저장
-    // setMainImageFile(file)
-    // // 업로드 상태 초기화
-    // setMainImageUploaded(false)
-
     if (file.status === 'uploading') {
       console.log('#대표이미지 핸들러', file)
       // API 호출 트리거
@@ -107,9 +100,9 @@ export const usePopupDetailService = () => {
         setAdditionalImagesUploaded(false)
       })
     } else if (file.status === 'removed') {
-      // setAdditionalImageFile((prev) =>
-      //   prev.filter((img) => img.imgUrl !== file.url),
-      // )
+      setAdditionalImageFile((prev) =>
+        prev.filter((img) => img.imgUrl !== file.url),
+      )
     } else if (file.status === 'done') {
       setAdditionalImageFile(fileList)
     }
