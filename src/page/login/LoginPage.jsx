@@ -33,8 +33,9 @@ const LoginPage = () => {
       console.log('response', response)
       // navigate('/', { replace: true })
       const newToken = response.headers['authorization']
+      const newRefresh = response.headers['refresh']
       // localStorage.setItem('token', newToken)
-      login(newToken)
+      login(newToken, newRefresh)
       navigate('/')
     } catch (error) {
       console.error('Login failed:', error)

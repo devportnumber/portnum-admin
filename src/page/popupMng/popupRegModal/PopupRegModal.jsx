@@ -170,8 +170,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
 
   // s3 이미지 업로드
   const uploadToS3 = async (s3Url, file) => {
-    console.log('s3Url', s3Url)
-    console.log('file', file)
+    console.log('##S3_Url: ', s3Url)
+    console.log('##S3_file', file)
     try {
       await fetch(s3Url, {
         method: 'PUT',
@@ -271,21 +271,23 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       // 최종 등록 API 호출
       console.log('팝업 등록 완료:', savePopupFormData)
       await storeSaveApi('/popup', 'POST', savePopupFormData, null)
-      setIsUpload(true) // Set isUpload to true after successful API call
+      setIsUpload(true)
       setLoading(false)
-      setIsModalOpen(false) // Close the modal after successful submission
+      setIsModalOpen(false)
     } catch (error) {
       console.error('팝업 등록 중 오류 발생:', error)
       setLoading(false)
     }
   }
 
+  // 팝업 등록 성공시 리로드
   useEffect(() => {
     if (storeFilterData?.success) {
-      window.location.reload()
+      // window.location.reload("/")
     }
   }, [storeFilterData])
 
+  // 모달 닫을시 다 초기화
   const onClose = () => {
     form.resetFields()
   }
