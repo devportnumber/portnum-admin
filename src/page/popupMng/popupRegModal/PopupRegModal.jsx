@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { Flex, Form, Radio, Upload } from 'antd'
+import dayjs from 'dayjs'
+import React, { useEffect } from 'react'
+import styled from 'styled-components'
 import {
-  Button,
-  SubmitModal,
-  Input,
-  DatePicker,
-  RangeDatePicker,
-  SelectOption,
   Address,
+  Button,
+  DatePicker,
+  Input,
+  SelectOption,
+  SubmitModal,
   ToastEditor,
 } from '../../../components/index'
-import { Upload, message, Radio, Form, Flex } from 'antd'
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import styled from 'styled-components'
-import { useAxios } from '../../../hooks/useAxios'
 import * as constantsData from '../service/constants'
-import dayjs from 'dayjs'
+import { usePopupDetailService } from '../service/usePopupDetailService'
 
 const plainOptions = [
   {
@@ -31,45 +30,53 @@ const plainOptions = [
 const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
-  const [isUpload, setIsUpload] = useState(false)
-
-  const [loading, setLoading] = useState(false)
-  const [address, setAddress] = useState(null)
-  const [popupState, setPopupState] = useState('Y')
-  const [editorTextData, setEditorTextData] = useState('')
-
-  // 이미지 데이터(대표이미지, 추가이미지)
-  const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지
-  const [mainImage, setMainImage] = useState('') // 대표 이미지
-  const [mainImageUploaded, setMainImageUploaded] = useState(false)
-
-  const [additionalImageFile, setAdditionalImageFile] = useState([]) // 추가 이미지
-  const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
-  const [additionalImagesUploaded, setAdditionalImagesUploaded] =
-    useState(false)
-
-  // 이미지 url 요청
   const {
-    fetchData: storeImgGetApi,
-    loading: storeImgGetLoading,
-    data: storeImgGetData,
-    error: storeImgGetError,
-  } = useAxios()
+    popupFormData, // 폼 데이터
+    setPopupFormData,
+    storeSaveApi, // 최종 등록 api
+    storeFilterData, // 팝업 등록 성공 데이터
+    // onFinish, // 최종 등록, 수정 : 제출 함수
+    isUpload,
+    setIsUpload,
+    uploadToS3, // s3 이미지 업로드
+    handleMainImageChange, // 대표 이미지 핸들러
+    handleAdditionalImagesChange, // 추가 이미지 핸들러
+    popupState, // 라디오
+    setPopupState,
+    mainImage,
+    setMainImage,
+    additionalImages,
+    setAdditionalImages,
+    setLoading,
+    loading,
+  } = usePopupDetailService()
 
-  const {
-    fetchData: storeImgPostApi,
-    loading: storeImgPostLoading,
-    data: storeImgPostData,
-    error: storeImgPostError,
-  } = useAxios()
-
-  // 팝업 등록
-  const {
-    fetchData: storeSaveApi,
-    loading: saveLoading,
-    data: storeFilterData,
-    error: error2,
-  } = useAxios()
+  // ✅ API 팝업등록
+  const onFinish = (values) => {
+    try {
+      const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
+      const savePopupFormData = {
+        ...popupFormData,
+        // description: editorTextData,
+        representImgUrl: mainImage, // 대표 이미지 1장
+        images: filteredImages, // 이미지 배열 9장
+        address: {
+          address: values.address, // address 객체를 그대로 사용
+          addressDetail: values.addressDetail, // addressDetail을 따로 사용
+        },
+      }
+      setIsUpload(true)
+      storeSaveApi('/popup', 'POST', savePopupFormData, null)
+      console.log('팝업 등록 완료:', savePopupFormData)
+      console.log('#최등록#isUpload', isUpload)
+      // 이미지 업로드
+      setLoading(false)
+      setIsModalOpen(false)
+    } catch (error) {
+      console.error('팝업 등록 중 오류 발생:', error)
+      setLoading(false)
+    }
+  }
 
   // 상세 설정
   useEffect(() => {
@@ -94,142 +101,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     }
   }, [tableRecord])
 
-  const [popupFormData, setPopupFormData] = useState({
-    adminId: 1,
-    name: '',
-    category: '',
-    startDate: dayjs().format('YYYY-MM-DDT00:00:00'),
-    endDate: dayjs().format('YYYY-MM-DDT00:00:00'),
-    stat: '',
-    point: {
-      longitude: '123',
-      latitude: '123',
-    },
-    // address: {
-    //   address: '',
-    //   addressDetail: '',
-    //   region: '',
-    // },
-    description: '', // 상세 설명?
-    detailDescription: '',
-    mapUrl: '', // 네이버 지도
-    representImgUrl: mainImage, // 대표 이미지 1장
-    images: additionalImages, // 이미지 배열 9장
-    keywords: ['테스트', '테스트1', '테스트2'],
-  })
-
-  // 대표 이미지 핸들러
-  const handleMainImageChange = async ({ file }) => {
-    // // API 호출 트리거
-    // storeImgGetApi('/image', 'GET', null, { imageName: file.name })
-    // // 상태에 파일 저장
-    // setMainImageFile(file)
-    // // 업로드 상태 초기화
-    // setMainImageUploaded(false)
-
-    if (file.status === 'uploading') {
-      console.log('#대표이미지 핸들러', file)
-      // API 호출 트리거
-      storeImgGetApi('/image', 'GET', null, { imageName: file.name })
-      // 상태에 파일 저장
-      setMainImageFile(file)
-      // 업로드 상태 초기화
-    } else if (file.status === 'removed') {
-      setMainImage('')
-    } else if (file.status === 'done') {
-      setMainImageFile(file)
-      // setMainImageFile(file)
-    }
-    setMainImageUploaded(false)
-  }
-
-  // 추가 이미지 핸들러
-  const handleAdditionalImagesChange = ({ file, fileList }) => {
-    console.log('추가 파일 리스트', fileList)
-
-    // setAdditionalImageFile(fileList)
-    // fileList.forEach((fileItem) => {
-    //   storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
-    //   setAdditionalImagesUploaded(false)
-    // })
-
-    if (file.status === 'uploading') {
-      setAdditionalImageFile(fileList)
-      fileList.forEach((fileItem) => {
-        storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
-        setAdditionalImagesUploaded(false)
-      })
-    } else if (file.status === 'removed') {
-      // setAdditionalImageFile((prev) =>
-      //   prev.filter((img) => img.imgUrl !== file.url),
-      // )
-    } else if (file.status === 'done') {
-      setAdditionalImageFile(fileList)
-    }
-  }
-
-  // s3 이미지 업로드
-  const uploadToS3 = async (s3Url, file) => {
-    console.log('##S3_Url: ', s3Url)
-    console.log('##S3_file', file)
-    try {
-      await fetch(s3Url, {
-        method: 'PUT',
-        body: file.originFileObj,
-        headers: {
-          'Content-Type': file.type,
-        },
-      })
-    } catch (error) {
-      console.error('[Error uploading to S3]', error)
-      throw error
-    }
-  }
-  // 이미지 get 요청 응답값 셋팅
-  useEffect(() => {
-    const uploadImageToS3 = async (file, preSingedUrl) => {
-      try {
-        await uploadToS3(preSingedUrl, file)
-        console.log('파일 업로드 완료!!!!!!!!!')
-      } catch (error) {
-        console.error('파일 업로드 중 오류!!!!!!!!!!', error)
-      }
-    }
-
-    // 대표 이미지 처리
-    if (storeImgGetData && mainImageFile) {
-      const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
-
-      // 대표 이미지가 이미 업로드된 상태가 아닌 경우에만 업로드
-      if (!mainImageUploaded) {
-        console.log('#대표이미지 이펙트', preSingedUrl)
-        setMainImage(imageSaveUrl) // 상태 업데이트
-        if (isUpload) {
-          uploadImageToS3(mainImageFile, preSingedUrl)
-        }
-
-        setMainImageUploaded(true) // 업로드 상태 업데이트
-      }
-    }
-
-    // 추가 이미지 처리
-    if (storeImgGetData && additionalImageFile) {
-      const { preSingedUrl, imageSaveUrl } = storeImgGetData.data
-
-      // 추가 이미지 업로드 시 중복 방지
-      additionalImageFile.forEach(async (file) => {
-        if (!additionalImagesUploaded) {
-          console.log('###추가이미지', file)
-          setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }])
-          if (isUpload) {
-            await uploadImageToS3(file, preSingedUrl)
-          }
-          setAdditionalImagesUploaded(true)
-        }
-      })
-    }
-  }, [storeImgGetData, isUpload])
-
   // 이미지 업로드 버튼
   const uploadButton = (
     <button
@@ -242,50 +113,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
     </button>
   )
-
-  const onPopupStateChange = ({ target: { value } }) => {
-    setPopupState(value)
-  }
-
-  // ✅ API 팝업등록
-  const onFinish = async (values) => {
-    const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
-    const savePopupFormData = {
-      ...popupFormData,
-      // description: editorTextData,
-      representImgUrl: mainImage, // 대표 이미지 1장
-      images: filteredImages, // 이미지 배열 9장
-      address: {
-        address: values.address, // address 객체를 그대로 사용
-        addressDetail: values.addressDetail, // addressDetail을 따로 사용
-      },
-    }
-    // console.log('팝업 등록: savePopupFormData:', savePopupFormData)
-    // setPopupFormData(savePopupFormData)
-    // storeSaveApi('/popup', 'POST', savePopupFormData, null)
-
-    try {
-      // 파일 상태에 따른 분기 처리
-      // await handleFileStatus()
-
-      // 최종 등록 API 호출
-      console.log('팝업 등록 완료:', savePopupFormData)
-      await storeSaveApi('/popup', 'POST', savePopupFormData, null)
-      setIsUpload(true)
-      setLoading(false)
-      setIsModalOpen(false)
-    } catch (error) {
-      console.error('팝업 등록 중 오류 발생:', error)
-      setLoading(false)
-    }
-  }
-
-  // 팝업 등록 성공시 리로드
-  useEffect(() => {
-    if (storeFilterData?.success) {
-      // window.location.reload("/")
-    }
-  }, [storeFilterData])
 
   // 모달 닫을시 다 초기화
   const onClose = () => {
@@ -470,7 +297,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           >
             <Radio.Group
               options={plainOptions}
-              onChange={onPopupStateChange}
+              onChange={(value) => setPopupState(value)}
               value={popupState}
             />
           </Form.Item>
