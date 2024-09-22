@@ -13,9 +13,10 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  const login = (token, refresh) => {
+  const login = (token, refresh, nickName) => {
     localStorage.setItem('token', token)
     localStorage.setItem('refresh', refresh)
+    localStorage.setItem('nickName', nickName)
     setIsAuthenticated(true)
   }
 

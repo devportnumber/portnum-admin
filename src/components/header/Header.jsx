@@ -7,7 +7,9 @@ import { useNavigate } from 'react-router-dom'
 const Header = () => {
   const navigate = useNavigate()
   const [logout, setLogout] = useState(false)
+  const nickName = localStorage.getItem('nickName')
 
+  // 로그아웃
   const handleLogout = async () => {
     try {
       const accessToken = localStorage.getItem('token')
@@ -55,7 +57,7 @@ const Header = () => {
       <RightBox>
         {/* 로그인시 입장 닉네임으로 변경 */}
         <h4>
-          <span className="boldTxt">어드민(ID)</span>님 환영합니다.
+          <span className="boldTxt">{nickName}</span>님 환영합니다.
         </h4>
         <LogoutBtn type="button" onClick={handleLogout}>
           로그아웃
