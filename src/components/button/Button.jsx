@@ -62,7 +62,7 @@ const Button = ({
 export default Button
 
 const SearchBtnWrap = styled.div`
-  /* width: 100%; */
+  width: 100%;
   .ant-btn {
     width: 100%;
   }

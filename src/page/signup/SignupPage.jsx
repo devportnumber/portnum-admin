@@ -197,7 +197,7 @@ const SignupPage = () => {
           <Button
             btnText="중복 확인"
             dupChk
-            width={'144px'}
+            // width={'144px'}
             onClick={checkNickname}
             // onClick={handleSubmit}
           />
@@ -336,10 +336,11 @@ const SignupForm = styled(Form)`
 `
 
 const NickNameWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  /* flex-direction: row; */
   align-items: center;
+  gap: 10px;
   .ant-btn {
     margin-bottom: 20px;
   }
