@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Upload, message, Radio, Form, Flex } from 'antd'
+
 import { useAxios } from '../../hooks/useAxios.jsx'
 import { Input, Button } from '../../components/index.js'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.js'
 
 const LoginPage = () => {
@@ -78,38 +79,63 @@ const LoginPage = () => {
       >
         <Form.Item
           name="email"
-          label="이메일"
+          // label="이메일"
           // rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
         >
           <Input placeholder="email" />
         </Form.Item>
         <Form.Item
           name="password"
-          label="비밀번호"
+          // label="비밀번호"
           // rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
         >
           <Input type="password" placeholder="Password" required />
         </Form.Item>
         <Button btnText="로그인" htmlType={'submit'} onClick={handleSubmit} />
+        <LinkGroup>
+          <LinkTxt to="/find-id">아이디 찾기</LinkTxt>
+          <span>|</span>
+          <LinkTxt to="/find-password"> 비밀번호 찾기 </LinkTxt>
+          <span>|</span>
+          <LinkTxt to="/signup">회원가입</LinkTxt>
+        </LinkGroup>
       </FormWrap>
     </Wrap>
   )
 }
 
 export default LoginPage
-
-const FormWrap = styled(Form)`
-  width: 200px;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-`
-
 const Wrap = styled.section`
   margin-top: 55px;
   display: flex;
   flex-direction: column;
   align-items: center;
+`
+
+const FormWrap = styled(Form)`
+  /* width: 200px;
+  height: 300px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  .ant-form-item-control-input-content {
+    width: 353px;
+    /* height: 60px; */
+  }
+`
+const LinkGroup = styled.div`
+  display: flex;
+  gap: 20px;
+  color: #828282d9;
+`
+
+const LinkTxt = styled(Link)`
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+  }
 `

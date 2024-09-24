@@ -5,6 +5,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 // import { userRoutes, authRoutes } from "./allRoutes";
 import PopupMngPage from '../page/popupMng/PopupMngPage'
 import LoginPage from '../page/login/LoginPage'
+import SignupPage from '../page/signup/SignupPage'
 import { useAuth } from '../context/AuthContext'
 
 // 인증된 사용자용 라우트 정의
@@ -21,6 +22,10 @@ const unauthenticatedRoutes = [
   {
     path: '/login',
     component: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    component: <SignupPage />,
   },
 ]
 

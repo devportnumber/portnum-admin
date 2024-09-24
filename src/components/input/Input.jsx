@@ -9,6 +9,8 @@ const Input = ({
   isReadOnly,
   onChange,
   type,
+  addonAfter,
+  pwd,
 }) => {
   const handleChange = (e) => {
     const { value } = e.target
@@ -18,16 +20,30 @@ const Input = ({
   return (
     <div>
       {inputTitle && <InputTitle>{inputTitle}</InputTitle>}
-      <Inputs
-        style={{
-          width: '100%',
-        }}
-        value={value}
-        type={type}
-        placeholder={placeholder}
-        readOnly={isReadOnly}
-        onChange={onChange ? handleChange : onChange}
-      />
+      {pwd ? (
+        <Inputs.Password
+          style={{
+            width: '100%',
+          }}
+          value={value}
+          type={type}
+          placeholder={placeholder}
+          readOnly={isReadOnly}
+          onChange={onChange ? handleChange : onChange}
+        />
+      ) : (
+        <Inputs
+          style={{
+            width: '100%',
+          }}
+          value={value}
+          type={type}
+          placeholder={placeholder}
+          readOnly={isReadOnly}
+          onChange={onChange ? handleChange : onChange}
+          addonAfter={addonAfter}
+        />
+      )}
     </div>
   )
 }

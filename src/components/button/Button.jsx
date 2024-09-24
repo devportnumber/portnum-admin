@@ -13,6 +13,8 @@ const Button = ({
   htmlType,
   ref,
   cancel,
+  dupChk,
+  width,
 }) => {
   // 버튼에 아이콘이 포함한 경우 props로 전달
   const isIconMode = (mode) => {
@@ -35,8 +37,8 @@ const Button = ({
         theme={{
           token: {
             borderRadius: '8px',
-            colorPrimary: cancel ? '#fff' : '#000',
-            colorTextLightSolid: cancel ? '#000' : '#fff',
+            colorPrimary: dupChk ? '#c0c0c0' : cancel ? '#fff' : '#000', // dupChk가 true면 빨간색, 아니면 기본색
+            colorTextLightSolid: dupChk ? '#fff' : cancel ? '#000' : '#fff', // dupChk일 때 텍스트 색도 변경
           },
         }}
       >
@@ -47,6 +49,7 @@ const Button = ({
           onClick={onClick}
           disabled={disabled}
           htmlType={htmlType}
+          style={{ width: width }}
           // shape="round"
         >
           {btnText}
@@ -60,4 +63,7 @@ export default Button
 
 const SearchBtnWrap = styled.div`
   /* width: 100%; */
+  .ant-btn {
+    width: 100%;
+  }
 `
