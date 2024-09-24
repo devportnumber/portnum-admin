@@ -1,8 +1,9 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { Flex, Form, Radio, Upload } from 'antd'
+import { Flex, Form, Radio, Upload, Modal } from 'antd'
 import dayjs from 'dayjs'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 import {
   Address,
   Button,
@@ -30,6 +31,7 @@ const plainOptions = [
 const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
+  const [mode, setMode] = useState('create')
   const {
     popupFormData, // 폼 데이터
     setPopupFormData,
@@ -50,14 +52,16 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     setLoading,
     loading,
   } = usePopupDetailService()
+  const navigate = useNavigate()
 
   // ✅ API 팝업등록
   const onFinish = (values) => {
     try {
       const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
       const savePopupFormData = {
-        ...popupFormData,
-        // description: editorTextData,
+        ...values,
+        adminId: mode === 'edit' ? 1 : null,
+        popupId: tableRecord.popupId || null,
         representImgUrl: mainImage, // 대표 이미지 1장
         images: filteredImages, // 이미지 배열 9장
         address: {
@@ -65,9 +69,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           addressDetail: values.addressDetail, // addressDetail을 따로 사용
         },
       }
+      console.log('####', savePopupFormData)
       setIsUpload(true)
-      storeSaveApi('/popup', 'POST', savePopupFormData, null)
-      console.log('팝업 등록 완료:', savePopupFormData)
+      if (mode === 'create') {
+        storeSaveApi('/popup', 'POST', savePopupFormData, null)
+      }
+      if (mode === 'edit') {
+        storeSaveApi('/popup', 'PATCH', savePopupFormData, null)
+      }
       console.log('#최등록#isUpload', isUpload)
       // 이미지 업로드
       setLoading(false)
@@ -76,6 +85,44 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       console.error('팝업 등록 중 오류 발생:', error)
       setLoading(false)
     }
+  }
+  useEffect(() => {
+    if (isModalOpen) {
+      if (tableRecord) {
+        setMode('edit')
+        populateForm(tableRecord)
+      } else {
+        setMode('create')
+        resetForm()
+      }
+    }
+  }, [tableRecord, isModalOpen])
+
+  const populateForm = (record) => {
+    form.setFieldsValue({
+      name: record.name,
+      category: record.category,
+      startDate: dayjs(record.startDate),
+      endDate: dayjs(record.endDate),
+      stat: record.stat,
+      address: record.address?.address,
+      addressDetail: record.address?.addressDetail,
+      keywords: record.keywords?.join(', '),
+      mapUrl: record.mapUrl,
+      valid: record.valid,
+      description: record.description,
+      detailDescription: record.detailDescription,
+    })
+
+    setMainImage(record.representImgUrl)
+    const formattedImages =
+      record.images?.map((image) => ({
+        uid: image.imgId,
+        name: image.imgUrl.split('/').pop(),
+        status: 'done',
+        url: image.imgUrl,
+      })) || []
+    setAdditionalImages(formattedImages)
   }
 
   // 상세 설정
@@ -121,10 +168,32 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
     </button>
   )
+  const resetForm = () => {
+    form.resetFields()
+    setPopupFormData({})
+    setMainImage(null)
+    setAdditionalImages([])
+    setIsUpload(false)
+  }
 
   // 모달 닫을시 다 초기화
   const onClose = () => {
-    form.resetFields()
+    resetForm()
+    setIsModalOpen(false)
+  }
+
+  const handleImageEdit = (type) => {
+    Modal.confirm({
+      title: '이미지 수정',
+      content: '현재 이미지를 삭제하고 새 이미지를 업로드하시겠습니까?',
+      onOk: () => {
+        if (type === 'main') {
+          setMainImage(null)
+        } else {
+          setAdditionalImages([])
+        }
+      },
+    })
   }
 
   useEffect(() => {
@@ -164,7 +233,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             <Form.Item
               name="name"
               label="컨텐츠 명"
-              // rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
+              rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
             >
               <Input />
             </Form.Item>
@@ -208,7 +277,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               // name={['address', 'address']}
               name="address"
               label="주소 등록"
-              rules={[{ required: false, message: '주소를 입력하세요!' }]}
+              rules={[{ required: true, message: '주소를 입력하세요!' }]}
             >
               <Address />
             </Form.Item>
@@ -216,21 +285,21 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               // name={['address', 'addressDetail']}
               name={'addressDetail'}
               label="상세 주소"
-              rules={[{ required: false, message: '상세 주소를 입력하세요!' }]}
+              rules={[{ required: true, message: '상세 주소를 입력하세요!' }]}
             >
               <Input placeholder="상세주소 입력" />
             </Form.Item>
             <Form.Item
               name="keywords"
               label="키워드 등록(,로 구분)"
-              rules={[{ required: false, message: '키워드를 입력하세요!' }]}
+              rules={[{ required: true, message: '키워드를 입력하세요!' }]}
             >
               <Input placeholder="키워드를 입력하세요." />
             </Form.Item>
             <Form.Item
               name="category"
               label="카테고리"
-              rules={[{ required: false, message: '카테고리를 선택하세요!' }]}
+              rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
             >
               <SelectOption
                 selectItems={constantsData.CATEGORY_ITEMS}
@@ -241,9 +310,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           <Form.Item
             name="representImgUrl"
             label="대표 이미지"
-            rules={[
-              { required: false, message: '대표 이미지를 업로드하세요!' },
-            ]}
+            value={mainImage}
+            rules={[{ required: true, message: '대표 이미지를 업로드하세요!' }]}
           >
             <Upload
               name="file"
@@ -253,7 +321,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               maxCount={1}
               onChange={handleMainImageChange}
             >
-              {uploadButton}
+              {mainImage ? (
+                <Button
+                  btnText={'수정'}
+                  onClick={() => handleImageEdit('main')}
+                />
+              ) : (
+                uploadButton
+              )}
             </Upload>
           </Form.Item>
           <Form.Item
@@ -277,14 +352,14 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
           <Form.Item
             name="description"
             label="기본 설명"
-            rules={[{ required: false, message: '기본 설명을 입력하세요!' }]}
+            rules={[{ required: true, message: '기본 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
           </Form.Item>
           <Form.Item
             name="detailDescription"
             label="상세 설명"
-            rules={[{ required: false, message: '상세 설명을 입력하세요!' }]}
+            rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
           >
             <ToastEditor value={tableRecord?.detailDescription} />
           </Form.Item>
@@ -292,7 +367,7 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             name="stat"
             label="컨텐츠 노출 여부"
             rules={[
-              { required: false, message: '컨텐츠 노출 여부를 선택하세요!' },
+              { required: true, message: '컨텐츠 노출 여부를 선택하세요!' },
             ]}
           >
             <Radio.Group
@@ -302,9 +377,22 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
             />
           </Form.Item>
         </FormWrap>
-        <Form.Item>
-          <Button btnText={tableRecord ? '수정' : '등록'} htmlType="submit" />
-        </Form.Item>
+        <BtnWrap>
+          <Button
+            btnText={'취소'}
+            htmlType="submit"
+            width={'120px'}
+            cancel
+            onClick={onClose}
+          />
+          <Form.Item>
+            <Button
+              btnText={mode === 'create' ? '등록' : '수정'}
+              htmlType="submit"
+              width={'120px'}
+            />
+          </Form.Item>
+        </BtnWrap>
       </Form>
     </SubmitModal>
   )
@@ -343,4 +431,13 @@ const FormInfo = styled.section`
   align-items: center;
   gap: 20px;
   background: #fefefe;
+`
+
+const BtnWrap = styled.div`
+  width: 248px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
 `

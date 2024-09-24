@@ -8,20 +8,27 @@ export const useAxios = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState(localStorage.getItem('token') || '')
 
-  const login = async () => {
+  const reissueToken = async () => {
+    console.log('토큰 재요청')
     try {
-      const response = await axios.post('https://portnumber.site/auth/login', {
-        email: 'testwebin9@naver.com',
-        password: '12345678',
-      })
+      const response = await axios.patch(
+        'https://portnumber.site/auth/reissue',
+        {},
+        {
+          headers: {
+            Authorization: `${token}`, // Send the refresh token if needed
+          },
+        },
+      )
       const newToken = response.headers['authorization']
       if (newToken) {
-        setToken(newToken.replace('Bearer ', ''))
+        setToken(newToken)
+        localStorage.setItem('token', newToken)
       }
     } catch (error) {
-      console.error('Login failed:', error)
+      console.error('Token reissue failed:', error)
     }
   }
 
@@ -29,10 +36,18 @@ export const useAxios = () => {
   //   login()
   // }, [])
 
-  const fetchData = async (url, method, requestBody, params) => {
+  const fetchData = async (
+    url,
+    method,
+    requestBody,
+    params,
+    newToken,
+    retryCount = 0,
+  ) => {
     // 임시 작업 토큰
+    // const token = localStorage.getItem('token')
+    // const refresh = localStorage.getItem('refesh')
     try {
-      const token = localStorage.getItem('token')
       console.log('++', token)
       setLoading(true)
       const response = await axios({
@@ -48,10 +63,34 @@ export const useAxios = () => {
       })
 
       console.log(response)
-
-      setData(response?.data)
-      setLoading(false)
+      if (response.data) {
+        setData(response?.data)
+        setLoading(false)
+      } else if (response.data.code === 30020 && retryCount < 3) {
+        console.log('Attempting to reissue token and retry request')
+        try {
+          const newToken = await reissueToken()
+          // Retry the original request with the new token
+          return fetchData(
+            url,
+            method,
+            requestBody,
+            params,
+            newToken,
+            retryCount + 1,
+          )
+        } catch (reissueError) {
+          console.error(
+            'Token reissue failed, cannot retry request',
+            reissueError,
+          )
+          setError(reissueError)
+          setLoading(false)
+        }
+      }
     } catch (error) {
+      console.log('error', error)
+
       setError(error)
       setLoading(false)
     }

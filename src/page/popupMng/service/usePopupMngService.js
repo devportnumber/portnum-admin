@@ -97,7 +97,7 @@ export const usePopupMngService = () => {
     }
     console.log('######', updateReq)
     setRequestFilter(updateReq)
-    // storePostApi('/list/filter', 'POST', reqFilter, null)
+    // storePostApi('/popup/api/한윤수2', 'POST', reqFilter, null)
     // console.log('service-startDate', startDate)
     // console.log('service-endDate', endDate)
     // console.log('reqFilter', reqFilter)
@@ -124,7 +124,7 @@ export const usePopupMngService = () => {
 
   useEffect(() => {
     if (storeFilterGetData) {
-      setStoreListState(storeFilterGetData.data.data)
+      setStoreListState(storeFilterGetData?.data?.data)
       // console.log('>>>storeFilterPostData', storeFilterGetData)
     }
   }, [storeFilterGetData])

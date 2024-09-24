@@ -40,6 +40,7 @@ const PopupMngPage = () => {
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false)
 
   const { data: storeList, loading, error, fetchData } = useAxios()
+  const nickName = localStorage.getItem('nickName')
 
   // const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
@@ -64,7 +65,12 @@ const PopupMngPage = () => {
   const handleTableRowClick = (record) => {
     // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)
-    storeDetailApi(`/popup/api/한윤수2/${record?.popupId}`, 'GET', null, null)
+    storeDetailApi(
+      `/popup/api/${nickName}/${record?.popupId}`,
+      'GET',
+      null,
+      null,
+    )
     // setTableRecord(record)
   }
 
@@ -167,11 +173,13 @@ const PopupMngPage = () => {
         setCurrentPage={setCurrentPage}
         total={storeListState?.length}
       />
-      <Button
-        btnText={'선택 삭제'}
-        cancel
-        onClick={() => setIsModalOpenConfirm(true)}
-      />
+      <DelBtnWrap>
+        <Button
+          btnText={'선택 삭제'}
+          cancel
+          onClick={() => setIsModalOpenConfirm(true)}
+        />
+      </DelBtnWrap>
       <ConfirmModal
         title={'삭제 알림'}
         isModalOpen={isModalOpenConfirm}
@@ -189,4 +197,9 @@ const ButtonWrap = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 55px;
+`
+
+const DelBtnWrap = styled.div`
+  width: 120px;
+  display: flex;
 `
