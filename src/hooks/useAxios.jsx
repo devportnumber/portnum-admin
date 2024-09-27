@@ -1,22 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import axios from 'axios'
 
 axios.defaults.withCredentials = true
 
 export const useAxios = () => {
   const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const [token, setToken] = useState(localStorage.getItem('token') || '')
   const refreshToken = localStorage.getItem('refresh')
-  const [isReissuing, setIsReissuing] = useState(false)
+  const isReissuingRef = useRef(false)
+  const requestQueue = useRef([])
 
-  //  API 토큰 재생성
   const reissueToken = async () => {
-    console.log('2. 토큰 재요청 api')
-    console.log('2.token 토큰 재요청 api', token)
-    console.log('2.refreshToken  토큰 재요청 api', refreshToken)
     try {
       const response = await axios.patch(
         'http://localhost:8080/auth/reissue',
@@ -28,10 +25,7 @@ export const useAxios = () => {
           },
         },
       )
-      console.log('3. 토큰 재요청응답', response)
       const newToken = response.headers['authorization']
-      console.log('4. 토큰 재요청 newToken', newToken)
-      // 재발급된 새로운 토큰 저장
       if (newToken) {
         setToken(newToken)
         localStorage.setItem('token', newToken)
@@ -39,61 +33,71 @@ export const useAxios = () => {
       return newToken
     } catch (error) {
       console.error('Token reissue failed:', error)
+      return null
     }
   }
 
-  // api 요청 공통 로직
-  const fetchData = async (
-    url,
-    method,
-    requestBody,
-    params,
-    newAccessToken,
-  ) => {
-    try {
-      setLoading(true)
-      console.log('@@@@token@@@@', token)
-      const response = await axios({
-        method: method,
-        // url: 'https://portnumber.site/admin' + url,
-        url: 'http://localhost:8080/admin' + url,
-        data: requestBody,
-        params: params,
-        headers: {
-          'Content-Type': 'application/json', // JSON으로 전달
-          Authorization: `${token}`, // JWT 토큰을 헤더에 추가 Bearer
-        },
-      })
+  const processQueue = async (newToken) => {
+    const queue = requestQueue.current
+    requestQueue.current = []
+    for (const request of queue) {
+      await fetchData(
+        request.url,
+        request.method,
+        request.requestBody,
+        request.params,
+        newToken,
+      )
+    }
+  }
 
-      console.log('## 공통response', response)
-      if (response.data) {
-        setData(response?.data)
+  const fetchData = useCallback(
+    async (url, method, requestBody, params, newAccessToken = token) => {
+      try {
+        setLoading(true)
+        const response = await axios({
+          method: method,
+          url: 'http://localhost:8080/admin' + url,
+          data: requestBody,
+          params: params,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${newAccessToken}`,
+          },
+        })
+
+        if (response.data) {
+          if (response.data.code === 30030) {
+            // Token needs to be refreshed
+            if (!isReissuingRef.current) {
+              isReissuingRef.current = true
+              const newToken = await reissueToken()
+              isReissuingRef.current = false
+
+              if (newToken) {
+                // Retry the request with the new token
+                return fetchData(url, method, requestBody, params, newToken)
+              } else {
+                throw new Error('Failed to reissue token')
+              }
+            } else {
+              // If already reissuing, add to queue
+              requestQueue.current.push({ url, method, requestBody, params })
+            }
+          } else {
+            // Normal successful response
+            setData(response.data)
+          }
+        }
+        setLoading(false)
+      } catch (error) {
+        console.log('error', error)
+        setError(error)
         setLoading(false)
       }
-      if (response.data.code === 30030) {
-        alert('토큰 재발급!')
-        console.log('1. 토큰 재발급 요청')
-        try {
-          // 재발급 요청
-          await reissueToken()
-          // const newAccessToken = await reissueToken()
-          // if (newAccessToken) {
-          //   // 재발급 후 원래 요청을 새로운 토큰으로 재시도
-          //   // return fetchData(url, method, requestBody, params)
-          // }
-        } catch (reissueError) {
-          console.error('Token reissue failed', reissueError)
-          setError(reissueError)
-          setLoading(false)
-        }
-      }
-    } catch (error) {
-      console.log('error', error)
-
-      setError(error)
-      setLoading(false)
-    }
-  }
+    },
+    [token],
+  )
 
   return { data, loading, error, fetchData }
 }
