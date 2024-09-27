@@ -16,7 +16,7 @@ const Header = () => {
       const refreshToken = localStorage.getItem('refresh')
 
       const response = await axios.patch(
-        'https://portnumber.site/auth/logout',
+        'http://localhost:8080/auth/logout',
         null, // 데이터가 없으므로 null
         {
           headers: {

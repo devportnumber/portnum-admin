@@ -1,6 +1,6 @@
 import { Col, Row, Flex } from 'antd'
 import React, { useEffect, useState } from 'react'
-import styled, { createGlobalStyle } from 'styled-components'
+import styled from 'styled-components'
 import {
   BoxShadow,
   Button,

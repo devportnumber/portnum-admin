@@ -9,51 +9,41 @@ export const useAxios = () => {
   const [error, setError] = useState('')
 
   const [token, setToken] = useState(localStorage.getItem('token') || '')
+  const refreshToken = localStorage.getItem('refresh')
 
+  //  API 토큰 재생성
   const reissueToken = async () => {
-    console.log('토큰 재요청')
+    console.log('2. 토큰 재요청 api')
     try {
       const response = await axios.patch(
-        'https://portnumber.site/auth/reissue',
+        'http://localhost:8080/auth/reissue',
         {},
         {
           headers: {
-            Authorization: `${token}`, // Send the refresh token if needed
+            Authorization: `${token}`,
+            Refresh: refreshToken,
           },
         },
       )
-      const newToken = response.headers['authorization']
-      if (newToken) {
-        setToken(newToken)
-        localStorage.setItem('token', newToken)
-      }
+      console.log('3. 토큰 재요청응답', response)
+      // const newToken = response.headers['authorization']
+      // if (newToken) {
+      //   setToken(newToken)
+      //   localStorage.setItem('token', newToken)
+      // }
     } catch (error) {
       console.error('Token reissue failed:', error)
     }
   }
 
-  // useEffect(() => {
-  //   login()
-  // }, [])
-
-  const fetchData = async (
-    url,
-    method,
-    requestBody,
-    params,
-    newToken,
-    retryCount = 0,
-  ) => {
-    // 임시 작업 토큰
-    // const token = localStorage.getItem('token')
-    // const refresh = localStorage.getItem('refesh')
+  // api 요청 공통 로직
+  const fetchData = async (url, method, requestBody, params) => {
     try {
-      console.log('++', token)
       setLoading(true)
       const response = await axios({
         method: method,
-        url: 'https://portnumber.site/admin' + url,
-        // url: 'http://localhost:8080/admin' + url,
+        // url: 'https://portnumber.site/admin' + url,
+        url: 'http://localhost:8080/admin' + url,
         data: requestBody,
         params: params,
         headers: {
@@ -62,28 +52,20 @@ export const useAxios = () => {
         },
       })
 
-      console.log(response)
+      console.log('## 공통response', response)
       if (response.data) {
         setData(response?.data)
         setLoading(false)
-      } else if (response.data.code === 30020 && retryCount < 3) {
-        console.log('Attempting to reissue token and retry request')
+      }
+      if (response.data.code === 30020) {
+        console.log('1. 토큰 재발급 요청')
+        alert('토큰 재발급!')
         try {
-          const newToken = await reissueToken()
-          // Retry the original request with the new token
-          return fetchData(
-            url,
-            method,
-            requestBody,
-            params,
-            newToken,
-            retryCount + 1,
-          )
+          await reissueToken()
+          //       Retry the original request with the new token
+          // return fetchData(url, method, requestBody, params)
         } catch (reissueError) {
-          console.error(
-            'Token reissue failed, cannot retry request',
-            reissueError,
-          )
+          console.error('Token reissue failed', reissueError)
           setError(reissueError)
           setLoading(false)
         }
