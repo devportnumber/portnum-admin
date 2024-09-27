@@ -61,9 +61,10 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       const savePopupFormData = {
         ...values,
         adminId: mode === 'edit' ? 1 : null,
-        popupId: tableRecord.popupId || null,
+        popupId: mode === 'edit' ? tableRecord?.popupId : null,
         representImgUrl: mainImage, // 대표 이미지 1장
         images: filteredImages, // 이미지 배열 9장
+        keywords: values.keywords.split(','),
         address: {
           address: values.address, // address 객체를 그대로 사용
           addressDetail: values.addressDetail, // addressDetail을 따로 사용
@@ -86,17 +87,30 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       setLoading(false)
     }
   }
+  // useEffect(() => {
+  //   if (isModalOpen) {
+  //     if (tableRecord) {
+  //       setMode('edit')
+  //       populateForm(tableRecord)
+  //     } else {
+  //       setMode('create')
+  //       resetForm()
+  //     }
+  //   }
+  // }, [tableRecord, isModalOpen])
+
   useEffect(() => {
     if (isModalOpen) {
       if (tableRecord) {
         setMode('edit')
         populateForm(tableRecord)
       } else {
-        setMode('create')
         resetForm()
       }
+    } else {
+      resetForm()
     }
-  }, [tableRecord, isModalOpen])
+  }, [isModalOpen, tableRecord])
 
   const populateForm = (record) => {
     form.setFieldsValue({
@@ -169,11 +183,18 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
     </button>
   )
   const resetForm = () => {
+    // form.resetFields()
+    // setPopupFormData({})
+    // setMainImage(null)
+    // setAdditionalImages([])
+    // setIsUpload(false)
     form.resetFields()
     setPopupFormData({})
     setMainImage(null)
     setAdditionalImages([])
     setIsUpload(false)
+    setMode('create')
+    setPopupState(undefined)
   }
 
   // 모달 닫을시 다 초기화
