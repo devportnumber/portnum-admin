@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useAxios } from '../../../hooks/useAxios'
+
 export const usePopupDetailService = () => {
   const [loading, setLoading] = useState(false)
   const [isUpload, setIsUpload] = useState(false)
@@ -44,8 +45,10 @@ export const usePopupDetailService = () => {
     adminId: 1,
     name: '',
     category: '',
-    startDate: dayjs().format('YYYY-MM-DDT00:00:00'),
-    endDate: dayjs().format('YYYY-MM-DDT00:00:00'),
+    startDate: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+    endDate: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+    // startDate: dayjs().format('YYYY-MM-DDT00:00:00'),
+    // endDate: dayjs().format('YYYY-MM-DDT00:00:00'),
     stat: '',
     point: {
       longitude: '123',
@@ -61,11 +64,17 @@ export const usePopupDetailService = () => {
     mapUrl: '', // 네이버 지도
     representImgUrl: mainImage, // 대표 이미지 1장
     images: additionalImages, // 이미지 배열 9장
-    keywords: ['테스트', '테스트1', '테스트2'],
+    keywords: '',
   })
 
   // 대표 이미지 핸들러
   const handleMainImageChange = async ({ file }) => {
+    console.log('대표이미지 핸들러', file)
+
+    // const files = file.originFileObj // 업로드된 파일
+    // const imgURL = URL.createObjectURL(files) // URL 생성
+    // setMainImage(imgURL) // 미리보기 상태 업데이트
+
     if (file.status === 'uploading') {
       console.log('#대표이미지 핸들러', file)
       // API 호출 트리거
@@ -77,21 +86,17 @@ export const usePopupDetailService = () => {
       setMainImage('')
     } else if (file.status === 'done') {
       setMainImageFile(file)
-
-      // setMainImageFile(file)
     }
     setMainImageUploaded(false)
   }
 
   // 추가 이미지 핸들러
   const handleAdditionalImagesChange = ({ file, fileList }) => {
-    console.log('추가 파일 리스트', fileList)
+    console.log('추가 파일 file 핸들러 ', file)
+    console.log('추가 파일 리스트 핸들러 ', fileList)
 
-    // setAdditionalImageFile(fileList)
-    // fileList.forEach((fileItem) => {
-    //   storeImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
-    //   setAdditionalImagesUploaded(false)
-    // })
+    console.log('추가 이미지 배열:', additionalImages)
+    console.log('삭제할 URL:', file.url)
 
     if (file.status === 'uploading') {
       setAdditionalImageFile(fileList)
@@ -101,8 +106,9 @@ export const usePopupDetailService = () => {
       })
     } else if (file.status === 'removed') {
       setAdditionalImageFile((prev) =>
-        prev.filter((img) => img.imgUrl !== file.url),
+        prev.filter((img) => img.url !== file.url),
       )
+      setAdditionalImages((prev) => prev.filter((img) => img.url !== file.url))
     } else if (file.status === 'done') {
       setAdditionalImageFile(fileList)
     }

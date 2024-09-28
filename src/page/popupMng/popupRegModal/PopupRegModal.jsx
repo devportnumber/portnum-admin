@@ -1,9 +1,9 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { Flex, Form, Radio, Upload, Modal } from 'antd'
+import { Flex, Form, Radio, Upload } from 'antd'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 import {
   Address,
   Button,
@@ -28,7 +28,12 @@ const plainOptions = [
 ]
 
 // 팝업 등록 모달
-const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
+const PopupRegModal = ({
+  isModalOpen,
+  setIsModalOpen,
+  tableRecord,
+  setTableRecord,
+}) => {
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
   const [mode, setMode] = useState('create')
@@ -60,11 +65,13 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
       const savePopupFormData = {
         ...values,
-        adminId: mode === 'edit' ? 1 : null,
+        adminId: 1,
         popupId: mode === 'edit' ? tableRecord?.popupId : null,
         representImgUrl: mainImage, // 대표 이미지 1장
         images: filteredImages, // 이미지 배열 9장
-        keywords: values.keywords.split(','),
+        keywords: values.keywords?.split(','),
+        startDate: dayjs(values.startDate).format('YYYY-MM-DDTHH:mm:ss'),
+        endDate: dayjs(values.endDate).format('YYYY-MM-DDTHH:mm:ss'),
         address: {
           address: values.address, // address 객체를 그대로 사용
           addressDetail: values.addressDetail, // addressDetail을 따로 사용
@@ -87,31 +94,8 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       setLoading(false)
     }
   }
-  // useEffect(() => {
-  //   if (isModalOpen) {
-  //     if (tableRecord) {
-  //       setMode('edit')
-  //       populateForm(tableRecord)
-  //     } else {
-  //       setMode('create')
-  //       resetForm()
-  //     }
-  //   }
-  // }, [tableRecord, isModalOpen])
 
-  useEffect(() => {
-    if (isModalOpen) {
-      if (tableRecord) {
-        setMode('edit')
-        populateForm(tableRecord)
-      } else {
-        resetForm()
-      }
-    } else {
-      resetForm()
-    }
-  }, [isModalOpen, tableRecord])
-
+  // 상세 설정
   const populateForm = (record) => {
     form.setFieldsValue({
       name: record.name,
@@ -137,38 +121,42 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
         url: image.imgUrl,
       })) || []
     setAdditionalImages(formattedImages)
+    setMode('edit')
   }
 
-  // 상세 설정
+  const resetForm = () => {
+    form.resetFields()
+    setPopupFormData({})
+    setMainImage(null)
+    setAdditionalImages([])
+    setIsUpload(false)
+    setMode('create')
+    setTableRecord(null) // 상세 정보 초기화 !!!
+  }
+
+  // 모달 닫을시 다 초기화
+  const onClose = () => {
+    resetForm()
+    setIsModalOpen(false)
+  }
+
+  // 모달 열고 닫기
   useEffect(() => {
-    if (tableRecord) {
-      form.setFieldValue('name', tableRecord.name)
-      form.setFieldValue('category', tableRecord.category)
-      form.setFieldValue('startDate', tableRecord.startDate)
-      form.setFieldValue('endDate', tableRecord.endDate)
-      form.setFieldValue('stat', tableRecord.stat)
-      form.setFieldValue('address', tableRecord.address?.address)
-      form.setFieldValue('addressDetail', tableRecord.address?.addressDetail)
-      form.setFieldValue('keywords', tableRecord.keywords?.join(', '))
-      form.setFieldValue('mapUrl', tableRecord.mapUrl)
-      form.setFieldValue('valid', tableRecord.valid)
-      form.setFieldValue('description', tableRecord.description)
-      form.setFieldValue('detailDescription', tableRecord.detailDescription)
-      form.setFieldValue('representImgUrl', tableRecord.representImgUrl)
-
-      setMainImage(tableRecord?.representImgUrl)
-      // setAdditionalImages(tableRecord?.images)
-
-      // 추가 이미지 설정
-      const formattedImages = tableRecord.images.map((image) => ({
-        uid: image.imgId, // 고유한 uid
-        name: image.imgUrl.split('/').pop(), // 파일 이름
-        status: 'done', // 상태
-        url: image.imgUrl, // 이미지 URL
-      }))
-      setAdditionalImages(formattedImages)
+    if (isModalOpen) {
+      if (tableRecord) {
+        populateForm(tableRecord)
+        setMode('edit')
+      } else {
+        resetForm()
+        setMode('create')
+      }
     }
-  }, [tableRecord])
+  }, [isModalOpen, tableRecord])
+
+  // 메인 이미지 수정
+  const handleImageEdit = (type) => {
+    console.log('type', type)
+  }
 
   // 이미지 업로드 버튼
   const uploadButton = (
@@ -182,40 +170,6 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
     </button>
   )
-  const resetForm = () => {
-    // form.resetFields()
-    // setPopupFormData({})
-    // setMainImage(null)
-    // setAdditionalImages([])
-    // setIsUpload(false)
-    form.resetFields()
-    setPopupFormData({})
-    setMainImage(null)
-    setAdditionalImages([])
-    setIsUpload(false)
-    setMode('create')
-    setPopupState(undefined)
-  }
-
-  // 모달 닫을시 다 초기화
-  const onClose = () => {
-    resetForm()
-    setIsModalOpen(false)
-  }
-
-  const handleImageEdit = (type) => {
-    Modal.confirm({
-      title: '이미지 수정',
-      content: '현재 이미지를 삭제하고 새 이미지를 업로드하시겠습니까?',
-      onOk: () => {
-        if (type === 'main') {
-          setMainImage(null)
-        } else {
-          setAdditionalImages([])
-        }
-      },
-    })
-  }
 
   useEffect(() => {
     form
@@ -328,16 +282,19 @@ const PopupRegModal = ({ isModalOpen, setIsModalOpen, tableRecord }) => {
               />
             </Form.Item>
           </FormInfo>
+
           <Form.Item
             name="representImgUrl"
             label="대표 이미지"
             value={mainImage}
-            rules={[{ required: true, message: '대표 이미지를 업로드하세요!' }]}
+            rules={[
+              { required: false, message: '대표 이미지를 업로드하세요!' },
+            ]}
           >
             <Upload
               name="file"
-              fileList={mainImage ? [{ url: mainImage, uid: '-1' }] : []}
-              // fileList={[{ url: mainImage, uid: '-1' }]}
+              // fileList={mainImage ? [{ url: mainImage, uid: '-1' }] : []}
+              fileList={mainImage ? [{ url: mainImage, uid: 'main' }] : []}
               listType="picture-card"
               maxCount={1}
               onChange={handleMainImageChange}

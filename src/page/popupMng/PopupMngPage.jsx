@@ -148,6 +148,7 @@ const PopupMngPage = () => {
             isModalOpen={isModalOpenSubmit}
             setIsModalOpen={setIsModalOpenSubmit}
             tableRecord={tableRecord}
+            setTableRecord={setTableRecord}
           />
         </div>
         <Row gutter={[10, 10]}>

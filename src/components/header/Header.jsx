@@ -27,12 +27,13 @@ const Header = () => {
       )
 
       // 로그아웃 성공 시 로컬 스토리지에서 토큰 제거
-      localStorage.removeItem('token')
-      localStorage.removeItem('refresh')
+      // localStorage.removeItem('token')
+      // localStorage.removeItem('refresh')
+      setLogout(true)
+      // localStorage.clear()
 
       console.log('로그아웃', response)
 
-      setLogout(true)
       // // 로그인 페이지로 이동
       navigate('/login')
     } catch (error) {
@@ -43,6 +44,7 @@ const Header = () => {
   useEffect(() => {
     if (logout) {
       // navigate('/login')
+      localStorage.clear()
       window.location.replace('/login')
     }
   }, [logout])

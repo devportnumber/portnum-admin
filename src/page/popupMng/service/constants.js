@@ -1,3 +1,6 @@
+import dayjs from 'dayjs'
+import { useEffect, useState } from 'react'
+
 export const popupColumns = [
   // {
   //   title: 'no',
@@ -24,10 +27,19 @@ export const popupColumns = [
   {
     title: '팝업기간',
     dataIndex: 'endDate',
+    render: (startDate, record) => {
+      const endDate = record.endDate // 현재 행의 endDate를 가져옴
+      const formattedStartDate = dayjs(startDate).format('YYYY.MM.DD')
+      const formattedEndDate = dayjs(endDate).format('YYYY.MM.DD')
+      return <p>{`${formattedStartDate} ~ ${formattedEndDate}`}</p>
+    },
   },
   {
     title: '등록일시',
     dataIndex: 'startDate',
+    render: (data) => {
+      return <p>{dayjs(data).format('YYYY.MM.DD')}</p>
+    },
   },
   {
     title: '상태',
