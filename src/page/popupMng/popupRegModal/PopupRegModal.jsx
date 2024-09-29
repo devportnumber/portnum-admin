@@ -15,6 +15,7 @@ import {
 } from '../../../components/index'
 import * as constantsData from '../service/constants'
 import { usePopupDetailService } from '../service/usePopupDetailService'
+import ImageCard from '../imageCard/ImageCard'
 
 const plainOptions = [
   {
@@ -45,7 +46,6 @@ const PopupRegModal = ({
     // onFinish, // 최종 등록, 수정 : 제출 함수
     isUpload,
     setIsUpload,
-    uploadToS3, // s3 이미지 업로드
     handleMainImageChange, // 대표 이미지 핸들러
     handleAdditionalImagesChange, // 추가 이미지 핸들러
     popupState, // 라디오
@@ -282,8 +282,13 @@ const PopupRegModal = ({
               />
             </Form.Item>
           </FormInfo>
-
-          <Form.Item
+          <ImageCard
+            mainImage={mainImage}
+            setMainImage={setMainImage}
+            additionalImages={additionalImages}
+            setAdditionalImages={setAdditionalImages}
+          />
+          {/* <Form.Item
             name="representImgUrl"
             label="대표 이미지"
             value={mainImage}
@@ -326,7 +331,7 @@ const PopupRegModal = ({
             >
               {uploadButton}
             </Upload>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name="description"
             label="기본 설명"
