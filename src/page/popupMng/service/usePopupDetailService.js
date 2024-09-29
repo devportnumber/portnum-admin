@@ -9,16 +9,17 @@ export const usePopupDetailService = () => {
   const [formValues, setFormValues] = useState(null)
 
   // 이미지 데이터(대표이미지, 추가이미지)
-  const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지
+  const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지 파일
   const [mainImage, setMainImage] = useState('') // 대표 이미지
+  const [someMainImage, setSomeMainImage] = useState('')
   const [mainImageUploaded, setMainImageUploaded] = useState(false)
 
-  const [additionalImageFile, setAdditionalImageFile] = useState([]) // 추가 이미지
+  const [additionalImageFile, setAdditionalImageFile] = useState([]) // 추가 이미지 파일
   const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
   const [additionalImagesUploaded, setAdditionalImagesUploaded] =
     useState(false)
 
-  // 이미지 url 요청
+  // 대표 이미지 url 요청
   const {
     fetchData: storeMainImgGetApi,
     loading: storeMainImgGetLoading,
@@ -26,6 +27,7 @@ export const usePopupDetailService = () => {
     error: storeMainImgGetError,
   } = useAxios()
 
+  // 추가 이미지 url 요청
   const {
     fetchData: storeAddImgGetApi,
     loading: storeAddImgGetLoading,
@@ -68,50 +70,92 @@ export const usePopupDetailService = () => {
   })
 
   // 대표 이미지 핸들러
-  const handleMainImageChange = async ({ file }) => {
+  const handleMainImageChange = async (e) => {
+    e.preventDefault()
+
+    // 👉 변경
+    const file = e.target.files[0]
     console.log('대표이미지 핸들러', file)
+    if (file) {
+      const reader = new FileReader()
+      console.log('대표이미지 reader', reader)
 
-    // const files = file.originFileObj // 업로드된 파일
-    // const imgURL = URL.createObjectURL(files) // URL 생성
-    // setMainImage(imgURL) // 미리보기 상태 업데이트
-
-    if (file.status === 'uploading') {
-      console.log('#대표이미지 핸들러', file)
-      // API 호출 트리거
-      storeMainImgGetApi('/image', 'GET', null, { imageName: file.name })
-      // 상태에 파일 저장
-      setMainImageFile(file)
-      // 업로드 상태 초기화
-    } else if (file.status === 'removed') {
-      setMainImage('')
-    } else if (file.status === 'done') {
-      setMainImageFile(file)
+      reader.onloadend = () => {
+        setMainImage(reader.result)
+        // setSomeMainImage(reader.result) // 미리보기 이미지 설정
+        setMainImageFile(file) // 파일 객체 저장
+        storeMainImgGetApi('/image', 'GET', null, { imageName: file.name })
+      }
+      reader.readAsDataURL(file)
     }
-    setMainImageUploaded(false)
   }
 
   // 추가 이미지 핸들러
-  const handleAdditionalImagesChange = ({ file, fileList }) => {
-    console.log('추가 파일 file 핸들러 ', file)
-    console.log('추가 파일 리스트 핸들러 ', fileList)
-
-    console.log('추가 이미지 배열:', additionalImages)
-    console.log('삭제할 URL:', file.url)
-
-    if (file.status === 'uploading') {
-      setAdditionalImageFile(fileList)
-      fileList.forEach((fileItem) => {
-        storeAddImgGetApi('/image', 'GET', null, { imageName: fileItem.name })
-        setAdditionalImagesUploaded(false)
+  const handleAdditionalImagesChange = (e) => {
+    e.preventDefault()
+    const files = Array.from(e.target.files)
+    const newImages = files.map((file) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          resolve(reader.result)
+        }
+        reader.readAsDataURL(file)
       })
-    } else if (file.status === 'removed') {
-      setAdditionalImageFile((prev) =>
-        prev.filter((img) => img.url !== file.url),
-      )
-      setAdditionalImages((prev) => prev.filter((img) => img.url !== file.url))
-    } else if (file.status === 'done') {
-      setAdditionalImageFile(fileList)
+    })
+
+    // Promise.all(newImages).then((results) => {
+    //   setAdditionalImages((prevImages) => [...prevImages, ...results]) // 기존 추가 이미지에 새 이미지 추가
+    // })
+    Promise.all(newImages).then((results) => {
+      setAdditionalImages((prevImages) => {
+        const currentCount = prevImages.length
+        const newCount = currentCount + results.length
+
+        // 현재 이미지 수와 새로 추가할 이미지 수를 비교하여 9장을 초과하지 않도록 필터링
+        if (newCount > 9) {
+          alert('추가할 수 있는 이미지는 최대 9장입니다.')
+          return [...prevImages, ...results.slice(0, 9 - currentCount)] // 9장이 되지 않도록 슬라이스
+        }
+
+        return [...prevImages, ...results] // 9장이 안 넘으면 모두 추가
+      })
+    })
+  }
+
+  // 추가 이미지 삭제 핸들러
+  const handleDeleteImage = (e, index) => {
+    e.preventDefault()
+    setAdditionalImages((prevImages) =>
+      prevImages.filter((_, i) => i !== index),
+    )
+  }
+
+  // 추가 이미지 수정 핸들러
+  const handleEditImage = (e, index) => {
+    e.preventDefault()
+    console.log('index', index)
+
+    const editFileInput = document.createElement('input')
+    editFileInput.type = 'file'
+    editFileInput.accept = 'image/*'
+
+    editFileInput.onchange = (event) => {
+      const file = event.target.files[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setAdditionalImages((prevImages) => {
+            const newImages = [...prevImages]
+            newImages[index] = reader.result
+            return newImages
+          })
+        }
+        reader.readAsDataURL(file)
+      }
     }
+
+    editFileInput.click()
   }
 
   // AWS s3 이미지 업로드
@@ -121,7 +165,7 @@ export const usePopupDetailService = () => {
     try {
       await fetch(s3Url, {
         method: 'PUT',
-        body: file.originFileObj,
+        body: file,
         headers: {
           'Content-Type': file.type,
         },
@@ -146,21 +190,19 @@ export const usePopupDetailService = () => {
     if (storeMainImgGetData && mainImageFile) {
       const { preSingedUrl, imageSaveUrl } = storeMainImgGetData.data
 
-      console.log('')
-
-      // 대표 이미지가 이미 업로드된 상태가 아닌 경우에만 업로드
+      // // 대표 이미지가 이미 업로드된 상태가 아닌 경우에만 업로드
       if (!mainImageUploaded) {
-        console.log('#대표이미지 이펙트', preSingedUrl)
-        setMainImage(imageSaveUrl) // DB 데이터 상태 업데이트
-
+        // DB 데이터 상태 업데이트
         setMainImageUploaded(true) // 업로드 상태 업데이트
+        setMainImage(imageSaveUrl)
       }
-      console.log('#대표# isUpload', isUpload)
+      // 팝업등록때 같이 추가
       if (isUpload) {
-        uploadImageToS3(mainImageFile, preSingedUrl)
+        // setMainImage(imageSaveUrl) // DB저장X 화면ㅇ
+        console.log('대표이미지', imageSaveUrl)
+        // uploadImageToS3(mainImageFile, preSingedUrl)
       }
     }
-
     // 추가 이미지 처리
     if (storeAddImgGetData && additionalImageFile) {
       const { preSingedUrl, imageSaveUrl } = storeAddImgGetData.data
@@ -168,12 +210,12 @@ export const usePopupDetailService = () => {
       // 추가 이미지 업로드 시 중복 방지
       additionalImageFile.forEach(async (file) => {
         if (!additionalImagesUploaded) {
-          console.log('###추가이미지', file)
-          setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }])
           setAdditionalImagesUploaded(true)
+          setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }]) // DB저장
         }
-        console.log('#추가#isUpload', isUpload)
+        // 팝업등록때 같이 추가
         if (isUpload) {
+          console.log('추가이미지', imageSaveUrl)
           uploadImageToS3(file, preSingedUrl)
         }
       })
@@ -198,8 +240,11 @@ export const usePopupDetailService = () => {
     uploadToS3, // s3 이미지 업로드
     handleMainImageChange, // 대표 이미지 핸들러
     handleAdditionalImagesChange, // 추가 이미지 핸들러
+    handleEditImage,
+    handleDeleteImage,
     popupState, // 라디오
     setPopupState,
+    someMainImage,
     mainImage,
     setMainImage,
     additionalImages,

@@ -42,6 +42,9 @@ export const usePopupMngService = () => {
     data: storeDelData,
     error: error4,
   } = useAxios()
+
+  const adminId = localStorage.getItem('adminId') || null
+  const nickName = localStorage.getItem('nickName') || null
   const [storeListState, setStoreListState] = useState()
   const [reqPopupData, setReqPopupData] = useState({})
 
@@ -97,17 +100,18 @@ export const usePopupMngService = () => {
     }
     console.log('######', updateReq)
     setRequestFilter(updateReq)
-    // storePostApi('/popup/api/한윤수2', 'POST', reqFilter, null)
-    // console.log('service-startDate', startDate)
-    // console.log('service-endDate', endDate)
-    // console.log('reqFilter', reqFilter)
   }
 
   // API: 팝업 삭제
   const handleDeleteClick = () => {
-    storeDelApi('/popup', 'DELETE', { adminId: 1, popupIds: checkItem }, null)
+    storeDelApi(
+      '/popup',
+      'DELETE',
+      { adminId: adminId, popupIds: checkItem },
+      null,
+    )
     console.log('checkItem', checkItem)
-    console.log('checkItem', { adminId: 1, popupIds: checkItem })
+    console.log('checkItem', { adminId: adminId, popupIds: checkItem })
   }
 
   // API 모달창 팝업등록 제출
@@ -119,7 +123,7 @@ export const usePopupMngService = () => {
   // API 필터 조회
   useEffect(() => {
     // /admin/popup/1
-    storeFilterGetApi('/popup/api/한윤수2', 'GET', null, requestFilter)
+    storeFilterGetApi(`/popup/api/${nickName}`, 'GET', null, requestFilter)
   }, [requestFilter, storeDelData])
 
   useEffect(() => {

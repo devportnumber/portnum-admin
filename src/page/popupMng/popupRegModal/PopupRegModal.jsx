@@ -48,8 +48,11 @@ const PopupRegModal = ({
     setIsUpload,
     handleMainImageChange, // 대표 이미지 핸들러
     handleAdditionalImagesChange, // 추가 이미지 핸들러
+    handleDeleteImage,
+    handleEditImage,
     popupState, // 라디오
     setPopupState,
+    someMainImage,
     mainImage,
     setMainImage,
     additionalImages,
@@ -58,17 +61,20 @@ const PopupRegModal = ({
     loading,
   } = usePopupDetailService()
   const navigate = useNavigate()
+  const adminId = localStorage.getItem('adminId') || null
 
-  // ✅ API 팝업등록
+  // ✅ API 팝업등록 버튼 클릭
   const onFinish = (values) => {
+    console.log('등록 대표이미지 ', mainImage)
+    console.log('등록 추가이미지 ', additionalImages)
     try {
-      const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
+      // const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
       const savePopupFormData = {
         ...values,
-        adminId: 1,
+        adminId: parseInt(adminId),
         popupId: mode === 'edit' ? tableRecord?.popupId : null,
         representImgUrl: mainImage, // 대표 이미지 1장
-        images: filteredImages, // 이미지 배열 9장
+        images: additionalImages, // 이미지 배열 9장
         keywords: values.keywords?.split(','),
         startDate: dayjs(values.startDate).format('YYYY-MM-DDTHH:mm:ss'),
         endDate: dayjs(values.endDate).format('YYYY-MM-DDTHH:mm:ss'),
@@ -78,7 +84,9 @@ const PopupRegModal = ({
         },
       }
       console.log('####', savePopupFormData)
-      setIsUpload(true)
+
+      setIsUpload(true) // 업로드 상태 변경
+
       if (mode === 'create') {
         storeSaveApi('/popup', 'POST', savePopupFormData, null)
       }
@@ -208,7 +216,7 @@ const PopupRegModal = ({
             <Form.Item
               name="name"
               label="컨텐츠 명"
-              rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
+              rules={[{ required: false, message: '컨텐츠 명을 입력하세요!' }]}
             >
               <Input />
             </Form.Item>
@@ -217,7 +225,9 @@ const PopupRegModal = ({
               <Form.Item
                 name="startDate"
                 label="컨텐츠 노출 기간"
-                rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
+                rules={[
+                  { required: false, message: '날짜 범위를 선택하세요!' },
+                ]}
               >
                 <DatePicker
                   value={popupFormData.startDate}
@@ -252,7 +262,7 @@ const PopupRegModal = ({
               // name={['address', 'address']}
               name="address"
               label="주소 등록"
-              rules={[{ required: true, message: '주소를 입력하세요!' }]}
+              rules={[{ required: false, message: '주소를 입력하세요!' }]}
             >
               <Address />
             </Form.Item>
@@ -260,21 +270,21 @@ const PopupRegModal = ({
               // name={['address', 'addressDetail']}
               name={'addressDetail'}
               label="상세 주소"
-              rules={[{ required: true, message: '상세 주소를 입력하세요!' }]}
+              rules={[{ required: false, message: '상세 주소를 입력하세요!' }]}
             >
               <Input placeholder="상세주소 입력" />
             </Form.Item>
             <Form.Item
               name="keywords"
               label="키워드 등록(,로 구분)"
-              rules={[{ required: true, message: '키워드를 입력하세요!' }]}
+              rules={[{ required: false, message: '키워드를 입력하세요!' }]}
             >
               <Input placeholder="키워드를 입력하세요." />
             </Form.Item>
             <Form.Item
               name="category"
               label="카테고리"
-              rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
+              rules={[{ required: false, message: '카테고리를 선택하세요!' }]}
             >
               <SelectOption
                 selectItems={constantsData.CATEGORY_ITEMS}
@@ -283,10 +293,15 @@ const PopupRegModal = ({
             </Form.Item>
           </FormInfo>
           <ImageCard
+            someMainImage={someMainImage}
             mainImage={mainImage}
             setMainImage={setMainImage}
             additionalImages={additionalImages}
             setAdditionalImages={setAdditionalImages}
+            handleMainImageChange={handleMainImageChange}
+            handleAdditionalImagesChange={handleAdditionalImagesChange}
+            handleDeleteImage={handleDeleteImage}
+            handleEditImage={handleEditImage}
           />
           {/* <Form.Item
             name="representImgUrl"
@@ -335,14 +350,14 @@ const PopupRegModal = ({
           <Form.Item
             name="description"
             label="기본 설명"
-            rules={[{ required: true, message: '기본 설명을 입력하세요!' }]}
+            rules={[{ required: false, message: '기본 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
           </Form.Item>
           <Form.Item
             name="detailDescription"
             label="상세 설명"
-            rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
+            rules={[{ required: false, message: '상세 설명을 입력하세요!' }]}
           >
             <ToastEditor value={tableRecord?.detailDescription} />
           </Form.Item>
