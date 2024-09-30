@@ -3,17 +3,18 @@ import { useEffect, useState } from 'react'
 import { useAxios } from '../../../hooks/useAxios'
 
 export const usePopupDetailService = () => {
+  const adminId = parseInt(localStorage.getItem('adminId')) || null
   const [loading, setLoading] = useState(false)
   const [isUpload, setIsUpload] = useState(false)
   const [popupState, setPopupState] = useState('Y')
   const [formValues, setFormValues] = useState(null)
 
-  // 이미지 데이터(대표이미지, 추가이미지)
+  // 이미지 데이터(대표이미지)
   const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지 파일
   const [mainImage, setMainImage] = useState('') // 대표 이미지
   const [someMainImage, setSomeMainImage] = useState('')
   const [mainImageUploaded, setMainImageUploaded] = useState(false)
-
+  //이미지 데이터(추가이미지)
   const [additionalImageFile, setAdditionalImageFile] = useState([]) // 추가 이미지 파일
   const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
   const [additionalImagesUploaded, setAdditionalImagesUploaded] =
@@ -33,6 +34,30 @@ export const usePopupDetailService = () => {
     loading: storeAddImgGetLoading,
     data: storeAddImgGetData,
     error: storeImgGetError,
+  } = useAxios()
+
+  // 추가 이미지 추가 POST
+  const {
+    fetchData: storeAddImgPostApi,
+    loading: storeAddImgPostLoading,
+    data: storeAddImgPostData,
+    error: storeImgPostError,
+  } = useAxios()
+
+  // 추가 이미지 수정 PATCH
+  const {
+    fetchData: storeAddImgPatchApi,
+    loading: storeAddImgPatchLoading,
+    data: storeAddImgPatchData,
+    error: storeImgPatchError,
+  } = useAxios()
+
+  // 추가 이미지 삭제 Delete
+  const {
+    fetchData: storeAddImgDeleteApi,
+    loading: storeAddImgDeleteLoading,
+    data: storeAddImgDeleteData,
+    error: storeImgDeleteError,
   } = useAxios()
 
   // 팝업 등록
@@ -73,7 +98,6 @@ export const usePopupDetailService = () => {
   const handleMainImageChange = async (e) => {
     e.preventDefault()
 
-    // 👉 변경
     const file = e.target.files[0]
     console.log('대표이미지 핸들러', file)
     if (file) {
@@ -99,42 +123,61 @@ export const usePopupDetailService = () => {
         const reader = new FileReader()
         reader.onloadend = () => {
           resolve(reader.result)
+          // setAdditionalImages(reader.result)
+          storeAddImgGetApi('/image', 'GET', null, { imageName: file.name })
         }
         reader.readAsDataURL(file)
       })
     })
 
-    // Promise.all(newImages).then((results) => {
-    //   setAdditionalImages((prevImages) => [...prevImages, ...results]) // 기존 추가 이미지에 새 이미지 추가
-    // })
     Promise.all(newImages).then((results) => {
-      setAdditionalImages((prevImages) => {
-        const currentCount = prevImages.length
-        const newCount = currentCount + results.length
-
-        // 현재 이미지 수와 새로 추가할 이미지 수를 비교하여 9장을 초과하지 않도록 필터링
-        if (newCount > 9) {
-          alert('추가할 수 있는 이미지는 최대 9장입니다.')
-          return [...prevImages, ...results.slice(0, 9 - currentCount)] // 9장이 되지 않도록 슬라이스
-        }
-
-        return [...prevImages, ...results] // 9장이 안 넘으면 모두 추가
-      })
+      console.log(results)
+      setAdditionalImages((prevImages) => [...prevImages, ...results]) // 기존 추가 이미지에 새 이미지 추가
     })
+    // Promise.all(newImages).then((results) => {
+    //   setAdditionalImages((prevImages) => {
+    //     const currentCount = prevImages.length
+    //     const newCount = currentCount + results.length
+
+    //     // 현재 이미지 수와 새로 추가할 이미지 수를 비교하여 9장을 초과하지 않도록 필터링
+    //     if (newCount > 9) {
+    //       alert('추가할 수 있는 이미지는 최대 9장입니다.')
+    //       return [...prevImages, ...results.slice(0, 9 - currentCount)] // 9장이 되지 않도록 슬라이스
+    //     }
+
+    //     return [...prevImages, ...results] // 9장이 안 넘으면 모두 추가
+    //   })
+    // })
   }
 
   // 추가 이미지 삭제 핸들러
-  const handleDeleteImage = (e, index) => {
+  const handleDeleteImage = (e, index, imageSrc) => {
     e.preventDefault()
     setAdditionalImages((prevImages) =>
       prevImages.filter((_, i) => i !== index),
     )
+
+    if (imageSrc.status === 'done') {
+      // 삭제 api
+      storeAddImgDeleteApi(
+        '/popup/img',
+        'DELETE',
+        {
+          adminId: adminId,
+          popupId: imageSrc.popupId,
+          representUrl: '', // 수정 필요
+          imgIds: [imageSrc.imgId],
+        },
+        null,
+      )
+    }
   }
 
   // 추가 이미지 수정 핸들러
-  const handleEditImage = (e, index) => {
+  const handleEditImage = (e, index, imageSrc) => {
     e.preventDefault()
-    console.log('index', index)
+    console.log('$수정index', index)
+    console.log('$수정imageSrc', imageSrc)
 
     const editFileInput = document.createElement('input')
     editFileInput.type = 'file'
@@ -186,7 +229,7 @@ export const usePopupDetailService = () => {
       }
     }
 
-    // 대표 이미지 처리
+    // 1️⃣ 대표 이미지 처리
     if (storeMainImgGetData && mainImageFile) {
       const { preSingedUrl, imageSaveUrl } = storeMainImgGetData.data
 
@@ -203,20 +246,20 @@ export const usePopupDetailService = () => {
         // uploadImageToS3(mainImageFile, preSingedUrl)
       }
     }
-    // 추가 이미지 처리
+    // 2️⃣ 추가 이미지 처리
     if (storeAddImgGetData && additionalImageFile) {
       const { preSingedUrl, imageSaveUrl } = storeAddImgGetData.data
 
       // 추가 이미지 업로드 시 중복 방지
       additionalImageFile.forEach(async (file) => {
         if (!additionalImagesUploaded) {
-          setAdditionalImagesUploaded(true)
           setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }]) // DB저장
+          setAdditionalImagesUploaded(true)
         }
         // 팝업등록때 같이 추가
         if (isUpload) {
           console.log('추가이미지', imageSaveUrl)
-          uploadImageToS3(file, preSingedUrl)
+          // uploadImageToS3(file, preSingedUrl)
         }
       })
     }

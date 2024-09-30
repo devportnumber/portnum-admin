@@ -83,15 +83,15 @@ const PopupRegModal = ({
           addressDetail: values.addressDetail, // addressDetail을 따로 사용
         },
       }
-      console.log('####', savePopupFormData)
 
       setIsUpload(true) // 업로드 상태 변경
+      console.log('####', savePopupFormData)
 
       if (mode === 'create') {
-        storeSaveApi('/popup', 'POST', savePopupFormData, null)
+        // storeSaveApi('/popup', 'POST', savePopupFormData, null)
       }
       if (mode === 'edit') {
-        storeSaveApi('/popup', 'PATCH', savePopupFormData, null)
+        // storeSaveApi('/popup', 'PATCH', savePopupFormData, null)
       }
       console.log('#최등록#isUpload', isUpload)
       // 이미지 업로드
@@ -123,7 +123,8 @@ const PopupRegModal = ({
     setMainImage(record.representImgUrl)
     const formattedImages =
       record.images?.map((image) => ({
-        uid: image.imgId,
+        popupId: record.popupId,
+        imgId: image.imgId,
         name: image.imgUrl.split('/').pop(),
         status: 'done',
         url: image.imgUrl,
@@ -303,50 +304,6 @@ const PopupRegModal = ({
             handleDeleteImage={handleDeleteImage}
             handleEditImage={handleEditImage}
           />
-          {/* <Form.Item
-            name="representImgUrl"
-            label="대표 이미지"
-            value={mainImage}
-            rules={[
-              { required: false, message: '대표 이미지를 업로드하세요!' },
-            ]}
-          >
-            <Upload
-              name="file"
-              // fileList={mainImage ? [{ url: mainImage, uid: '-1' }] : []}
-              fileList={mainImage ? [{ url: mainImage, uid: 'main' }] : []}
-              listType="picture-card"
-              maxCount={1}
-              onChange={handleMainImageChange}
-            >
-              {mainImage ? (
-                <Button
-                  btnText={'수정'}
-                  onClick={() => handleImageEdit('main')}
-                />
-              ) : (
-                uploadButton
-              )}
-            </Upload>
-          </Form.Item>
-          <Form.Item
-            name="images"
-            label="추가 이미지"
-            rules={[
-              { required: false, message: '추가 이미지를 업로드하세요!' },
-            ]}
-          >
-            <Upload
-              name="file"
-              listType="picture-card"
-              multiple
-              fileList={additionalImages}
-              maxCount={9}
-              onChange={handleAdditionalImagesChange}
-            >
-              {uploadButton}
-            </Upload>
-          </Form.Item> */}
           <Form.Item
             name="description"
             label="기본 설명"

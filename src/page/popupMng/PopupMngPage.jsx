@@ -59,9 +59,6 @@ const PopupMngPage = () => {
     error: sstoreDetailError,
   } = useAxios()
 
-  const handleFilterChange = (e) => {
-    // console.log("선택", e);
-  }
   const handleTableRowClick = (record) => {
     // console.log('모달 클릭', record)
     setIsModalOpenSubmit(true)

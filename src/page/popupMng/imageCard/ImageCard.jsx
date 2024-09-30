@@ -32,7 +32,6 @@ const ImageUploader = ({
       additionalFileInputRef.current.click() // 숨겨진 input[type="file"] 클릭
     }
   }
-  console.log('이거?', someMainImage)
 
   return (
     <Wrap>
@@ -84,11 +83,15 @@ const ImageUploader = ({
                 alt={`추가 이미지 ${index + 1}`}
               />
               <CardActions>
-                <EditButton onClick={(e) => handleEditImage(e, index)}>
+                <EditButton
+                  onClick={(e) => handleEditImage(e, index, imageSrc)}
+                >
                   <img src={EditIcon} alt="수정 아이콘" />
                   수정
                 </EditButton>
-                <DeleteButton onClick={(e) => handleDeleteImage(e, index)}>
+                <DeleteButton
+                  onClick={(e) => handleDeleteImage(e, index, imageSrc)}
+                >
                   <img src={DeleteIcon} alt="삭제 아이콘" />
                   삭제
                 </DeleteButton>
