@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import LOGO_IMG from '../../assets/logo/portnumber_logo1.svg'
 import { useNavigate } from 'react-router-dom'
 
-const Header = () => {
+const Header = ({ isAuth }) => {
   const navigate = useNavigate()
   const [logout, setLogout] = useState(false)
   const nickName = localStorage.getItem('nickName')
@@ -50,23 +50,33 @@ const Header = () => {
   }, [logout])
 
   return (
-    <Wrap>
-      <div>
-        <button type="button" onClick={() => navigate('/')}>
-          <img src={LOGO_IMG} alt="로고 이미지" />
-        </button>
-      </div>
-      <RightBox>
-        {/* 로그인시 입장 닉네임으로 변경 */}
-        <h4>
-          <span className="boldTxt">{nickName}</span>님 환영합니다.
-        </h4>
-        <LogoutBtn type="button" onClick={handleLogout}>
-          로그아웃
-        </LogoutBtn>
-      </RightBox>
-      {/* <h1 className="headerTit">PORT’S NUMBER Tab Tab Tab</h1> */}
-    </Wrap>
+    <>
+      {isAuth ? (
+        <AuthWrap>
+          <div>
+            <img src={LOGO_IMG} alt="로고 이미지" />
+          </div>
+        </AuthWrap>
+      ) : (
+        <Wrap>
+          <div>
+            <button type="button" onClick={() => navigate('/')}>
+              <img src={LOGO_IMG} alt="로고 이미지" />
+            </button>
+          </div>
+          <RightBox>
+            {/* 로그인시 입장 닉네임으로 변경 */}
+            <h4>
+              <span className="boldTxt">{nickName}</span>님 환영합니다.
+            </h4>
+            <LogoutBtn type="button" onClick={handleLogout}>
+              로그아웃
+            </LogoutBtn>
+          </RightBox>
+          {/* <h1 className="headerTit">PORT’S NUMBER Tab Tab Tab</h1> */}
+        </Wrap>
+      )}
+    </>
   )
 }
 
@@ -80,8 +90,16 @@ const Wrap = styled.header`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #d9d9d9;
-  .headerTit {
-  }
+`
+
+const AuthWrap = styled.header`
+  padding: 0px 56px;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #d9d9d9;
 `
 
 const RightBox = styled.div`

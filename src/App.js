@@ -47,7 +47,12 @@ function AuthenticatedApp() {
           </LayoutWrapper>
         </>
       ) : (
-        <Router />
+        <>
+          <Header isAuth={true} />
+          <Wrap>
+            <Router />
+          </Wrap>
+        </>
       )}
     </>
   )
@@ -66,4 +71,10 @@ const MainContent = styled.div`
   flex-grow: 1;
   padding: 38px 52px 20px;
   background-color: #f3f7fa;
+`
+const Wrap = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `

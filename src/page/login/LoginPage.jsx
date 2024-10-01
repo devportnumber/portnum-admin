@@ -94,7 +94,7 @@ const LoginPage = () => {
         </Form.Item>
         <Button btnText="로그인" htmlType={'submit'} onClick={handleSubmit} />
         <LinkGroup>
-          <LinkTxt to="/find-id">아이디 찾기</LinkTxt>
+          <LinkTxt to="/find-email">아이디 찾기</LinkTxt>
           <span>|</span>
           <LinkTxt to="/find-password"> 비밀번호 찾기 </LinkTxt>
           <span>|</span>
@@ -107,15 +107,18 @@ const LoginPage = () => {
 
 export default LoginPage
 const Wrap = styled.section`
-  margin-top: 55px;
+  /* min-height: 100vh; */
+  /* margin-top: 320px; */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `
 
 const FormWrap = styled(Form)`
   /* width: 200px;
   height: 300px; */
+  margin-top: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;

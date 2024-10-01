@@ -3,10 +3,12 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 
 // routes
 // import { userRoutes, authRoutes } from "./allRoutes";
+import { useAuth } from '../context/AuthContext'
 import PopupMngPage from '../page/popupMng/PopupMngPage'
 import LoginPage from '../page/login/LoginPage'
 import SignupPage from '../page/signup/SignupPage'
-import { useAuth } from '../context/AuthContext'
+import FindEmailPage from '../page/findEmail/FindEmailPage'
+import FindPwdPage from '../page/findPwd/FindPwdPage'
 
 // 인증된 사용자용 라우트 정의
 const authenticatedRoutes = [
@@ -26,6 +28,14 @@ const unauthenticatedRoutes = [
   {
     path: '/signup',
     component: <SignupPage />,
+  },
+  {
+    path: '/find-email',
+    component: <FindEmailPage />,
+  },
+  {
+    path: '/find-password',
+    component: <FindPwdPage />,
   },
 ]
 

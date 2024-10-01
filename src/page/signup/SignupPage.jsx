@@ -119,211 +119,197 @@ const SignupPage = () => {
   }, [emailChkData])
 
   return (
-    <Container>
-      <SignupForm
-        form={form}
-        name="signup"
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={signupForm}
-        onValuesChange={(changedValues, allValues) => {
-          setSignupForm({ ...signupForm, ...changedValues })
-        }}
+    <SignupForm
+      form={form}
+      name="signup"
+      layout="vertical"
+      onFinish={onFinish}
+      initialValues={signupForm}
+      onValuesChange={(changedValues, allValues) => {
+        setSignupForm({ ...signupForm, ...changedValues })
+      }}
+    >
+      <h2 className="title">포트넘버 회원가입</h2>
+      <Form.Item
+        label="이름"
+        name="name"
+        rules={[
+          { required: true, message: '이름을 입력해주세요!' },
+          {
+            min: 2,
+            message: '이름은 최소 2글자 이상 입력해 주세요. (띄어쓰기 가능)',
+          },
+        ]}
+        help="최소 2글자 이상(한글, 영어) 입력해 주세요. (띄어쓰기 가능)"
       >
-        <h2 className="title">포트넘버 회원가입</h2>
+        <Input placeholder="이름을 입력해주세요" />
+      </Form.Item>
+      <NickNameWrap>
         <Form.Item
-          label="이름"
-          name="name"
+          label="닉네임"
+          name="nickName"
+          help={
+            // 처음에는 기본 도움말을 보여주고, 중복 체크 후 성공 또는 에러 메시지로 교체
+            nicknameSuccessMessage ? (
+              <span style={{ color: 'green' }}>{nicknameSuccessMessage}</span>
+            ) : form.getFieldError('nickName').length > 0 ? (
+              <span style={{ color: 'red' }}>
+                {form.getFieldError('nickName')[0]}
+              </span>
+            ) : (
+              <div className="ninknameHelp">
+                <p>영문, 숫자 이외 특수문자는 입력할 수 없습니다.</p>
+                <p>닉네임은 본인 페이지 주소로 활용됩니다.</p>
+                <p>ex)portnumber.site/portnumber</p>
+              </div>
+            )
+          }
           rules={[
-            { required: true, message: '이름을 입력해주세요!' },
-            {
-              min: 2,
-              message: '이름은 최소 2글자 이상 입력해 주세요. (띄어쓰기 가능)',
-            },
+            { required: true, message: '닉네임을 입력해주세요!' },
+            //   {
+            //     pattern: /^[a-zA-Z0-9]*$/,
+            //     message:
+            //       '닉네임은 영문, 숫자 이외의 특수문자는 입력할 수 없습니다.',
+            //   },
           ]}
-          help="최소 2글자 이상(한글, 영어) 입력해 주세요. (띄어쓰기 가능)"
+          // help={
+          //   nicknameSuccessMessage ? (
+          //     <span style={{ color: 'green' }}>{nicknameSuccessMessage}</span>
+          //   ) : (
+          //     <div className="ninknameHelp">
+          //       <p>영문, 숫자 이외 특수문자는 입력할 수 없습니다.</p>
+          //       <p>닉네임은 본인 페이지 주소로 활용됩니다.</p>
+          //       <p> ex)portnumber.site/portnumber)</p>
+          //     </div>
+          //   )
+          // }
+          // help={
+          //   <div className="ninknameHelp">
+          //     <p>영문, 숫자 이외 특수문자는 입력할 수 없습니다.</p>
+          //     <p>닉네임은 본인 페이지 주소로 활용됩니다.</p>
+          //     <p> ex)portnumber.site/portnumber)</p>
+          //   </div>
+          // }
         >
-          <Input placeholder="이름을 입력해주세요" />
+          <Input placeholder="닉네임을 입력해주세요" />
         </Form.Item>
-        <NickNameWrap>
+        <Button
+          btnText="중복 확인"
+          dupChk
+          // width={'144px'}
+          onClick={checkNickname}
+          // onClick={handleSubmit}
+        />
+      </NickNameWrap>
+      <EmailWrap>
+        <Flex gap="small" align="center">
           <Form.Item
-            label="닉네임"
-            name="nickName"
+            label="이메일"
+            name="email"
+            rules={[
+              { required: true, message: '이메일을 입력해주세요!' },
+              {
+                type: 'email',
+                message: '적합하지 않은 이메일 형식입니다. 다시 입력해주세요',
+              },
+            ]}
             help={
-              // 처음에는 기본 도움말을 보여주고, 중복 체크 후 성공 또는 에러 메시지로 교체
-              nicknameSuccessMessage ? (
-                <span style={{ color: 'green' }}>{nicknameSuccessMessage}</span>
-              ) : form.getFieldError('nickName').length > 0 ? (
+              emailSuccessMessage ? (
+                <span style={{ color: 'green' }}>{emailSuccessMessage}</span>
+              ) : form.getFieldError('email').length > 0 ? (
                 <span style={{ color: 'red' }}>
-                  {form.getFieldError('nickName')[0]}
+                  {form.getFieldError('email')[0]}
                 </span>
               ) : (
-                <div className="ninknameHelp">
-                  <p>영문, 숫자 이외 특수문자는 입력할 수 없습니다.</p>
-                  <p>닉네임은 본인 페이지 주소로 활용됩니다.</p>
-                  <p>ex)portnumber.site/portnumber</p>
-                </div>
+                ''
               )
             }
-            rules={[
-              { required: true, message: '닉네임을 입력해주세요!' },
-              //   {
-              //     pattern: /^[a-zA-Z0-9]*$/,
-              //     message:
-              //       '닉네임은 영문, 숫자 이외의 특수문자는 입력할 수 없습니다.',
-              //   },
-            ]}
-            // help={
-            //   nicknameSuccessMessage ? (
-            //     <span style={{ color: 'green' }}>{nicknameSuccessMessage}</span>
-            //   ) : (
-            //     <div className="ninknameHelp">
-            //       <p>영문, 숫자 이외 특수문자는 입력할 수 없습니다.</p>
-            //       <p>닉네임은 본인 페이지 주소로 활용됩니다.</p>
-            //       <p> ex)portnumber.site/portnumber)</p>
-            //     </div>
-            //   )
-            // }
-            // help={
-            //   <div className="ninknameHelp">
-            //     <p>영문, 숫자 이외 특수문자는 입력할 수 없습니다.</p>
-            //     <p>닉네임은 본인 페이지 주소로 활용됩니다.</p>
-            //     <p> ex)portnumber.site/portnumber)</p>
-            //   </div>
-            // }
           >
-            <Input placeholder="닉네임을 입력해주세요" />
+            <Input placeholder="이메일을 입력해주세요" />
           </Form.Item>
-          <Button
-            btnText="중복 확인"
-            dupChk
-            // width={'144px'}
-            onClick={checkNickname}
-            // onClick={handleSubmit}
-          />
-        </NickNameWrap>
-        <EmailWrap>
-          <Flex gap="small" align="center">
-            <Form.Item
-              label="이메일"
-              name="email"
-              rules={[
-                { required: true, message: '이메일을 입력해주세요!' },
-                {
-                  type: 'email',
-                  message: '적합하지 않은 이메일 형식입니다. 다시 입력해주세요',
-                },
-              ]}
-              help={
-                emailSuccessMessage ? (
-                  <span style={{ color: 'green' }}>{emailSuccessMessage}</span>
-                ) : form.getFieldError('email').length > 0 ? (
-                  <span style={{ color: 'red' }}>
-                    {form.getFieldError('email')[0]}
-                  </span>
-                ) : (
-                  ''
+        </Flex>
+        <Button btnText="중복 확인" dupChk onClick={checkEmail} />
+      </EmailWrap>
+      <Form.Item
+        label="비밀번호"
+        name="password"
+        rules={[
+          { required: true, message: '비밀번호 확인란을 입력해주세요.' },
+          {
+            min: 8,
+            message: '비밀번호는 최소 8자 이상이어야 합니다!',
+          },
+          {
+            max: 20,
+            message: '비밀번호는 최대 20자 이하여야 합니다!',
+          },
+          {
+            pattern:
+              /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,20}$/,
+            message:
+              '비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자리여야 합니다.',
+          },
+          {
+            validator: (_, value) => {
+              if (value && value === form.getFieldValue('email')) {
+                return Promise.reject(
+                  '아이디와 같은 비밀번호는 사용하실 수 없습니다.',
                 )
               }
-            >
-              <Input placeholder="이메일을 입력해주세요" />
-            </Form.Item>
-          </Flex>
-          <Button btnText="중복 확인" dupChk onClick={checkEmail} />
-        </EmailWrap>
-        <Form.Item
-          label="비밀번호"
-          name="password"
-          rules={[
-            { required: true, message: '비밀번호 확인란을 입력해주세요.' },
-            {
-              min: 8,
-              message: '비밀번호는 최소 8자 이상이어야 합니다!',
+              return Promise.resolve()
             },
-            {
-              max: 20,
-              message: '비밀번호는 최대 20자 이하여야 합니다!',
-            },
-            {
-              pattern:
-                /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,20}$/,
-              message:
-                '비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자리여야 합니다.',
-            },
-            {
-              validator: (_, value) => {
-                if (value && value === form.getFieldValue('email')) {
-                  return Promise.reject(
-                    '아이디와 같은 비밀번호는 사용하실 수 없습니다.',
-                  )
-                }
-                return Promise.resolve()
-              },
-            },
-          ]}
-          help="영문, 숫자, 특수문자를 포함한 8~20자리의 비밀번호를 입력해 주세요.
+          },
+        ]}
+        help="영문, 숫자, 특수문자를 포함한 8~20자리의 비밀번호를 입력해 주세요.
 아이디와 같은 비밀번호는 사용하실 수 없습니다."
-        >
-          <Input type="password" placeholder="비밀번호를 입력해주세요" />
-        </Form.Item>
-        <Form.Item
-          label="비밀번호 확인"
-          name="confirmPassword"
-          rules={[
-            { required: true, message: '비밀번호를 확인해주세요!' },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve()
-                }
-                return Promise.reject(
-                  new Error('비밀번호가 일치하지 않습니다.'),
-                )
-              },
-            }),
-          ]}
-        >
-          <Input type="password" placeholder="비밀번호를 다시 입력해주세요" />
-        </Form.Item>
+      >
+        <Input type="password" placeholder="비밀번호를 입력해주세요" />
+      </Form.Item>
+      <Form.Item
+        label="비밀번호 확인"
+        name="confirmPassword"
+        rules={[
+          { required: true, message: '비밀번호를 확인해주세요!' },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve()
+              }
+              return Promise.reject(new Error('비밀번호가 일치하지 않습니다.'))
+            },
+          }),
+        ]}
+      >
+        <Input type="password" placeholder="비밀번호를 다시 입력해주세요" />
+      </Form.Item>
 
-        <Form.Item>
-          <Button
-            btnText="가입하기"
-            htmlType={'submit'}
-            // onClick={handleSubmit}
-          />
-        </Form.Item>
-      </SignupForm>
-    </Container>
+      <Form.Item>
+        <Button
+          btnText="가입하기"
+          htmlType={'submit'}
+          // onClick={handleSubmit}
+        />
+      </Form.Item>
+    </SignupForm>
   )
 }
 
 export default SignupPage
 
-const Container = styled.div`
+const SignupForm = styled(Form)`
+  width: 432px;
+  margin-top: 80px;
+  background-color: white;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: left;
-  /* background-color: #f0f2f5; */
+  gap: 20px;
   .title {
     font-size: 24px;
     color: #000;
     margin-bottom: 20px;
     font-weight: 600;
   }
-`
-
-const SignupForm = styled(Form)`
-  width: 432px;
-  /* margin-top: 40px; */
-  background-color: white;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
   .ant-form-item {
     width: 100%;
     /* margin: 0; */
