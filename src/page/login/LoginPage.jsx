@@ -39,7 +39,13 @@ const LoginPage = () => {
       const newAdminId = response?.data.data?.adminId
       // localStorage.setItem('token', newToken)
       login(newToken, newRefresh, newNickName, newAdminId)
-      navigate('/')
+
+      if (response?.data.data.isRqPwChange === true) {
+        alert('비밀번호 재설정')
+        navigate('/reset-password')
+      } else {
+        navigate('/')
+      }
     } catch (error) {
       console.error('Login failed:', error)
     }

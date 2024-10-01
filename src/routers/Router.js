@@ -9,12 +9,17 @@ import LoginPage from '../page/login/LoginPage'
 import SignupPage from '../page/signup/SignupPage'
 import FindEmailPage from '../page/findEmail/FindEmailPage'
 import FindPwdPage from '../page/findPwd/FindPwdPage'
+import FindResetPwdPage from '../page/findResetPwd/FindResetPwdPage'
 
 // 인증된 사용자용 라우트 정의
 const authenticatedRoutes = [
   {
     path: '/',
     component: <PopupMngPage />,
+  },
+  {
+    path: '/reset-password',
+    component: <FindResetPwdPage />,
   },
   // 인증된 사용자용 다른 라우트 추가
 ]
