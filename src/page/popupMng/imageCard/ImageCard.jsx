@@ -7,6 +7,8 @@ const ImageUploader = ({
   someMainImage,
   mainImage,
   setMainImage,
+  someAdditionalImages,
+  setSomeAdditionalImages,
   additionalImages,
   setAdditionalImages,
   handleMainImageChange,
@@ -33,6 +35,8 @@ const ImageUploader = ({
     }
   }
 
+  console.log('someMainImage', someMainImage)
+
   return (
     <Wrap>
       {/* 대표 이미지 업로드 버튼 */}
@@ -41,13 +45,10 @@ const ImageUploader = ({
         <UploadButton onClick={handleMainUploadClick}>
           <p>+</p>
         </UploadButton>
-        {mainImage && (
+        {someMainImage && (
           <CardContainer>
             <CalendarImage>
-              <BackgroundImage
-                src={mainImage ? mainImage : someMainImage}
-                alt="대표 이미지"
-              />
+              <BackgroundImage src={someMainImage} alt="대표 이미지" />
               <CardActions>
                 <EditButton onClick={handleMainUploadClick}>
                   <img src={EditIcon} alt="수정 아이콘" />
@@ -75,11 +76,11 @@ const ImageUploader = ({
         <UploadButton onClick={handleAdditionalUploadClick}>
           <p>+</p>
         </UploadButton>
-        {additionalImages.map((imageSrc, index) => (
+        {someAdditionalImages?.map((imageSrc, index) => (
           <CardContainer key={index}>
             <CalendarImage>
               <BackgroundImage
-                src={imageSrc.url ? imageSrc.url : imageSrc}
+                src={imageSrc?.imgId ? imageSrc?.url : imageSrc}
                 alt={`추가 이미지 ${index + 1}`}
               />
               <CardActions>

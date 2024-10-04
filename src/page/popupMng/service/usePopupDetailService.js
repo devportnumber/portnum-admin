@@ -11,12 +11,14 @@ export const usePopupDetailService = () => {
 
   // 이미지 데이터(대표이미지)
   const [mainImageFile, setMainImageFile] = useState('') // 대표 이미지 파일
-  const [mainImage, setMainImage] = useState('') // 대표 이미지
+  const [mainImage, setMainImage] = useState('') // 대표 이미지(Request)
   const [someMainImage, setSomeMainImage] = useState('')
   const [mainImageUploaded, setMainImageUploaded] = useState(false)
+
   //이미지 데이터(추가이미지)
   const [additionalImageFile, setAdditionalImageFile] = useState([]) // 추가 이미지 파일
-  const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지
+  const [additionalImages, setAdditionalImages] = useState([]) // 추가 이미지(Request)
+  const [someAdditionalImages, setSomeAdditionalImages] = useState([])
   const [additionalImagesUploaded, setAdditionalImagesUploaded] =
     useState(false)
 
@@ -105,8 +107,8 @@ export const usePopupDetailService = () => {
       console.log('대표이미지 reader', reader)
 
       reader.onloadend = () => {
-        setMainImage(reader.result)
-        // setSomeMainImage(reader.result) // 미리보기 이미지 설정
+        // setMainImage(reader.result)
+        setSomeMainImage(reader.result) // 미리보기 이미지 설정
         setMainImageFile(file) // 파일 객체 저장
         storeMainImgGetApi('/image', 'GET', null, { imageName: file.name })
       }
@@ -118,6 +120,8 @@ export const usePopupDetailService = () => {
   const handleAdditionalImagesChange = (e) => {
     e.preventDefault()
     const files = Array.from(e.target.files)
+    console.log('추추가가files', files)
+    setAdditionalImageFile(files)
     const newImages = files.map((file) => {
       return new Promise((resolve) => {
         const reader = new FileReader()
@@ -130,24 +134,14 @@ export const usePopupDetailService = () => {
       })
     })
 
+    console.log('newImages', newImages)
+
     Promise.all(newImages).then((results) => {
-      console.log(results)
-      setAdditionalImages((prevImages) => [...prevImages, ...results]) // 기존 추가 이미지에 새 이미지 추가
+      console.log('추가 results', results)
+
+      setSomeAdditionalImages((prevImages) => [...prevImages, ...results])
+      // setAdditionalImages((prevImages) => [...prevImages, ...results])
     })
-    // Promise.all(newImages).then((results) => {
-    //   setAdditionalImages((prevImages) => {
-    //     const currentCount = prevImages.length
-    //     const newCount = currentCount + results.length
-
-    //     // 현재 이미지 수와 새로 추가할 이미지 수를 비교하여 9장을 초과하지 않도록 필터링
-    //     if (newCount > 9) {
-    //       alert('추가할 수 있는 이미지는 최대 9장입니다.')
-    //       return [...prevImages, ...results.slice(0, 9 - currentCount)] // 9장이 되지 않도록 슬라이스
-    //     }
-
-    //     return [...prevImages, ...results] // 9장이 안 넘으면 모두 추가
-    //   })
-    // })
   }
 
   // 추가 이미지 삭제 핸들러
@@ -159,17 +153,17 @@ export const usePopupDetailService = () => {
 
     if (imageSrc.status === 'done') {
       // 삭제 api
-      storeAddImgDeleteApi(
-        '/popup/img',
-        'DELETE',
-        {
-          adminId: adminId,
-          popupId: imageSrc.popupId,
-          representUrl: '', // 수정 필요
-          imgIds: [imageSrc.imgId],
-        },
-        null,
-      )
+      // storeAddImgDeleteApi(
+      //   '/popup/img',
+      //   'DELETE',
+      //   {
+      //     adminId: adminId,
+      //     popupId: imageSrc.popupId,
+      //     representUrl: '', // 수정 필요
+      //     imgIds: [imageSrc.imgId],
+      //   },
+      //   null,
+      // )
     }
   }
 
@@ -241,9 +235,7 @@ export const usePopupDetailService = () => {
       }
       // 팝업등록때 같이 추가
       if (isUpload) {
-        // setMainImage(imageSaveUrl) // DB저장X 화면ㅇ
-        console.log('대표이미지', imageSaveUrl)
-        // uploadImageToS3(mainImageFile, preSingedUrl)
+        uploadImageToS3(mainImageFile, preSingedUrl)
       }
     }
     // 2️⃣ 추가 이미지 처리
@@ -253,13 +245,12 @@ export const usePopupDetailService = () => {
       // 추가 이미지 업로드 시 중복 방지
       additionalImageFile.forEach(async (file) => {
         if (!additionalImagesUploaded) {
-          setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }]) // DB저장
           setAdditionalImagesUploaded(true)
+          setAdditionalImages((prev) => [...prev, { imgUrl: imageSaveUrl }]) // DB저장
         }
         // 팝업등록때 같이 추가
         if (isUpload) {
-          console.log('추가이미지', imageSaveUrl)
-          // uploadImageToS3(file, preSingedUrl)
+          uploadImageToS3(file, preSingedUrl)
         }
       })
     }
@@ -288,8 +279,11 @@ export const usePopupDetailService = () => {
     popupState, // 라디오
     setPopupState,
     someMainImage,
+    setSomeMainImage,
     mainImage,
     setMainImage,
+    someAdditionalImages,
+    setSomeAdditionalImages,
     additionalImages,
     setAdditionalImages,
     loading,

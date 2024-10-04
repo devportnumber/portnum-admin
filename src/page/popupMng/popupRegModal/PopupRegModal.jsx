@@ -53,9 +53,12 @@ const PopupRegModal = ({
     popupState, // 라디오
     setPopupState,
     someMainImage,
+    setSomeMainImage,
     mainImage,
     setMainImage,
     additionalImages,
+    someAdditionalImages,
+    setSomeAdditionalImages,
     setAdditionalImages,
     setLoading,
     loading,
@@ -88,7 +91,7 @@ const PopupRegModal = ({
       console.log('####', savePopupFormData)
 
       if (mode === 'create') {
-        // storeSaveApi('/popup', 'POST', savePopupFormData, null)
+        storeSaveApi('/popup', 'POST', savePopupFormData, null)
       }
       if (mode === 'edit') {
         // storeSaveApi('/popup', 'PATCH', savePopupFormData, null)
@@ -120,24 +123,30 @@ const PopupRegModal = ({
       detailDescription: record.detailDescription,
     })
 
-    setMainImage(record.representImgUrl)
+    // setMainImage(record.representImgUrl)
+    setSomeMainImage(record.representImgUrl)
     const formattedImages =
       record.images?.map((image) => ({
-        popupId: record.popupId,
-        imgId: image.imgId,
-        name: image.imgUrl.split('/').pop(),
+        popupId: record?.popupId,
+        imgId: image?.imgId,
+        name: image?.imgUrl.split('/').pop(),
         status: 'done',
-        url: image.imgUrl,
+        url: image?.imgUrl,
       })) || []
-    setAdditionalImages(formattedImages)
+    // setAdditionalImages(formattedImages)
+    console.log('formattedImages', formattedImages)
+    setSomeAdditionalImages(formattedImages || null)
     setMode('edit')
   }
 
   const resetForm = () => {
     form.resetFields()
     setPopupFormData({})
+    // 대표 이미지
     setMainImage(null)
+    setSomeMainImage(null)
     setAdditionalImages([])
+    setSomeAdditionalImages([])
     setIsUpload(false)
     setMode('create')
     setTableRecord(null) // 상세 정보 초기화 !!!
@@ -295,8 +304,11 @@ const PopupRegModal = ({
           </FormInfo>
           <ImageCard
             someMainImage={someMainImage}
+            setSomeMainImage={setSomeMainImage}
             mainImage={mainImage}
             setMainImage={setMainImage}
+            someAdditionalImages={someAdditionalImages}
+            setSomeAdditionalImages={setSomeAdditionalImages}
             additionalImages={additionalImages}
             setAdditionalImages={setAdditionalImages}
             handleMainImageChange={handleMainImageChange}
