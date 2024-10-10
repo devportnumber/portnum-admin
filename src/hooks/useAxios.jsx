@@ -59,7 +59,7 @@ export const useAxios = () => {
         setLoading(true)
         const response = await axios({
           method: method,
-          url: 'http://localhost:8080/admin' + url,
+          url: 'https://portnumber.site/admin' + url,
           data: requestBody,
           params: params,
           headers: {

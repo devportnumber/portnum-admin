@@ -30,6 +30,13 @@ const SignupPage = () => {
     error: emailChkError,
   } = useAxios()
 
+  // 아이디 중복 체크
+  const {
+    fetchData: loginIdChkApi,
+    data: loginIdChkData,
+    error: loginIdChkError,
+  } = useAxios()
+
   // 회원가입
   const {
     fetchData: signupApi,
@@ -39,9 +46,11 @@ const SignupPage = () => {
 
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
   const [isEmailChecked, setIsEmailChecked] = useState(false)
+  const [isLoginIdChecked, setIsLoginIdChecked] = useState(false)
 
   const [nicknameSuccessMessage, setNicknameSuccessMessage] = useState('')
   const [emailSuccessMessage, setEmailSuccessMessage] = useState('')
+  const [loginIdSuccessMessage, setLoginIdSuccessMessage] = useState('')
 
   // ✅ API 닉네임 중복 체크 GET
   const checkNickname = () => {
@@ -56,6 +65,12 @@ const SignupPage = () => {
     emailChkApi('/valid/email', 'GET', null, { value: email })
   }
 
+  // ✅ API 이메일 중복 체크 GET
+  const checkLoginId = () => {
+    const loginId = signupForm?.loginId
+    loginIdChkApi('/valid/loginId', 'GET', null, { value: loginId })
+  }
+
   // ✅ API 회원가입 POST
   const onFinish = (values) => {
     console.log('Form values:', values)
@@ -63,10 +78,16 @@ const SignupPage = () => {
       alert('닉네임 중복 확인을 해주세요.')
       return
     }
-    if (!isEmailChecked) {
-      alert('이메일 중복 확인을 해주세요.')
+
+    if (!isLoginIdChecked) {
+      alert('아이디 중복 확인을 해주세요.')
       return
     }
+
+    // if (!isEmailChecked) {
+    //   alert('이메일 중복 확인을 해주세요.')
+    //   return
+    // }
     signupApi('/signup', 'POST', values, null)
   }
 
@@ -102,21 +123,38 @@ const SignupPage = () => {
   }, [nicknameChkData])
 
   useEffect(() => {
-    if (emailChkData?.data === true) {
+    if (loginIdChkData?.data === true) {
       form.setFields([
         {
-          name: 'email',
-          errors: ['이미 사용중인 이메일입니다.'],
+          name: 'loginId',
+          errors: ['이미 사용중인 아이디입니다.'],
         },
       ])
-      setEmailSuccessMessage('')
-      setIsEmailChecked(false)
-    } else if (emailChkData?.data === false) {
-      setIsEmailChecked(true)
-      setEmailSuccessMessage('사용 가능한 이메일입니다.')
-      form.setFields([{ name: 'email', errors: [] }])
+      setLoginIdSuccessMessage('')
+      setIsLoginIdChecked(false)
+    } else if (loginIdChkData?.data === false) {
+      setIsLoginIdChecked(true)
+      setLoginIdSuccessMessage('사용 가능한 아이디입니다.')
+      form.setFields([{ name: 'loginId', errors: [] }])
     }
-  }, [emailChkData])
+  }, [loginIdChkData])
+
+  // useEffect(() => {
+  //   if (emailChkData?.data === true) {
+  //     form.setFields([
+  //       {
+  //         name: 'email',
+  //         errors: ['이미 사용중인 이메일입니다.'],
+  //       },
+  //     ])
+  //     setEmailSuccessMessage('')
+  //     setIsEmailChecked(false)
+  //   } else if (emailChkData?.data === false) {
+  //     setIsEmailChecked(true)
+  //     setEmailSuccessMessage('사용 가능한 이메일입니다.')
+  //     form.setFields([{ name: 'email', errors: [] }])
+  //   }
+  // }, [emailChkData])
 
   return (
     <SignupForm
@@ -144,6 +182,37 @@ const SignupPage = () => {
       >
         <Input placeholder="이름을 입력해주세요" />
       </Form.Item>
+      <IdWrap>
+        <Form.Item
+          label="아이디"
+          name="loginId"
+          rules={[
+            { required: true, message: '아이디를 입력해주세요!' },
+            {
+              min: 2,
+              message: '*최소 4글자 이상 문구(영어)를 입력해 주세요.',
+            },
+          ]}
+          help={
+            // 처음에는 기본 도움말을 보여주고, 중복 체크 후 성공 또는 에러 메시지로 교체
+            loginIdSuccessMessage ? (
+              <span style={{ color: 'green' }}>{loginIdSuccessMessage}</span>
+            ) : form.getFieldError('loginId').length > 0 ? (
+              <span style={{ color: 'red' }}>
+                {form.getFieldError('loginId')[0]}
+              </span>
+            ) : (
+              <div className="help">
+                <p>*최소 4글자 이상 문구(영어)를 입력해 주세요.</p>
+              </div>
+            )
+          }
+        >
+          <Input placeholder="아이디를 입력해주세요" />
+        </Form.Item>
+        <Button btnText="중복 확인" dupChk onClick={checkLoginId} />
+      </IdWrap>
+
       <NickNameWrap>
         <Form.Item
           label="닉네임"
@@ -228,7 +297,7 @@ const SignupPage = () => {
             <Input placeholder="이메일을 입력해주세요" />
           </Form.Item>
         </Flex>
-        <Button btnText="중복 확인" dupChk onClick={checkEmail} />
+        {/* <Button btnText="중복 확인" dupChk onClick={checkEmail} /> */}
       </EmailWrap>
       <Form.Item
         label="비밀번호"
@@ -339,5 +408,16 @@ const EmailWrap = styled.div`
     width: 100%;
     margin: 0;
     margin-bottom: 8px;
+  }
+`
+
+const IdWrap = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  /* flex-direction: row; */
+  align-items: center;
+  gap: 10px;
+  .ant-btn {
+    margin-top: 5px;
   }
 `

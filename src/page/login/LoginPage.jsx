@@ -32,6 +32,11 @@ const LoginPage = () => {
         loginForm,
       )
       console.log('response', response)
+
+      if (response.data.code === 30020) {
+        alert('가입되지 않은 사용자의 접근입니다.')
+        return
+      }
       // navigate('/', { replace: true })
       const newToken = response.headers['authorization']
       const newRefresh = response.headers['refresh']
