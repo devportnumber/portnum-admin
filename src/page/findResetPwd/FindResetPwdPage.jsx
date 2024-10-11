@@ -13,12 +13,12 @@ const FindResetPwdPage = () => {
   const [form] = Form.useForm()
   const values = Form.useWatch([], form)
   const navigate = useNavigate()
-  const adminId = localStorage.getItem('adminId')
+  const adminId = parseInt(localStorage.getItem('adminId')) || null
 
   const [resetPwdForm, setResetPwdForm] = useState({
-    adminId: adminId,
-    oldPassword: '',
-    newPassWord: '',
+    adminId: parseInt(adminId),
+    newPassword: '',
+    // oldPassword: '',
   })
 
   const {
@@ -73,7 +73,7 @@ const FindResetPwdPage = () => {
       <h2 className="title"> 비밀번호 재설정</h2>
       <Form.Item
         label="비밀번호"
-        name="newPassWord"
+        name="newPassword"
         layout="vertical"
         rules={[
           { required: true, message: '비밀번호 확인란을 입력해주세요.' },
@@ -115,7 +115,7 @@ const FindResetPwdPage = () => {
           { required: true, message: '비밀번호를 확인해주세요!' },
           ({ getFieldValue }) => ({
             validator(_, value) {
-              if (!value || getFieldValue('newPassWord') === value) {
+              if (!value || getFieldValue('newPassword') === value) {
                 return Promise.resolve()
               }
               return Promise.reject(new Error('비밀번호가 일치하지 않습니다.'))

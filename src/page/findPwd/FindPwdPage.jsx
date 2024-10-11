@@ -14,7 +14,7 @@ const FindPwdPage = () => {
   const navigate = useNavigate()
 
   const [findPwdForm, setFindPwdForm] = useState({
-    nickName: '',
+    loginId: '',
     email: '',
   })
 
@@ -85,12 +85,12 @@ const FindPwdPage = () => {
     >
       <h2 className="title"> 비밀번호 찾기</h2>
       <Form.Item
-        label="닉네임"
-        name="nickName"
+        label="아이디"
+        name="loginId"
         layout="vertical"
-        rules={[{ required: true, message: '닉네임을 입력해주세요!' }]}
+        rules={[{ required: true, message: '아이디를 입력해주세요!' }]}
       >
-        <Input placeholder="닉네임을 입력해주세요" />
+        <Input placeholder="아이디를 입력해주세요" />
       </Form.Item>
       <Form.Item
         label="가입시 이메일"
