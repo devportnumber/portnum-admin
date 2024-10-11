@@ -10,6 +10,7 @@ import SignupPage from '../page/signup/SignupPage'
 import FindEmailPage from '../page/findEmail/FindEmailPage'
 import FindPwdPage from '../page/findPwd/FindPwdPage'
 import FindResetPwdPage from '../page/findResetPwd/FindResetPwdPage'
+import FindLongIdPage from '../page/findLoginId/FindLongIdPage'
 
 // 인증된 사용자용 라우트 정의
 const authenticatedRoutes = [
@@ -37,6 +38,10 @@ const unauthenticatedRoutes = [
   {
     path: '/find-email',
     component: <FindEmailPage />,
+  },
+  {
+    path: '/find-loginId',
+    component: <FindLongIdPage />,
   },
   {
     path: '/find-password',
