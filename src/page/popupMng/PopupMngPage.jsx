@@ -43,7 +43,7 @@ const PopupMngPage = () => {
   const nickName = localStorage.getItem('nickName')
 
   // const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = 10
+  // const pageSize = 10
   // const paginateData = (data, currentPage, pageSize) => {
   //   const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
   //   const endIndex = startIndex + pageSize // 끝 인덱스
@@ -166,10 +166,10 @@ const PopupMngPage = () => {
         setCheckItem={setCheckItem}
       />
       <Pagination
-        size={pageSize}
+        size={10}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        total={storeListState?.length}
+        total={20}
       />
       <DelBtnWrap>
         <Button
