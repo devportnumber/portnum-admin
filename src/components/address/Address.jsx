@@ -1,16 +1,36 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-import { Button, SubmitModal, ConfirmModal, Input } from '../index'
+import React, { useState } from 'react'
 import DaumPostcode from 'react-daum-postcode'
-import { Space } from 'antd'
+import styled from 'styled-components'
+import { Input, SubmitModal } from '../index'
+const { kakao } = window
 
-const Address = ({ value, onChange }) => {
+const Address = ({ value, onChange, setPoint }) => {
   const [isModalOpen, setIsModalOpen] = useState(false) // 모달창 컴포넌트 props로 전달
+
+  const getAddressCoords = (address) => {
+    let geocoder = new kakao.maps.services.Geocoder()
+    return new Promise((resolve, reject) => {
+      geocoder.addressSearch(address, (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          const coords = new kakao.maps.LatLng(result[0].x, result[0].y)
+          setPoint({
+            longitude: Number(coords?.La),
+            latitude: Number(coords?.Ma),
+          })
+          console.log('coords', coords)
+          resolve(coords)
+        } else {
+          reject(status)
+        }
+      })
+    })
+  }
 
   const handleComplete = (data) => {
     console.log('address', data)
     const fullAddress = data?.address // 주소를 받아옴
     onChange(fullAddress)
+    getAddressCoords(fullAddress)
     setIsModalOpen(false)
   }
   return (

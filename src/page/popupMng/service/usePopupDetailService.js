@@ -79,10 +79,10 @@ export const usePopupDetailService = () => {
     // startDate: dayjs().format('YYYY-MM-DDT00:00:00'),
     // endDate: dayjs().format('YYYY-MM-DDT00:00:00'),
     stat: '',
-    point: {
-      longitude: '123',
-      latitude: '123',
-    },
+    // point: {
+    //   longitude: '37.54183',
+    //   latitude: '127.0563',
+    // },
     // address: {
     //   address: '',
     //   addressDetail: '',

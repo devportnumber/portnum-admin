@@ -94,8 +94,6 @@ export const usePopupMngService = () => {
       category: reqFilter.category, // 카테고리
       startDate: dayjs(startDate).format('YYYY-MM-DDT00:00:00'), // 시작 날짜
       endDate: dayjs(endDate).format('YYYY-MM-DDT00:00:00'), // 종료 날짜
-      // startDate: dayjs(startDate).format('YY.MM.DD'), // 시작 날짜
-      // endDate: dayjs(endDate).format('YY.MM.DD'), // 종료 날짜
       stat: reqFilter.stat,
     }
     console.log('######', updateReq)

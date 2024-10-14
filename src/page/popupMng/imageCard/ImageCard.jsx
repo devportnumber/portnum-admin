@@ -35,8 +35,6 @@ const ImageUploader = ({
     }
   }
 
-  console.log('someMainImage', someMainImage)
-
   return (
     <Wrap>
       {/* 대표 이미지 업로드 버튼 */}

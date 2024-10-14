@@ -65,6 +65,7 @@ const PopupRegModal = ({
   } = usePopupDetailService()
   const navigate = useNavigate()
   const adminId = localStorage.getItem('adminId') || null
+  const [point, setPoint] = useState()
 
   // ✅ API 팝업등록 버튼 클릭
   const onFinish = (values) => {
@@ -85,6 +86,7 @@ const PopupRegModal = ({
           address: values.address, // address 객체를 그대로 사용
           addressDetail: values.addressDetail, // addressDetail을 따로 사용
         },
+        point,
       }
 
       setIsUpload(true) // 업로드 상태 변경
@@ -94,7 +96,7 @@ const PopupRegModal = ({
         storeSaveApi('/popup', 'POST', savePopupFormData, null)
       }
       if (mode === 'edit') {
-        // storeSaveApi('/popup', 'PATCH', savePopupFormData, null)
+        storeSaveApi('/popup', 'PATCH', savePopupFormData, null)
       }
       console.log('#최등록#isUpload', isUpload)
       // 이미지 업로드
@@ -274,7 +276,7 @@ const PopupRegModal = ({
               label="주소 등록"
               rules={[{ required: false, message: '주소를 입력하세요!' }]}
             >
-              <Address />
+              <Address setPoint={setPoint} />
             </Form.Item>
             <Form.Item
               // name={['address', 'addressDetail']}

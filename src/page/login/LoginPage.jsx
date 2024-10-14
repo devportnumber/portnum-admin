@@ -13,18 +13,11 @@ const LoginPage = () => {
   const values = Form.useWatch([], form)
   const [loginForm, setLoginForm] = useState({
     // email: 'hello2@gmail.com',
-    loginId: 'testWebin',
-    password: 'qwer1234!',
+    loginId: '',
+    password: '',
   })
   const navigate = useNavigate()
   const { login } = useAuth()
-
-  const {
-    fetchData: loginApi,
-    loading: loginLoading,
-    data: loginlData,
-    error: loginError,
-  } = useAxios()
 
   const handleLogin = async () => {
     try {
