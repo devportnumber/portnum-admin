@@ -36,7 +36,7 @@ export const popupColumns = [
   },
   {
     title: '등록일시',
-    dataIndex: 'startDate',
+    dataIndex: 'regdt',
     render: (data) => {
       return <p>{dayjs(data).format('YYYY.MM.DD')}</p>
     },

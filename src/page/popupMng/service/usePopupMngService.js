@@ -59,6 +59,7 @@ export const usePopupMngService = () => {
     startDate: null, // 시작 날짜
     endDate: null, // 종료 날짜
     stat: null,
+    page: currentPage,
   })
   const [requestFilter, setRequestFilter] = useState(reqFilter)
   const [checkItem, setCheckItem] = useState([])
@@ -95,9 +96,10 @@ export const usePopupMngService = () => {
       startDate: dayjs(startDate).format('YYYY-MM-DDT00:00:00'), // 시작 날짜
       endDate: dayjs(endDate).format('YYYY-MM-DDT00:00:00'), // 종료 날짜
       stat: reqFilter.stat,
+      page: 1,
     }
-    console.log('######', updateReq)
     setRequestFilter(updateReq)
+    console.log('###팝업필터조회 요청값###', updateReq)
   }
 
   // API: 팝업 삭제
@@ -120,7 +122,6 @@ export const usePopupMngService = () => {
 
   // API 필터 조회
   useEffect(() => {
-    // /admin/popup/1
     storeFilterGetApi(`/popup/api/${nickName}`, 'GET', null, requestFilter)
   }, [requestFilter, storeDelData])
 
@@ -131,9 +132,23 @@ export const usePopupMngService = () => {
     }
   }, [storeFilterGetData])
 
+  useEffect(() => {
+    // 현재 페이지 번호를 필터에 추가
+    const updatedRequestFilter = { ...requestFilter, page: currentPage }
+    console.log('currentPage 변경으로 필터 조회:', updatedRequestFilter)
+
+    // API 호출
+    storeFilterGetApi(
+      `/popup/api/${nickName}`,
+      'GET',
+      null,
+      updatedRequestFilter,
+    )
+  }, [currentPage])
+
   // useEffect(() => {
   //   if (storeDelData === 'success') {
-  //     storeFilterGetApi('/popup/api/1', 'GET', null, requestFilter)
+  //     // storeFilterGetApi('/popup/api/1', 'GET', null, requestFilter)
   //     setCurrentPage(1)
   //   }
   // }, [storeDelData])
