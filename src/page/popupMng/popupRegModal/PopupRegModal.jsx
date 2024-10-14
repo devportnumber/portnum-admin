@@ -62,6 +62,7 @@ const PopupRegModal = ({
     setAdditionalImages,
     setLoading,
     loading,
+    modifyImages,
   } = usePopupDetailService()
   const navigate = useNavigate()
   const adminId = localStorage.getItem('adminId') || null
@@ -69,16 +70,14 @@ const PopupRegModal = ({
 
   // ✅ API 팝업등록 버튼 클릭
   const onFinish = (values) => {
-    console.log('등록 대표이미지 ', mainImage)
-    console.log('등록 추가이미지 ', additionalImages)
+    console.log('$$등록클릭: 대표이미지$$ ', mainImage)
+    console.log('$$등록클릭: 추가이미지$$ ', additionalImages)
     try {
       // const filteredImages = additionalImages.map(({ uid, ...rest }) => rest) // uid 제거
       const savePopupFormData = {
         ...values,
         adminId: parseInt(adminId),
         popupId: mode === 'edit' ? tableRecord?.popupId : null,
-        representImgUrl: mainImage, // 대표 이미지 1장
-        images: additionalImages, // 이미지 배열 9장
         keywords: values.keywords?.split(','),
         startDate: dayjs(values.startDate).format('YYYY-MM-DDTHH:mm:ss'),
         endDate: dayjs(values.endDate).format('YYYY-MM-DDTHH:mm:ss'),
@@ -86,11 +85,13 @@ const PopupRegModal = ({
           address: values.address, // address 객체를 그대로 사용
           addressDetail: values.addressDetail, // addressDetail을 따로 사용
         },
-        point,
+        point, // 위도,경도
+        representImgUrl: mainImage, // 대표 이미지 1장
+        images: mode === 'create' ? additionalImages : modifyImages, // 이미지 배열 9장
       }
 
       setIsUpload(true) // 업로드 상태 변경
-      console.log('####', savePopupFormData)
+      console.log('##팝업 폼데이터##', savePopupFormData)
 
       if (mode === 'create') {
         storeSaveApi('/popup', 'POST', savePopupFormData, null)
@@ -397,7 +398,7 @@ const FormUpload = styled.div`
 const FormInfo = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
+  align-items: flex-end;
   gap: 20px;
   background: #fefefe;
 `
