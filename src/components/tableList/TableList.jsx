@@ -66,6 +66,11 @@ const Wrap = styled.section`
   /* .ant-spin-nested-loading {
     border: 1px solid #dbdbdb;
   } */
+  table {
+    /* border: 1px solid #000; */
+    box-shadow: 0px 2px 6px 0px #0000001a;
+    box-shadow: 0px 0px 0px 1px #00000005;
+  }
   .ant-checkbox-inner {
     border-radius: 50%; /* 체크박스를 동그랗게 만듭니다. */
   }

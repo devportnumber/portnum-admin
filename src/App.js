@@ -70,7 +70,7 @@ const MainContent = styled.div`
   min-height: 100vh;
   flex-grow: 1;
   padding: 38px 52px 20px;
-  background-color: #f3f7fa;
+  background-color: #fff;
 `
 const Wrap = styled.section`
   display: flex;
