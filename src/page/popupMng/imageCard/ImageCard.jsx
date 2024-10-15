@@ -171,8 +171,8 @@ const BackgroundImage = styled.img`
 
 const CardActions = styled.div`
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: -2px;
+  left: 0px;
   width: 100%;
   height: 64px;
   background: #00000080;

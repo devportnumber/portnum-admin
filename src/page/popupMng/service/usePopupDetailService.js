@@ -22,10 +22,15 @@ export const usePopupDetailService = () => {
   const [additionalImagesUploaded, setAdditionalImagesUploaded] =
     useState(false)
 
-  // 수정시 추가이미지
+  //이미지 데이터(추가이미지 수정)
+  const [editIndex, setEditIndex] = useState(null) // 인덱스 관리
+  const [updateImageFile, setUpdateImageFile] = useState([]) // 수정 추가 이미지 파일
+  const [updateImages, setUpdateImages] = useState([]) // 수정 추가 이미지(Request)
+
+  // 수정시 추가 이미지 전체
   const [modifyImages, setModifyImages] = useState({
     addImages: additionalImages, // 추가 이미지
-    updateImages: [], // 수정 이미지
+    updateImages: updateImages, // 수정 이미지
     removeImages: [], // 삭제 이미지(imgId만 전달)
   })
 
@@ -45,28 +50,12 @@ export const usePopupDetailService = () => {
     error: storeImgGetError,
   } = useAxios()
 
-  // 추가 이미지 추가 POST
+  // 추가 이미지 수정 url 요청
   const {
-    fetchData: storeAddImgPostApi,
-    loading: storeAddImgPostLoading,
-    data: storeAddImgPostData,
-    error: storeImgPostError,
-  } = useAxios()
-
-  // 추가 이미지 수정 PATCH
-  const {
-    fetchData: storeAddImgPatchApi,
-    loading: storeAddImgPatchLoading,
-    data: storeAddImgPatchData,
-    error: storeImgPatchError,
-  } = useAxios()
-
-  // 추가 이미지 삭제 Delete
-  const {
-    fetchData: storeAddImgDeleteApi,
-    loading: storeAddImgDeleteLoading,
-    data: storeAddImgDeleteData,
-    error: storeImgDeleteError,
+    fetchData: storeUpdateImgApi,
+    loading: storeUpdateImgLoading,
+    data: storeUpdateImgData,
+    error: storeUpdateImgError,
   } = useAxios()
 
   // 팝업 등록
@@ -140,6 +129,46 @@ export const usePopupDetailService = () => {
     })
   }
 
+  // 추가 이미지 수정 핸들러
+  const handleEditImage = (e, index, imageSrc) => {
+    // console.log('$수정index', index)
+    // console.log('$수정imageSrc', imageSrc)
+    e.preventDefault()
+
+    setEditIndex(index)
+    const editFileInput = document.createElement('input')
+    editFileInput.type = 'file'
+    editFileInput.accept = 'image/*'
+
+    editFileInput.onchange = (event) => {
+      const file = event.target.files[0]
+      if (file) {
+        setUpdateImageFile(file)
+        console.log('수정파일', file)
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setSomeAdditionalImages((prevImages) => {
+            const newImages = [...prevImages]
+            newImages[index] = reader.result
+            return newImages
+          })
+        }
+        setModifyImages((prevState) => ({
+          ...prevState,
+          updateImages: [
+            ...prevState.updateImages,
+            { imgId: imageSrc.imgId, imgUrl: reader.result }, // Using imageSrc.imgId for update
+          ],
+        }))
+        storeUpdateImgApi('/image', 'GET', null, { imageName: file.name })
+
+        reader.readAsDataURL(file)
+      }
+    }
+
+    editFileInput.click()
+  }
+
   // 추가 이미지 삭제 핸들러
   const handleDeleteImage = (e, index, imageSrc) => {
     console.log('## 추가 이미지 삭제imageSrc', imageSrc)
@@ -154,37 +183,6 @@ export const usePopupDetailService = () => {
         removeImages: [...prevState.removeImages, imageSrc.imgId],
       }))
     }
-  }
-
-  // 추가 이미지 수정 핸들러
-  const handleEditImage = (e, index, imageSrc) => {
-    e.preventDefault()
-    console.log('$수정index', index)
-    console.log('$수정imageSrc', imageSrc)
-
-    const editFileInput = document.createElement('input')
-    editFileInput.type = 'file'
-    editFileInput.accept = 'image/*'
-
-    editFileInput.onchange = (event) => {
-      const file = event.target.files[0]
-
-      if (file) {
-        console.log('수정파일', file)
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          setSomeAdditionalImages((prevImages) => {
-            const newImages = [...prevImages]
-            newImages[index] = reader.result
-            return newImages
-          })
-        }
-        storeAddImgGetApi('/image', 'GET', null, { imageName: file.name })
-        reader.readAsDataURL(file)
-      }
-    }
-
-    editFileInput.click()
   }
 
   // ✅ AWS s3 이미지 업로드
@@ -254,20 +252,20 @@ export const usePopupDetailService = () => {
     }
 
     // 수정 이미지 처리
-    // if (storeAddImgGetData) {
-    //   const { preSingedUrl, imageSaveUrl } = storeAddImgGetData.data
-    //   setModifyImages((prevState) => ({
-    //     ...prevState,
-    //     updateImages: [
-    //       ...prevState.updateImages,
-    //       { imgId: prevState.imgId, imgUrl: imageSaveUrl },
-    //     ],
-    //   }))
-    //   if (isUpload) {
-    //     // uploadImageToS3(additionalImageFile, preSingedUrl)
-    //   }
-    // }
-  }, [storeMainImgGetData, storeAddImgGetData, isUpload])
+    if (storeUpdateImgData) {
+      const { preSingedUrl, imageSaveUrl } = storeUpdateImgData.data
+
+      setModifyImages((prevState) => ({
+        ...prevState,
+        updateImages: prevState.updateImages.map((img, idx) =>
+          idx === editIndex ? { ...img, imgUrl: imageSaveUrl } : img,
+        ),
+      }))
+      if (isUpload) {
+        uploadImageToS3(updateImageFile, preSingedUrl)
+      }
+    }
+  }, [storeMainImgGetData, storeAddImgGetData, storeUpdateImgData, isUpload])
 
   // 팝업 등록 성공시 리로드
   useEffect(() => {
