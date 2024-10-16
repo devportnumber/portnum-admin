@@ -50,17 +50,8 @@ const unauthenticatedRoutes = [
 ]
 
 const Router = () => {
-  // const isAuthenticated = localStorage.getItem('token')
-  // const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { isAuthenticated } = useAuth()
-  const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   // 토큰이 없으면 로그인 페이지로 이동
-  //   if (!isAuthenticated) {
-  //     navigate('/login')
-  //   }
-  // }, [isAuthenticated])
   return (
     <Routes>
       {isAuthenticated
@@ -71,9 +62,16 @@ const Router = () => {
             <Route path={route.path} element={route.component} key={idx} />
           ))}
       {/* 인증되지 않은 사용자가 인증된 라우트에 접근 시 로그인 페이지로 리다이렉트 */}
-      {!isAuthenticated && (
+      {/* {!isAuthenticated && (
         <Route path="*" element={<Navigate to="/login" />} />
       )}
+      {isAuthenticated && <Route path="*" element={<Navigate to="/" />} />} */}
+
+      {/* {isAuthenticated ? (
+        <Route path="*" element={<Navigate to="/" />} />
+      ) : (
+        <Route path="*" element={<Navigate to="/login" />} />
+      )} */}
     </Routes>
   )
 }
