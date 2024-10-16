@@ -270,7 +270,8 @@ export const usePopupDetailService = () => {
   // 팝업 등록 성공시 리로드
   useEffect(() => {
     if (storeFilterData?.success) {
-      // window.location.reload('/')
+      window.location.reload('/')
+      // alert("팝업등록")
     }
   }, [storeFilterData])
 
