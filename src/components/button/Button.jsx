@@ -32,7 +32,7 @@ const Button = ({
   }
 
   return (
-    <SearchBtnWrap>
+    <SearchBtnWrap cancel={cancel}>
       <ConfigProvider
         theme={{
           token: {
@@ -65,5 +65,9 @@ const SearchBtnWrap = styled.div`
   width: 100%;
   .ant-btn {
     width: 100%;
+    /* border: 1px solid #e0e0e0; */
+
+    border: ${({ cancel }) =>
+      cancel && `1px solid #e0e0e0;`}; /* 활성화 상태에 따라 배경색 변경 */
   }
 `

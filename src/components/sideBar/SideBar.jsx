@@ -96,6 +96,11 @@ const Side = styled.div`
     color: #000;
     font-weight: bold;
   }
+  /* 사이드바 클릭시 배경화면 */
+  :where(.css-dev-only-do-not-override-11lehqq).ant-menu-light
+    .ant-menu-item-selected {
+    background-color: #f9f9f9;
+  }
 `
 
 const MenuHead = styled.h4`

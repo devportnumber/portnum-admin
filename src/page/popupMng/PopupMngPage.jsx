@@ -20,7 +20,9 @@ import * as constantsData from './service/constants'
 
 const PopupMngPage = () => {
   const {
+    reqFilter,
     storeListState,
+    handleResetFilterClick,
     handleFilterClick,
     handleCategoryChange,
     handleStateChange,
@@ -39,17 +41,7 @@ const PopupMngPage = () => {
   const [isModalOpenSubmit, setIsModalOpenSubmit] = useState(false)
   const [isModalOpenConfirm, setIsModalOpenConfirm] = useState(false)
 
-  const { data: storeList, loading, error, fetchData } = useAxios()
   const nickName = localStorage.getItem('nickName')
-
-  // const [currentPage, setCurrentPage] = useState(1)
-  // const pageSize = 10
-  // const paginateData = (data, currentPage, pageSize) => {
-  //   const startIndex = (currentPage - 1) * pageSize // 시작 인덱스
-  //   const endIndex = startIndex + pageSize // 끝 인덱스
-  //   return data?.slice(startIndex, endIndex)
-  // }
-  // const currentData = paginateData(storeListState, currentPage, pageSize)
 
   // 팝업상세
   const {
@@ -100,6 +92,7 @@ const PopupMngPage = () => {
               selectTitle={'카테고리'}
               selectItems={constantsData.CATEGORY_ITEMS}
               onChange={handleCategoryChange}
+              value={reqFilter.category || 'all'} // 초기값 설정
             />
           </Col>
           <Col span={8}>
@@ -107,10 +100,15 @@ const PopupMngPage = () => {
               selectTitle={'상태'}
               selectItems={constantsData.STATE_ITEMS}
               onChange={handleStateChange}
+              value={reqFilter.stat || 'all'} // 초기값 설정
             />
           </Col>
           <Col span={8}>
-            <Input inputTitle={'팝업명'} onChange={handleNameChange} />
+            <Input
+              inputTitle={'팝업명'}
+              value={reqFilter.name || ''}
+              onChange={handleNameChange}
+            />
           </Col>
         </Row>
         <Row gutter={[10, 0]} align={'bottom'}>
@@ -131,7 +129,12 @@ const PopupMngPage = () => {
             </Flex>
           </Col>
           <Col span={8}>
-            <DateButtons setFromDate={setStartDate} setToDate={setEndDate} />
+            <DateButtons
+              fromDate={startDate}
+              setFromDate={setStartDate}
+              toDate={endDate}
+              setToDate={setEndDate}
+            />
           </Col>
         </Row>
       </BoxShadow>
@@ -150,7 +153,11 @@ const PopupMngPage = () => {
         </div>
         <Row gutter={[10, 10]}>
           <Col>
-            <Button btnText={'초기화'} cancel />
+            <Button
+              btnText={'초기화'}
+              cancel
+              onClick={handleResetFilterClick}
+            />
           </Col>
           <Col>
             <Button btnText={'조회'} onClick={handleFilterClick} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
+
 const DateButtons = ({
   fromDate,
   toDate,
@@ -12,42 +13,69 @@ const DateButtons = ({
 }) => {
   const today = dayjs()
   const [activeButton, setActiveButton] = useState('')
+
+  const setDates = (start, end, buttonName) => {
+    setFromDate(start)
+    setToDate(end)
+    setActiveButton(buttonName)
+    if (onChange) {
+      onChange(start, end)
+    }
+  }
+
   // 당월
   const currentMonth = () => {
-    // const startOfMonth = dayjs().startOf('month').format('YY.MM.DD')
     const startOfMonth = dayjs().startOf('month')
-    setFromDate(startOfMonth)
-    setToDate(today)
-    // setDateRange([dayjs(startOfMonth, 'YY.MM.DD'), dayjs(today, 'YY.MM.DD')])
-    setActiveButton('currentMonth')
+    setDates(startOfMonth, today, 'currentMonth')
   }
 
   // 1주일
   const currentWeekMonth = () => {
     const weekAgo = dayjs().subtract(1, 'week')
-    setFromDate(weekAgo)
-    setToDate(today)
-    // setDateRange([dayjs(weekAgo, 'YY.MM.DD'), dayjs(today, 'YY.MM.DD')])
-    setActiveButton('currentWeekMonth')
+    setDates(weekAgo, today, 'currentWeekMonth')
   }
 
   // 1개월
   const currentOneMonth = () => {
     const oneMonthAgo = dayjs().subtract(1, 'month')
-    setFromDate(oneMonthAgo)
-    setToDate(today)
-    // setDateRange([dayjs(oneMonthAgo, 'YY.MM.DD'), dayjs(today, 'YY.MM.DD')])
-    setActiveButton('currentOneMonth')
+    setDates(oneMonthAgo, today, 'currentOneMonth')
   }
 
   // 2개월
   const currentTwoMonth = () => {
     const twoMonthsAgo = dayjs().subtract(2, 'month')
-    setFromDate(twoMonthsAgo)
-    setToDate(today)
-    // setDateRange([dayjs(twoMonthsAgo, 'YY.MM.DD'), dayjs(today, 'YY.MM.DD')])
-    setActiveButton('currentTwoMonth')
+    setDates(twoMonthsAgo, today, 'currentTwoMonth')
   }
+
+  // 날짜 값이 수동으로 변경되면 activeButton을 초기화
+  useEffect(() => {
+    const today = dayjs()
+    if (fromDate && toDate) {
+      if (
+        fromDate.isSame(today.startOf('month'), 'day') &&
+        toDate.isSame(today, 'day')
+      ) {
+        setActiveButton('currentMonth')
+      } else if (
+        fromDate.isSame(today.subtract(1, 'week'), 'day') &&
+        toDate.isSame(today, 'day')
+      ) {
+        setActiveButton('currentWeekMonth')
+      } else if (
+        fromDate.isSame(today.subtract(1, 'month'), 'day') &&
+        toDate.isSame(today, 'day')
+      ) {
+        setActiveButton('currentOneMonth')
+      } else if (
+        fromDate.isSame(today.subtract(2, 'month'), 'day') &&
+        toDate.isSame(today, 'day')
+      ) {
+        setActiveButton('currentTwoMonth')
+      } else {
+        setActiveButton('')
+      }
+    }
+  }, [fromDate, toDate])
 
   return (
     <Wrap>
@@ -90,51 +118,8 @@ const Wrap = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  /* width: 100%; */
 `
 
-const FilterTit = styled.h4`
-  font-size: 14px;
-  color: #000;
-  width: 100px;
-`
-
-const FilterBox = styled.div`
-  /* width: fit-content; */
-  /* width: 300px; */
-  width: 100%;
-  height: 40px;
-  display: flex;
-  gap: 8px;
-  /* background: transparent; */
-  background: #fff;
-  /* border: 1px solid #79747e; */
-  /* border-radius: 20px; */
-  overflow: hidden;
-
-  .item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    text-align: center;
-    font-size: 14px;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    color: #00000099;
-    /* border-right: 1px solid #79747e; */
-  }
-
-  .item:last-child {
-    /* border-right: none; */
-  }
-
-  .item.active {
-    background-color: #e0e0e0;
-    color: #000;
-  }
-`
 const DateBtn = styled.button`
   width: 100%;
   height: 40px;
@@ -145,8 +130,7 @@ const DateBtn = styled.button`
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   color: #00000099;
-  background-color: ${({ active }) =>
-    active ? `#E0E0E0 ` : '#fff'}; /* 활성화 상태에 따라 배경색 변경 */
+  background-color: ${({ active }) => (active ? `#E0E0E0 ` : '#fff')};
 
   .btnTxt {
     font-size: 15px;

@@ -27,8 +27,9 @@ export const popupColumns = [
   {
     title: '팝업기간',
     dataIndex: 'endDate',
-    render: (startDate, record) => {
+    render: (_, record) => {
       const endDate = record.endDate // 현재 행의 endDate를 가져옴
+      const startDate = record.startDate // 현재 행의 endDate를 가져옴
       const formattedStartDate = dayjs(startDate).format('YYYY.MM.DD')
       const formattedEndDate = dayjs(endDate).format('YYYY.MM.DD')
       return <p>{`${formattedStartDate} ~ ${formattedEndDate}`}</p>

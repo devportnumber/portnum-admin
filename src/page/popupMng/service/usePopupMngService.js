@@ -48,10 +48,12 @@ export const usePopupMngService = () => {
   const [storeListState, setStoreListState] = useState()
   const [reqPopupData, setReqPopupData] = useState({})
 
+  // dayjs() 오늘날짜 기준
   const [startDate, setStartDate] = useState(dayjs())
   const [endDate, setEndDate] = useState(dayjs())
 
   const [currentPage, setCurrentPage] = useState(1)
+  const [allcount, setAllcount] = useState()
 
   const [reqFilter, setReqFilter] = useState({
     name: null, // 팝업명
@@ -66,7 +68,7 @@ export const usePopupMngService = () => {
 
   // filter 1. 카테고리 드롭다운
   const handleCategoryChange = (value) => {
-    console.log('카테고리 value', value)
+    // console.log('카테고리 value', value)
     if (value === 'all') {
       setReqFilter({ ...reqFilter, category: null })
     } else {
@@ -75,7 +77,7 @@ export const usePopupMngService = () => {
   }
   // filter 2. 팝업 상태 : 노출 or 비노출
   const handleStateChange = (value) => {
-    console.log('상태 value', value)
+    // console.log('상태 value', value)
     if (value === 'all') {
       setReqFilter({ ...reqFilter, stat: null })
     } else {
@@ -86,6 +88,22 @@ export const usePopupMngService = () => {
   // filter 3. 팝업명 : 입력 값
   const handleNameChange = (value) => {
     setReqFilter({ ...reqFilter, name: value })
+  }
+
+  // 필터 초기화
+  const handleResetFilterClick = () => {
+    setStartDate(dayjs())
+    setEndDate(dayjs())
+    const updateReq = {
+      name: null, // 팝업명
+      category: null, // 카테고리
+      startDate: dayjs().format('YYYY-MM-DDT00:00:00'), // 시작 날짜
+      endDate: dayjs().format('YYYY-MM-DDT00:00:00'), // 종료 날짜
+      stat: null,
+      page: 1,
+    }
+    setRequestFilter(updateReq) // 필터 값을 상태에 반영
+    setReqFilter(updateReq) // reqFilter도 초기화
   }
 
   // API: 팝업 필터 조회
@@ -154,9 +172,11 @@ export const usePopupMngService = () => {
   // }, [storeDelData])
 
   return {
+    reqFilter,
     storeListState,
     onFinish,
     reqPopupData,
+    handleResetFilterClick,
     handleFilterClick,
     handleCategoryChange,
     handleStateChange,

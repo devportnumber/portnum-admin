@@ -229,7 +229,7 @@ const PopupRegModal = ({
             <Form.Item
               name="name"
               label="컨텐츠 명"
-              rules={[{ required: false, message: '컨텐츠 명을 입력하세요!' }]}
+              rules={[{ required: true, message: '컨텐츠 명을 입력하세요!' }]}
             >
               <Input />
             </Form.Item>
@@ -238,9 +238,7 @@ const PopupRegModal = ({
               <Form.Item
                 name="startDate"
                 label="컨텐츠 노출 기간"
-                rules={[
-                  { required: false, message: '날짜 범위를 선택하세요!' },
-                ]}
+                rules={[{ required: true, message: '날짜 범위를 선택하세요!' }]}
               >
                 <DatePicker
                   value={popupFormData.startDate}
@@ -275,7 +273,7 @@ const PopupRegModal = ({
               // name={['address', 'address']}
               name="address"
               label="주소 등록"
-              rules={[{ required: false, message: '주소를 입력하세요!' }]}
+              rules={[{ required: true, message: '주소를 입력하세요!' }]}
             >
               <Address setPoint={setPoint} />
             </Form.Item>
@@ -283,21 +281,21 @@ const PopupRegModal = ({
               // name={['address', 'addressDetail']}
               name={'addressDetail'}
               label="상세 주소"
-              rules={[{ required: false, message: '상세 주소를 입력하세요!' }]}
+              rules={[{ required: true, message: '상세 주소를 입력하세요!' }]}
             >
               <Input placeholder="상세주소 입력" />
             </Form.Item>
             <Form.Item
               name="keywords"
               label="키워드 등록(,로 구분)"
-              rules={[{ required: false, message: '키워드를 입력하세요!' }]}
+              rules={[{ required: true, message: '키워드를 입력하세요!' }]}
             >
               <Input placeholder="키워드를 입력하세요." />
             </Form.Item>
             <Form.Item
               name="category"
               label="카테고리"
-              rules={[{ required: false, message: '카테고리를 선택하세요!' }]}
+              rules={[{ required: true, message: '카테고리를 선택하세요!' }]}
             >
               <SelectOption
                 selectItems={constantsData.CATEGORY_ITEMS}
@@ -319,17 +317,22 @@ const PopupRegModal = ({
             handleDeleteImage={handleDeleteImage}
             handleEditImage={handleEditImage}
           />
+          <p className="redTxt">
+            사진 별 권장 사이즈 및 용량 : 최소 300px X 300px 이상, 최대 1000px X
+            1000px / 정방형이 아닐 경우 사진이 잘릴 수 있습니다. (1장당 최대
+            크기 5MB)
+          </p>
           <Form.Item
             name="description"
             label="기본 설명"
-            rules={[{ required: false, message: '기본 설명을 입력하세요!' }]}
+            rules={[{ required: true, message: '기본 설명을 입력하세요!' }]}
           >
             <Input placeholder="최대 100Byte 가능" />
           </Form.Item>
           <Form.Item
             name="detailDescription"
             label="상세 설명"
-            rules={[{ required: false, message: '상세 설명을 입력하세요!' }]}
+            rules={[{ required: true, message: '상세 설명을 입력하세요!' }]}
           >
             <ToastEditor value={tableRecord?.detailDescription} />
           </Form.Item>
@@ -379,10 +382,20 @@ const FormWrap = styled.section`
   padding: 32px;
   border-radius: 8px;
   margin: 24px 0px 28px;
+
+  .ant-form-item-label label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+  }
   .infoTit {
     font-size: 14px;
     color: #000;
     margin-bottom: 10px;
+  }
+  .redTxt {
+    font-size: 14px;
+    color: #e0143c;
   }
 `
 
