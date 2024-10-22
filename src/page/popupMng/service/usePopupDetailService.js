@@ -62,14 +62,14 @@ export const usePopupDetailService = () => {
   const {
     fetchData: storeSaveApi,
     loading: saveLoading,
-    data: storeFilterData,
+    data: storeSaveData,
     error: error2,
   } = useAxios()
 
   const [popupFormData, setPopupFormData] = useState({
-    adminId: 1,
+    adminId: adminId || null,
     name: '',
-    category: '',
+    category: 'all',
     startDate: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
     endDate: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
     stat: '',
@@ -269,17 +269,17 @@ export const usePopupDetailService = () => {
 
   // 팝업 등록 성공시 리로드
   useEffect(() => {
-    if (storeFilterData?.success) {
-      window.location.reload('/')
+    if (storeSaveData?.success) {
       // alert("팝업등록")
+      window.location.reload('/')
     }
-  }, [storeFilterData])
+  }, [storeSaveData])
 
   return {
     popupFormData, // 폼 데이터
     setPopupFormData,
     storeSaveApi, // 최종 등록 api
-    storeFilterData, // 팝업 등록 성공 데이터
+    storeSaveData, // 팝업 등록 성공 데이터
     // onFinish, // 최종 등록, 수정 : 제출 함수
     isUpload,
     setIsUpload,

@@ -50,11 +50,26 @@ const unauthenticatedRoutes = [
 ]
 
 const Router = () => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
 
   return (
     <Routes>
-      {!isAuthenticated && (
+      {isAuthenticated ? (
+        <>
+          {authenticatedRoutes.map((route, idx) => (
+            <Route key={idx} path={route.path} element={route.component} />
+          ))}
+          <Route path="*" element={<Navigate to="/" />} />
+        </>
+      ) : (
+        <>
+          {unauthenticatedRoutes.map((route, idx) => (
+            <Route key={idx} path={route.path} element={route.component} />
+          ))}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </>
+      )}
+      {/* {!isAuthenticated && (
         <Route path="*" element={<Navigate to="/login" />} />
       )}
       {isAuthenticated
@@ -63,7 +78,7 @@ const Router = () => {
           ))
         : unauthenticatedRoutes.map((route, idx) => (
             <Route path={route.path} element={route.component} key={idx} />
-          ))}
+          ))} */}
       {/* 인증되지 않은 사용자가 인증된 라우트에 접근 시 로그인 페이지로 리다이렉트 */}
       {/* {isAuthenticated && <Route path="*" element={<Navigate to="/" />} />} */}
 

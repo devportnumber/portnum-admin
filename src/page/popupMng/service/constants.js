@@ -92,6 +92,39 @@ export const CATEGORY_ITEMS = [
     value: 'BAKERY',
     label: '베이커리',
   },
+  // ❕ 흑백요리사 카테고리 추가 ❕
+  {
+    value: 'WESTERN_BLK',
+    label: '흑 양식',
+  },
+  {
+    value: 'CHINESE_BLK',
+    label: '흑 중식',
+  },
+  {
+    value: 'JAPANESE_BLK',
+    label: '흑 일식',
+  },
+  {
+    value: 'KOREAN_BLK',
+    label: '흑 한식',
+  },
+  {
+    value: 'WESTERN_WHT',
+    label: '백 양식',
+  },
+  {
+    value: 'CHINESE_WHT',
+    label: '백 중식',
+  },
+  {
+    value: 'JAPANESE_WHT',
+    label: '백 일식',
+  },
+  {
+    value: 'KOREAN_WHT',
+    label: '백 한식',
+  },
 ]
 
 // 상태 드롭다운

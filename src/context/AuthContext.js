@@ -5,12 +5,14 @@ const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true) // 로딩 상태 추가
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token) {
       setIsAuthenticated(!!token)
     }
+    setIsLoading(false)
   }, [])
 
   const login = (token, refresh, nickName, adminId) => {
@@ -22,12 +24,12 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
+    localStorage.clear()
     setIsAuthenticated(false)
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   )
