@@ -7,17 +7,6 @@ import SideBar from './components/sideBar/SideBar'
 import { useAuth, AuthProvider } from './context/AuthContext'
 
 function App() {
-  // const [isAuthenticated, setIsAuthenticated] = useState(false)
-  // const token = localStorage.getItem('token')
-
-  // useEffect(() => {
-  //   if (token) {
-  //     setIsAuthenticated(true)
-  //   } else {
-  //     setIsAuthenticated(false)
-  //   }
-  // }, [])
-
   return (
     <div className="App">
       <BrowserRouter>

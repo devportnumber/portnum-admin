@@ -15,6 +15,7 @@ export const useAxios = () => {
   const isReissuingRef = useRef(false)
   const requestQueue = useRef([])
 
+  // 토큰 재생성
   const reissueToken = async () => {
     try {
       const response = await axios.patch(

@@ -11,22 +11,6 @@ dayjs.locale('ko')
 
 // 팝업관리 서비스 로직
 export const usePopupMngService = () => {
-  // 팝업
-  const {
-    fetchData: storeGetApi,
-    _,
-    data: storeListData,
-    error: error1,
-  } = useAxios()
-
-  // 팝업 등록
-  const {
-    fetchData: storeSaveApi,
-    loading2,
-    data: storeFilterData,
-    error: error2,
-  } = useAxios()
-
   // 팝업 조회
   const {
     fetchData: storeFilterGetApi,

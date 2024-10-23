@@ -65,7 +65,7 @@ const SignupPage = () => {
     emailChkApi('/valid/email', 'GET', null, { value: email })
   }
 
-  // ✅ API 이메일 중복 체크 GET
+  // ✅ API 아이디 중복 체크 GET
   const checkLoginId = () => {
     const loginId = signupForm?.loginId
     loginIdChkApi('/valid/loginId', 'GET', null, { value: loginId })
