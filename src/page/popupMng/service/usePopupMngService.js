@@ -129,6 +129,8 @@ export const usePopupMngService = () => {
 
   useEffect(() => {
     if (storeFilterGetData) {
+      console.log('storeFilterGetData', storeFilterGetData)
+      setAllcount(storeFilterGetData?.data?.totalElements)
       setStoreListState(storeFilterGetData?.data?.data)
       // console.log('>>>storeFilterPostData', storeFilterGetData)
     }
@@ -173,5 +175,6 @@ export const usePopupMngService = () => {
     setCheckItem,
     currentPage,
     setCurrentPage,
+    allcount,
   }
 }

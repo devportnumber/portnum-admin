@@ -35,6 +35,7 @@ const PopupMngPage = () => {
     setCheckItem,
     currentPage,
     setCurrentPage,
+    allcount,
   } = usePopupMngService()
   const [selectedFilterItems, setSelectedFilterItems] = useState([])
   const [tableRecord, setTableRecord] = useState(null)
@@ -176,7 +177,7 @@ const PopupMngPage = () => {
         size={10}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        total={20}
+        total={allcount}
       />
       <DelBtnWrap>
         <Button
