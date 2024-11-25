@@ -13,9 +13,11 @@ const Address = ({ value, onChange, setPoint }) => {
       geocoder.addressSearch(address, (result, status) => {
         if (status === kakao.maps.services.Status.OK) {
           const coords = new kakao.maps.LatLng(result[0].x, result[0].y)
+
+          console.log('coords', coords)
           setPoint({
-            longitude: Number(coords?.La),
-            latitude: Number(coords?.Ma),
+            longitude: Number(coords?.Ma), // 경도 Ma
+            latitude: Number(coords?.La), // 위도 La
           })
           console.log('coords', coords)
           resolve(coords)
